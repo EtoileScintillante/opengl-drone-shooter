@@ -14,12 +14,12 @@
 #include <random>
 
 /**
- * @brief generate random positions for the trees on a flat terrains.
+ * @brief generate random positions for the trees on a flat terrain.
  * 
  * @param numTrees number of trees for which a position will be generated.
  * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
  * @param groundY y value of the ground.
- * @param blockSize blocksize. This will be added to groundY in order to place the tree on the ground.
+ * @param blockSize blocksize. this value will be added to groundY in order to place the tree on the ground.
  * @param offsetY this value will be added to groundY and blockSize to avoid z fighting.
  * @return std::vector< glm::vec3 > vector containing all the positions.
  */
@@ -37,7 +37,7 @@ std::vector< glm::vec3 > generateTreePositions(int numTrees, int terrainSize, fl
 std::vector< glm::vec3 > generateRandomLampPositions(int numLamps, float heightLowerRange, float heightUpperRange, int terrainSize);
 
 /**
- * @brief generate the positions for lamps in such a way that the lamp sticks to a tree.
+ * @brief generates positions for lamps in such a way that the lamp sticks to a tree.
  * This is done in two steps: 
  * 1. randomly choose numLamps tree positions from the treePosition vector.
  * 2. create position for lamp based on position of tree by adding/subtracting offsets.
@@ -48,7 +48,7 @@ std::vector< glm::vec3 > generateRandomLampPositions(int numLamps, float heightL
  * @param blockSize blocksize. This will be added to groundY.
  * @param offsetY this value will be subtracted from groundY + blockSize + heightTree, creating a y value for the position of the lamps.
  * @param offsetX this value will be added to the x value of the tree position (if offsetX is smaller than blocksize of tree, 
- * the lamp will be partly rendered in the tree). Every third iteration, offsetX is subtracted from the x value of the tree
+ * the lamp will be partly rendered inside the tree). Every third iteration, offsetX is subtracted from the x value of the tree
  * position to create some variation in the direction the lamps are pointing at. 
  * @param treePositions vector containing the positions of the trees. 
  * @return std::vector< glm::vec3 > vector containing the positions.
@@ -61,10 +61,10 @@ std::vector< glm::vec3 > generateLampPosStickToTree(int numLamps, int heightTree
  * highest block of tree and 1 on top of this highest block. 
  * 
  * @param heightTree height of tree (number of blocks that make up a tree).
- * @param blockSize blocksize. This will be added or subtracted to x/y/z values of tree.
- * If blockSize is smaller than blocksize of tree, the leaves will be partly rendered in the tree. 
+ * @param blockSize blocksize. this value will be added to (or subtracted from) the x/y/z values of tree.
+ * If blockSize is smaller than blocksize of tree, the leaves will be partly rendered inside the tree. 
  * @param groundY y value of the ground.
- * @param offset this offset will be added or subtracted to x/y/z values of tree to prevent z fighting.
+ * @param offset this offset will be added to (or subtracted from) the x/y/z values of tree to prevent z fighting.
  * @param treePositions vector containing the positions of the trees.
  * @return std::vector< glm::vec3 > vector containing all the positions.
  */
