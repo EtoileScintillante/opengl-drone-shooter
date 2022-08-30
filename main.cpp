@@ -11,10 +11,10 @@
 #include "shader.h"
 #include "camera.h"
 #include "model.h"
+#include "terrain.h"
 
 #include <iostream>
 #include <filesystem>
-#include <random>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -39,11 +39,12 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-const unsigned int NUM_GLOWSTONES = 4; // must be equal to NR_POINT_LIGHTS in multiple_lights.fs (glow stones are just textured point lights)
-const unsigned int NUM_TREES = 15;
+int numGlowStones = 4; // must be equal to NR_POINT_LIGHTS in multiple_lights.fs (glow stones are just textured point lights)
+int numTrees = 15;
 int terrainSize = 25; // the for loop in which we generate the terrain goes from -terrainSize to terrainSize
 int heightTree = 5;
-float dirtY = -1.8; // y level of dirt blocks 
+float blockSize = 1.0f;
+float dirtY = -1.8; // y level of dirt blocks (ground level)
 
 // gun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
@@ -192,57 +193,6 @@ int main()
      0.0f, 0.5f,    0.52f, 0.75f,  0.0f, 1.0f  
     };
 
-    // set up position data for objects
-    // --------------------------------
-    std::random_device rd; // obtain a random number from hardware
-    std::mt19937 gen(rd()); // seed the generator
-
-    // create random positions for the tree trunks (made out of the wooden blocks)
-    glm::vec3 trunkPositions[NUM_TREES];
-    std::uniform_int_distribution<> xzPlane(-20, 20); // define the range for x and z axis (make sure lower and upper range are not higher tha terrainSize)
-    for (unsigned int i = 0; i < 15; i++)
-    {
-        float posX = xzPlane(gen); 
-        float posZ = xzPlane(gen);
-        glm::vec3 vec = {posX, dirtY + 1.0f, posZ}; // we'll render the lowest block of tree trunk at posY + 1.0 so that it is placed on the ground (1.0 is blocksize)
-        trunkPositions[i] = vec;
-    }
-
-    // positions of the glow stones (sticking to a tree trunk) 
-    std::uniform_int_distribution<> lights(0, NUM_TREES); // generate random number n between 0 and NUM_TREES correspondng the nth tree trunk intrunkPositions[]
-    int treeIndexes[NUM_GLOWSTONES]; // the trees with their position index in this array will be getting a glow stone attached to them
-    for (unsigned int i = 0; i < 4; i++)
-    {
-        int n = lights(gen); 
-        treeIndexes[i] = n;
-    }
-    glm::vec3 glowStonePositions[NUM_GLOWSTONES]; 
-    for (int i = 0; i < NUM_GLOWSTONES; i++)
-    {
-        // to position the glow stone to make it look like it sticks to the side of the tree, we lower or increase x by 0.5 and we add 2.0 to y
-        glm::vec3 vec = {trunkPositions[i].x - 0.5f, trunkPositions[i].y + 2.0f, trunkPositions[i].z};
-        if (i % 3 == 0) {vec = {trunkPositions[i].x + 0.5f, trunkPositions[i].y + 2.0f, trunkPositions[i].z};} // to add some variation in the direction the glow stones are pointing to
-        glowStonePositions[i] = vec;
-    }
-
-    // positions of leaves blocks (every tree has 5 leaves blocks attached to it)
-    glm::vec3 leavesPositions[NUM_TREES*5];
-    int indexCount = 0; // 5 leaves per tree, so every iteration we need to move 5 spots in the array to get every leaves block in
-    for (unsigned int i = 0; i < NUM_TREES; i++)
-    {
-        glm::vec3 leavesBlock1 = {trunkPositions[i].x - 1.0f, dirtY + heightTree, trunkPositions[i].z};
-        leavesPositions[indexCount] = leavesBlock1;
-        glm::vec3 leavesBlock2 = {trunkPositions[i].x + 1.0f, dirtY + heightTree,trunkPositions[i].z};
-        leavesPositions[indexCount + 1] = leavesBlock2;
-        glm::vec3 leavesBlock3 = {trunkPositions[i].x, dirtY + heightTree,trunkPositions[i].z - 1.0f};
-        leavesPositions[indexCount + 2] = leavesBlock3;
-        glm::vec3 leavesBlock4 = {trunkPositions[i].x, dirtY + heightTree,trunkPositions[i].z + 1.0f};
-        leavesPositions[indexCount + 3] = leavesBlock4;
-        glm::vec3 leavesBlock5 = {trunkPositions[i].x, dirtY + heightTree + 1.0,trunkPositions[i].z};
-        leavesPositions[indexCount + 4] = leavesBlock5;
-        indexCount += 5;
-    }
-
     // buffers
     // -------
     unsigned int posNormVBO, texCoordVBO; 
@@ -332,6 +282,12 @@ int main()
     // camera configuration
     // --------------------
     camera.nonFlying = true; // FPS
+
+    // position data for objects
+    // -------------------------
+    std::vector < glm::vec3 > treePositions = generateTreePositions(numTrees, terrainSize, dirtY, blockSize, 0.0001f); // trees
+    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(numGlowStones, heightTree, dirtY, blockSize, 3.0f, 0.5f, treePositions); // glow stones
+    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(heightTree, blockSize, dirtY, 0.0001f, treePositions); // leaves
     
     // render loop
     // -----------
@@ -372,7 +328,7 @@ int main()
         lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
         // glow stones (they only differ in position)
-        for (int i = 0; i < NUM_GLOWSTONES; i++)
+        for (int i = 0; i < numGlowStones; i++)
         {
             std::string number = std::to_string(i);
             lightingShader.setVec3("pointLights[" + number +"].position", glowStonePositions[i]);
@@ -409,16 +365,16 @@ int main()
 
         // render tree trunks
         glBindVertexArray(woodVAO);
-        for (unsigned int i = 0; i < NUM_TREES; i++)
+        for (unsigned int i = 0; i < numTrees; i++)
         {
-            glm::vec3 trunk =trunkPositions[i];
+            glm::vec3 tree = treePositions[i];
             for (unsigned int j = 0; j < heightTree; j++) 
             {
-                glm::mat4 modelTrunk = glm::mat4(1.0f);
-                modelTrunk = glm::translate(modelTrunk, trunk);
-                lightingShader.setMat4("model", modelTrunk);
+                glm::mat4 modelTree = glm::mat4(1.0f);
+                modelTree = glm::translate(modelTree, tree);
+                lightingShader.setMat4("model", modelTree);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
-                trunk.y++; // increase y with 1 to place next wooden block exactly on top of the one before that
+                tree.y += blockSize; // increase y with blockSize to place next wooden block exactly on top of the one before that
             }
         }
 
@@ -429,7 +385,7 @@ int main()
         // render leaves
         lightingShader.setBool("transparent", true); // leaves texture is 100% transparent in some parts of the image
         glBindVertexArray(leavesVAO);
-        for (unsigned int i = 0; i < 75; i++)
+        for (unsigned int i = 0; i < leavesPositions.size(); i++)
         {
             glm::mat4 modelLeaves = glm::mat4(1.0f);
             modelLeaves = glm::translate(modelLeaves, leavesPositions[i]);
@@ -600,7 +556,7 @@ unsigned int loadTexture(char const * path)
     return textureID;
 }
 
-// adds some extra movement to the gun while the 'player' is walking 
+// adds some extra movement to the gun while the player is walking 
 // -----------------------------------------------------------------
 void updateGunMovement()
 {
