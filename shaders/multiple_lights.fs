@@ -38,6 +38,7 @@ uniform vec3 viewPos;
 uniform DirLight dirLight;
 uniform PointLight pointLights[NR_POINT_LIGHTS];
 uniform Material material;
+uniform bool transparent;
 
 // function prototypes
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
@@ -61,7 +62,15 @@ void main()
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
         result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
 
-    FragColor = vec4(result, 1.0);
+    // Note: it is possible to discard fragments here because the leaves texture is either 100% transparent or 0% transparent, so no need for blending
+    if (transparent == true)
+    {
+        vec4 texColor = texture(material.diffuse, TexCoords);
+        if(texColor.a < 0.1) {discard;} // discard if transparent
+        else {FragColor = vec4(result, 1.0);}
+    } 
+    else {FragColor = vec4(result, 1.0);}
+
 }
 
 // calculates the color when using a directional light.
