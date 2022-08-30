@@ -361,6 +361,7 @@ int main()
 
         // activate shader before setting uniforms and drawing objects
         lightingShader.use();
+        lightingShader.setBool("transparent", false); // none of the textures are transparent, except for the leaves
         lightingShader.setVec3("viewPos", camera.Position);
         lightingShader.setFloat("material.shininess", 32.0f);  
 
@@ -426,6 +427,7 @@ int main()
         glBindTexture(GL_TEXTURE_2D, diffuseMapL);
 
         // render leaves
+        lightingShader.setBool("transparent", true); // leaves texture is 100% transparent in some parts of the image
         glBindVertexArray(leavesVAO);
         for (unsigned int i = 0; i < 75; i++)
         {
@@ -582,8 +584,8 @@ unsigned int loadTexture(char const * path)
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); 
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
