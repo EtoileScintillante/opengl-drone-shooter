@@ -14,7 +14,7 @@
 #include <random>
 
 /**
- * @brief generate random positions for the trees on a flat terrain.
+ * @brief generates random positions for trees on a flat terrain.
  * 
  * @param numTrees number of trees for which a position will be generated.
  * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
@@ -37,7 +37,7 @@ std::vector< glm::vec3 > generateTreePositions(int numTrees, int terrainSize, fl
 std::vector< glm::vec3 > generateRandomLampPositions(int numLamps, float heightLowerRange, float heightUpperRange, int terrainSize);
 
 /**
- * @brief generates positions for lamps in such a way that the lamp sticks to a tree.
+ * @brief generates positions for lamps in such a way that the lamps stick to the side of the trees.
  * This is done in two steps: 
  * 1. randomly choose numLamps tree positions from the treePosition vector.
  * 2. create position for lamp based on position of tree by adding/subtracting offsets.
