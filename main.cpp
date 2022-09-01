@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <filesystem>
+#include <ctime>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -45,7 +46,7 @@ int numTrees = 15;
 int terrainSize = 25; // the for loop in which we generate the terrain goes from -terrainSize to terrainSize
 int heightTree = 5;
 float blockSize = 1.0f;
-float dirtY = -1.8; // y level of dirt blocks (ground level)
+float groundY = -1.8; // y level of terrain
 
 // gun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
@@ -151,7 +152,7 @@ int main()
     };
 
     float textureCoords[] = {
-     // wood        // dirt        // leaves     
+     // wood        // dirt        // leaves/wall    
      0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,  // side    
      1.0f, 0.5f,    0.5f, 0.75f,   1.0f, 0.0f,   
      1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,   
@@ -243,7 +244,7 @@ int main()
     // buffers
     // -------
     unsigned int posNormVBO, texCoordVBO, skyboxVBO; 
-    unsigned int dirtVAO, woodVAO, leavesVAO, glowStoneVAO, skyboxVAO;
+    unsigned int dirtVAO, woodVAO, leaveStoneVAO, glowStoneVAO, skyboxVAO;
 
     // configure dirt block VAO 
     // ------------------------
@@ -283,10 +284,10 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); 
     glEnableVertexAttribArray(1);
 
-    // configure leaves block VAO
-    // --------------------------
-    glGenVertexArrays(1, &leavesVAO);
-    glBindVertexArray(leavesVAO);
+    // configure leaves and wall block VAO
+    // -----------------------------------
+    glGenVertexArrays(1, &leaveStoneVAO);
+    glBindVertexArray(leaveStoneVAO);
     glBindBuffer(GL_ARRAY_BUFFER, posNormVBO); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
     // position
@@ -331,6 +332,7 @@ int main()
     unsigned int diffuseMapDW = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
     unsigned int diffuseMapL = loadTexture(std::filesystem::path("resources/textures/leaves.png").c_str()); // leaves
     unsigned int diffuseMapGS = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
+    unsigned int diffuseMapS = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
 
     // skybox related
     std::vector<std::string> faces
@@ -358,9 +360,10 @@ int main()
 
     // position data for objects
     // -------------------------
-    std::vector < glm::vec3 > treePositions = generateTreePositions(numTrees, terrainSize, dirtY, blockSize, 0.0001f); // trees
-    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(numGlowStones, heightTree, dirtY, blockSize, 3.0f, 0.5f, treePositions); // glow stones
-    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(heightTree, blockSize, dirtY, 0.0001f, treePositions); // leaves
+    std::vector < int > terrainOrder = dirtStonePositions(terrainSize); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
+    std::vector < glm::vec3 > treePositions = generateTreePositions(numTrees, terrainSize, groundY, blockSize, 0.0001f); // trees
+    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(numGlowStones, heightTree, groundY, blockSize, 3.0f, 0.5f, treePositions); // glow stones
+    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(heightTree, blockSize, groundY, 0.0001f, treePositions); // leaves
     
     // render loop
     // -----------
@@ -419,24 +422,42 @@ int main()
         lightingShader.setMat4("view", view);
         lightingShader.setMat4("projection", projection); 
 
-        // bind diffuse map for wooden blocks and dirt blocks
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapDW);
-
-        // render dirt blocks
-        glBindVertexArray(dirtVAO);
-        for (int i = -terrainSize; i < terrainSize; i++)
+       // render terrain (dirt + stone blocks)
+       int indexOrder = 0;
+       for (int i = -terrainSize; i < terrainSize; i++)
         {
            for (int j = -terrainSize; j < terrainSize; j++)
            {
-                glm::mat4 modelDirt = glm::mat4(1.0f);
-                modelDirt = glm::translate(modelDirt, glm::vec3(i, dirtY, j));
-                lightingShader.setMat4("model", modelDirt);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
+                int num = terrainOrder[indexOrder + j];
+                if (num == 1) // dirt block
+                {
+                    // bind diffuse map for wooden blocks and dirt blocks
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, diffuseMapDW);
+                    glBindVertexArray(dirtVAO);
+                    glm::mat4 modelDirt = glm::mat4(1.0f);
+                    modelDirt = glm::translate(modelDirt, glm::vec3(i, groundY, j));
+                    lightingShader.setMat4("model", modelDirt);
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                }
+                if (num == 2) // stone
+                {
+                    // bind diffuse map for stone block
+                    glActiveTexture(GL_TEXTURE0);
+                    glBindTexture(GL_TEXTURE_2D, diffuseMapS);
+                    glBindVertexArray(leaveStoneVAO); 
+                    glm::mat4 modelStone = glm::mat4(1.0f);
+                    modelStone = glm::translate(modelStone, glm::vec3(i, groundY, j));
+                    lightingShader.setMat4("model", modelStone);
+                    glDrawArrays(GL_TRIANGLES, 0, 36);
+                }   
            }
+           indexOrder += terrainSize; // update index otherwise we keep indexing the first 25 spots
         }
 
         // render tree trunks
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMapDW);
         glBindVertexArray(woodVAO);
         for (unsigned int i = 0; i < numTrees; i++)
         {
@@ -451,13 +472,11 @@ int main()
             }
         }
 
-        // bind diffuse map for leaves blocks
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapL);
-
         // render leaves
         lightingShader.setBool("transparent", true); // leaves texture is 100% transparent in some parts of the image
-        glBindVertexArray(leavesVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMapL);
+        glBindVertexArray(leaveStoneVAO);
         for (unsigned int i = 0; i < leavesPositions.size(); i++)
         {
             glm::mat4 modelLeaves = glm::mat4(1.0f);
@@ -466,15 +485,12 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
 
-        // bind diffuse map for glow stones
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapGS);
-
         // render glow stones
         glowStoneShader.use();
         glowStoneShader.setMat4("view", view);
         glowStoneShader.setMat4("projection", projection);
-    
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseMapGS);
         glBindVertexArray(glowStoneVAO);
         for (unsigned int i = 0; i < 4; i++)
         {
