@@ -97,6 +97,7 @@ int main()
     Shader lightingShader("shaders/lighting_map.vs", "shaders/multiple_lights.fs"); 
     Shader glowStoneShader("shaders/light_cube_textured.vs", "shaders/light_cube_textured.fs"); 
     Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
+    Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
 
     // load model
     // ----------
@@ -194,10 +195,55 @@ int main()
      0.0f, 0.5f,    0.52f, 0.75f,  0.0f, 1.0f  
     };
 
+    float skyboxVertices[] = {
+    // positions          
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+    };
+
     // buffers
     // -------
-    unsigned int posNormVBO, texCoordVBO; 
-    unsigned int dirtVAO, woodVAO, leavesVAO, glowStoneVAO;
+    unsigned int posNormVBO, texCoordVBO, skyboxVBO; 
+    unsigned int dirtVAO, woodVAO, leavesVAO, glowStoneVAO, skyboxVAO;
 
     // configure dirt block VAO 
     // ------------------------
@@ -269,16 +315,42 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float))); 
     glEnableVertexAttribArray(1);
 
+    // configure skybox VAO
+    // --------------------
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    
+
     // load textures 
     // -------------
     unsigned int diffuseMapDW = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
     unsigned int diffuseMapL = loadTexture(std::filesystem::path("resources/textures/leaves.png").c_str()); // leaves
     unsigned int diffuseMapGS = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
 
+    // skybox related
+    std::vector<std::string> faces
+    {
+        std::filesystem::path("resources/skybox/right.jpg"),
+        std::filesystem::path("resources/skybox/left.jpg"),
+        std::filesystem::path("resources/skybox/top.jpg"),
+        std::filesystem::path("resources/skybox/bottom.jpg"),
+        std::filesystem::path("resources/skybox/front.jpg"),
+        std::filesystem::path("resources/skybox/back.jpg")
+    };
+    unsigned int skyboxTexture = loadCubemap(faces);
+
+
     // shader configuration
     // --------------------
     lightingShader.use();
     lightingShader.setInt("material.diffuse", 0); // there is no specular or emission texture
+    skyboxShader.use();
+    skyboxShader.setInt("skybox", 0);
 
     // camera configuration
     // --------------------
@@ -424,6 +496,20 @@ int main()
         handGun.DrawSpecificMesh(handGunShader, 3);
         handGun.DrawSpecificMesh(handGunShader, 4);
         handGun.DrawSpecificMesh(handGunShader, 6);
+
+        // draw skybox as last
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        skyboxShader.use();
+        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
+        skyboxShader.setMat4("view", view);
+        skyboxShader.setMat4("projection", projection);
+        // skybox cube
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS); // set depth function back to default
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -580,6 +666,7 @@ unsigned int loadCubemap(std::vector<std::string> faces)
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
+    stbi_set_flip_vertically_on_load(false); 
     int width, height, nrChannels;
     for (unsigned int i = 0; i < faces.size(); i++)
     {
