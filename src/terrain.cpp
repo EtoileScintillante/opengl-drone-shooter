@@ -85,3 +85,20 @@ std::vector< glm::vec3 > generateLeavesPositions(int heightTree, float blockSize
 
     return positions;
 }
+
+std::vector < int > dirtStonePositions(int terrainSize)
+{
+    std::random_device rd; // obtain a random number from hardware
+    std::mt19937 gen(rd()); // seed the generator
+
+    std::uniform_int_distribution<> numbers(1, 2); 
+    std::vector < int > v;
+    for (unsigned int i = 0; i < (terrainSize * terrainSize * 4); i++)
+    {
+        srand(time(NULL));
+        int choice = numbers(gen);
+        v.push_back(choice);
+    }
+
+    return v;
+}

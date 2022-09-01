@@ -70,4 +70,14 @@ std::vector< glm::vec3 > generateLampPosStickToTree(int numLamps, int heightTree
  */
 std::vector< glm::vec3 > generateLeavesPositions(int heightTree, float blockSize, float groundY, float offset, std::vector< glm::vec3 > treePositions);
 
+/**
+ * @brief creates a vector containing 1s and 2s in a random order. This function helps
+ * with creating a ground that is made up two types of blocks, so that there
+ * is no need to hard code an order in which the blocks are rendered. 
+ * 
+ * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
+ * @return std::vector < int > containing 1s and 2s.
+ */
+std::vector < int > dirtStonePositions(int terrainSize);
+
 #endif
