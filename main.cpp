@@ -395,6 +395,7 @@ int main()
         lightingShader.use();
         lightingShader.setBool("transparent", false); // none of the textures are transparent, except for the leaves
         lightingShader.setVec3("viewPos", camera.Position);
+        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
         lightingShader.setFloat("material.shininess", 32.0f);  
 
         // directional light (from above, basically like the sun)
@@ -403,7 +404,7 @@ int main()
         lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
         lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-        // glow stones (they only differ in position)
+        // point lights (glow stones) (they only differ in position)
         for (int i = 0; i < numGlowStones; i++)
         {
             std::string number = std::to_string(i);
