@@ -104,7 +104,7 @@ int main()
 
     // load model
     // ----------
-    Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
+    //Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
 
     // set up vertex data 
     // ------------------
@@ -245,9 +245,20 @@ int main()
 
     std::vector< Data > trunkVertices;
     std::vector< Data > leavesVertices;
-    for (unsigned i = 0; i < sizeof(vertices); i++)
+    int indexPos = 0;
+    int indexTex = 0;
+    for (unsigned i = 0; i < 36; i++) // 36 lines of position data
     {
-        std::cout << "TODO: fill vectors with the right vertex data";
+        Data vertexTrunk;
+        Data vertexLeaves;
+        vertexTrunk.Position = vertexLeaves.Position = glm::vec3(vertices[indexPos],vertices[indexPos+1], vertices[indexPos + 2]); // same positon data
+        vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
+        vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
+        indexPos += 3; // every line is 3 floats/spots in array, so here we move to the next line
+        indexTex += 6; // every line is 6 floats/spots in array
+        trunkVertices.push_back(vertexTrunk);
+        leavesVertices.push_back(vertexLeaves);
+
     }
 
     // buffers
@@ -325,7 +336,6 @@ int main()
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    
 
     // load textures 
     // -------------
@@ -348,10 +358,10 @@ int main()
 
     // shader configuration
     // --------------------
-    blockShader.use();
-    blockShader.setInt("ourTexture", 0); 
-    leaveShader.use();
-    leaveShader.setInt("ourTexture", 0);
+    //blockShader.use();
+    //blockShader.setInt("ourTexture", 0); 
+    //leaveShader.use();
+    //leaveShader.setInt("ourTexture", 0);
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
@@ -365,6 +375,11 @@ int main()
     std::vector < glm::vec3 > treePositions = generateTreePositions(N_TREES, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, 0.0001f); // trees
     std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(N_GLOWSTONES, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE, 3.0f, 0.5f, treePositions); // glow stones
     std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(HEIGHT_TREE, BLOCK_SIZE, GROUND_Y, 0.0001f, treePositions); // leaves
+
+    std::string pathTrunkTex = "resources/textures/blocks.JPG";
+    std::string pathLeavesTex = "resources/textures/leaves.png";
+
+    Tree trees(trunkVertices, leavesVertices, treePositions, pathTrunkTex, pathLeavesTex, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE);
     
     // render loop
     // -----------
@@ -399,6 +414,7 @@ int main()
         blockShader.setMat4("view", view);
         blockShader.setMat4("projection", projection); 
 
+        /*
        // render terrain (dirt + stone blocks)
        int indexOrder = 0;
        for (unsigned int i = 0; i < TERRAIN_SIZE; i++)
@@ -442,7 +458,15 @@ int main()
             blockShader.setMat4("model", modelGS);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        */
 
+        // test tree class
+        leaveShader.use();
+        leaveShader.setMat4("view", view);
+        leaveShader.setMat4("projection", projection); 
+        trees.Draw(blockShader, leaveShader);
+        
+        /*
         // render tree trunks
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
@@ -476,7 +500,9 @@ int main()
             leaveShader.setMat4("model", modelLeaves);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
+        */
         
+        /*
         // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
@@ -490,6 +516,7 @@ int main()
         handGun.DrawSpecificMesh(handGunShader, 3);
         handGun.DrawSpecificMesh(handGunShader, 4);
         handGun.DrawSpecificMesh(handGunShader, 6);
+        */
 
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
