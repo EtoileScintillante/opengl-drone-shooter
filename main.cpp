@@ -108,51 +108,51 @@ int main()
     // ------------------
     float vertices[] = {
     // position            // normals (these are not used right now)
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, -1.0f, 
-     0.5f, -0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
-    -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
+    -0.5f, -0.5f, -0.5f,    
+     0.5f, -0.5f, -0.5f,   
+     0.5f,  0.5f, -0.5f,   
+     0.5f,  0.5f, -0.5f,   
+    -0.5f,  0.5f, -0.5f,   
+    -0.5f, -0.5f, -0.5f,   
 
-    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,  1.0f, 
-     0.5f, -0.5f,  0.5f,   0.0f, 0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 0.0f,  1.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 0.0f,  1.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 0.0f,  1.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f, 0.0f,  1.0f,
+    -0.5f, -0.5f,  0.5f,    
+     0.5f, -0.5f,  0.5f,   
+     0.5f,  0.5f,  0.5f,   
+     0.5f,  0.5f,  0.5f,   
+    -0.5f,  0.5f,  0.5f,   
+    -0.5f, -0.5f,  0.5f,   
 
-    -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f,  0.0f, 
-    -0.5f,  0.5f, -0.5f,  -1.0f, 0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,  -1.0f, 0.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+    -0.5f,  0.5f,  0.5f,   
+    -0.5f,  0.5f, -0.5f,  
+    -0.5f, -0.5f, -0.5f,  
+    -0.5f, -0.5f, -0.5f,  
+    -0.5f, -0.5f,  0.5f,  
+    -0.5f,  0.5f,  0.5f,  
 
-     0.5f,  0.5f,  0.5f,   1.0f, 0.0f,  0.0f, 
-     0.5f,  0.5f, -0.5f,   1.0f, 0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,   1.0f, 0.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,   1.0f, 0.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,   1.0f, 0.0f,  0.0f,
+     0.5f,  0.5f,  0.5f,    
+     0.5f,  0.5f, -0.5f,   
+     0.5f, -0.5f, -0.5f,   
+     0.5f, -0.5f, -0.5f,   
+     0.5f, -0.5f,  0.5f,   
+     0.5f,  0.5f,  0.5f,   
 
-    -0.5f, -0.5f, -0.5f,   0.0f,-1.0f,  0.0f,
-     0.5f, -0.5f, -0.5f,   0.0f,-1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,   0.0f,-1.0f,  0.0f,
-     0.5f, -0.5f,  0.5f,   0.0f,-1.0f,  0.0f,
-    -0.5f, -0.5f,  0.5f,   0.0f,-1.0f,  0.0f,
-    -0.5f, -0.5f, -0.5f,   0.0f,-1.0f,  0.0f,
+    -0.5f, -0.5f, -0.5f,   
+     0.5f, -0.5f, -0.5f,   
+     0.5f, -0.5f,  0.5f,   
+     0.5f, -0.5f,  0.5f,   
+    -0.5f, -0.5f,  0.5f,   
+    -0.5f, -0.5f, -0.5f,   
 
-    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,  0.0f,
-     0.5f,  0.5f, -0.5f,   0.0f, 1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,  0.0f,
-     0.5f,  0.5f,  0.5f,   0.0f, 1.0f,  0.0f,
-    -0.5f,  0.5f,  0.5f,   0.0f, 1.0f,  0.0f,
-    -0.5f,  0.5f, -0.5f,   0.0f, 1.0f,  0.0f
+    -0.5f,  0.5f, -0.5f,   
+     0.5f,  0.5f, -0.5f,   
+     0.5f,  0.5f,  0.5f,   
+     0.5f,  0.5f,  0.5f,   
+    -0.5f,  0.5f,  0.5f,   
+    -0.5f,  0.5f, -0.5f
     };
 
     float textureCoords[] = {
-     // wood        // dirt        // leaves/wall    
+     // wood        // dirt        // leaves/stone    
      0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,  // side    
      1.0f, 0.5f,    0.5f, 0.75f,   1.0f, 0.0f,   
      1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,   
@@ -254,7 +254,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord
     glGenBuffers(1, &texCoordVBO); 
@@ -270,7 +270,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
     // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
@@ -285,7 +285,7 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
     // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
@@ -299,7 +299,7 @@ int main()
     glBindVertexArray(glowStoneVAO);
     glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
     // positions 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // texture coord (same coordinates as leaves block)
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
