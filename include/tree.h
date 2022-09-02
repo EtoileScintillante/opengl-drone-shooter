@@ -16,18 +16,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-
 #include <iostream>
 
 #include "shader.h"
 #include "terrain.h"
-
-struct Data { 
-    // position
-    glm::vec3 Position;
-    // texCoords
-    glm::vec2 TexCoords;
-};
+#include "data.h"
 
 class Tree {
 public:
@@ -80,7 +73,6 @@ public:
         shaderLeaves.setInt("ourTexture", 0);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureLeaves);
-        std::cout << "LEAVES " << textureLeaves << std::endl;
         glBindVertexArray(VAOleaves);
         for (unsigned int i = 0; i < leavesPositions.size(); i++)
         {
