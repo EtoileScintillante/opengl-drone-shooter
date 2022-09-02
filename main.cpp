@@ -1,5 +1,5 @@
 /* Work in progress: basic FPS game */
-// TODO: test tree.h
+// TODO: create classes for ground and glow stones to clean up code in main (especially the render loop)
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -460,47 +460,13 @@ int main()
         }
         */
 
-        // test tree class
-        leaveShader.use();
-        leaveShader.setMat4("view", view);
-        leaveShader.setMat4("projection", projection); 
-        trees.Draw(blockShader, leaveShader);
-        
-        /*
-        // render tree trunks
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
-        glBindVertexArray(woodVAO);
-        for (unsigned int i = 0; i < N_TREES; i++)
-        {
-            glm::vec3 tree = treePositions[i];
-            for (unsigned int j = 0; j < HEIGHT_TREE; j++) 
-            {
-                glm::mat4 modelTree = glm::mat4(1.0f);
-                modelTree = glm::translate(modelTree, tree);
-                blockShader.setMat4("model", modelTree);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
-                tree.y += BLOCK_SIZE; // increase y with BLOCK_SIZE to place next wooden block exactly on top of the one before that
-            }
-        }
-
         // view and projection transformations for leaveShader
         leaveShader.use();
         leaveShader.setMat4("view", view);
         leaveShader.setMat4("projection", projection); 
 
-        // render leaves
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, leavesTexture);
-        glBindVertexArray(leaveStoneVAO);
-        for (unsigned int i = 0; i < leavesPositions.size(); i++)
-        {
-            glm::mat4 modelLeaves = glm::mat4(1.0f);
-            modelLeaves = glm::translate(modelLeaves, leavesPositions[i]);
-            leaveShader.setMat4("model", modelLeaves);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        */
+        // render trees
+        trees.Draw(blockShader, leaveShader);
         
         /*
         // view and model transformation for handGunShader
