@@ -41,7 +41,7 @@ public:
     float blockSize;
 
     // constructor
-    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::vector < glm::vec3 > treePositions, std::string pathLeavesTexture, unsigned int heightTree, float groundLevel, float blockSize)
+    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::vector < glm::vec3 > treePositions, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int heightTree, float groundLevel, float blockSize)
     {
         this->verticesTrunk = verticesTrunk;
         this->verticesLeaves = verticesLeaves;
@@ -131,10 +131,11 @@ private:
 
         loadTexture(pathTrunkTexture, textureTrunk);
         loadTexture(pathLeavesTexture, textureLeaves);
+        createLeavesPositions();
     }
 
     // creates 5 leaves blocks for every tree
-    void generateLeavesPositions()
+    void createLeavesPositions()
     {
         for (unsigned int i = 0; i < treePositions.size(); i++)
         {
