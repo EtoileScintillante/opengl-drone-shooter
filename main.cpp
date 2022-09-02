@@ -14,6 +14,7 @@
 #include "model.h"
 #include "terrain.h"
 #include "tree.h"
+#include "data.h"
 
 #include <iostream>
 #include <filesystem>
@@ -101,10 +102,6 @@ int main()
     Shader leaveShader("shaders/blocks.vs", "shaders/transparent.fs");
     Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
     Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
-
-    // load model
-    // ----------
-    //Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
 
     // set up vertex data 
     // ------------------
@@ -247,7 +244,7 @@ int main()
     std::vector< Data > leavesVertices;
     int indexPos = 0;
     int indexTex = 0;
-    for (unsigned i = 0; i < 36; i++) // 36 lines of position data
+    for (unsigned i = 0; i < 36; i++) // 36 lines of position data (all objects, except model(s) are just blocks)
     {
         Data vertexTrunk;
         Data vertexLeaves;
@@ -264,7 +261,7 @@ int main()
     // buffers
     // -------
     unsigned int positionVBO, texCoordVBO, skyboxVBO; 
-    unsigned int dirtVAO, woodVAO, leaveStoneVAO, glowStoneVAO, skyboxVAO;
+    unsigned int dirtVAO, leaveStoneVAO, glowStoneVAO, skyboxVAO;
 
     // configure dirt block VAO 
     // ------------------------
@@ -281,21 +278,6 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float))); 
-    glEnableVertexAttribArray(1);
-
-    // configure wood block VAO
-    // ------------------------
-    glGenVertexArrays(1, &woodVAO);
-    glBindVertexArray(woodVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); 
     glEnableVertexAttribArray(1);
 
     // configure leaves and wall block VAO
@@ -337,10 +319,21 @@ int main()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    // load textures 
-    // -------------
+    // position data for objects
+    // -------------------------
+    std::vector < int > terrainOrder = dirtStonePositions(TERRAIN_SIZE); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
+    std::vector < glm::vec3 > treePositions = generateTreePositions(N_TREES, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, 0.0001f); // trees
+    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(N_GLOWSTONES, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE, 3.0f, 0.5f, treePositions); // glow stones
+    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(HEIGHT_TREE, BLOCK_SIZE, GROUND_Y, 0.0001f, treePositions); // leaves
+
+    // load textures and initialize objects
+    // ------------------------------------
+    std::string pathTrunkTex = "resources/textures/blocks.JPG";
+    std::string pathLeavesTex = "resources/textures/leaves.png";
+
+    Tree trees(trunkVertices, leavesVertices, treePositions, pathTrunkTex, pathLeavesTex, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE);
+
     unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
-    unsigned int leavesTexture = loadTexture(std::filesystem::path("resources/textures/leaves.png").c_str()); // leaves
     unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
     unsigned int stoneTexture = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
 
@@ -356,30 +349,20 @@ int main()
     };
     unsigned int skyboxTexture = loadCubemap(faces);
 
+    // load model(s)
+    // -------------
+    Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
+
     // shader configuration
     // --------------------
-    //blockShader.use();
-    //blockShader.setInt("ourTexture", 0); 
-    //leaveShader.use();
-    //leaveShader.setInt("ourTexture", 0);
+    blockShader.use();
+    blockShader.setInt("ourTexture", 0); 
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
     // camera configuration
     // --------------------
-    camera.nonFlying = true; // FPS
-
-    // position data for objects
-    // -------------------------
-    std::vector < int > terrainOrder = dirtStonePositions(TERRAIN_SIZE); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
-    std::vector < glm::vec3 > treePositions = generateTreePositions(N_TREES, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, 0.0001f); // trees
-    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(N_GLOWSTONES, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE, 3.0f, 0.5f, treePositions); // glow stones
-    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(HEIGHT_TREE, BLOCK_SIZE, GROUND_Y, 0.0001f, treePositions); // leaves
-
-    std::string pathTrunkTex = "resources/textures/blocks.JPG";
-    std::string pathLeavesTex = "resources/textures/leaves.png";
-
-    Tree trees(trunkVertices, leavesVertices, treePositions, pathTrunkTex, pathLeavesTex, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE);
+    camera.nonFlying = true; // set to FPS
     
     // render loop
     // -----------
@@ -414,7 +397,7 @@ int main()
         blockShader.setMat4("view", view);
         blockShader.setMat4("projection", projection); 
 
-        /*
+        
        // render terrain (dirt + stone blocks)
        int indexOrder = 0;
        for (unsigned int i = 0; i < TERRAIN_SIZE; i++)
@@ -446,6 +429,14 @@ int main()
            indexOrder += TERRAIN_SIZE; // update index otherwise we keep indexing the first 50 spots
         }
 
+        // view and projection transformations for leaveShader
+        leaveShader.use();
+        leaveShader.setMat4("view", view);
+        leaveShader.setMat4("projection", projection); 
+
+        // render trees
+        trees.Draw(blockShader, leaveShader);
+
         // render glow stones
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, glowStoneTexture);
@@ -458,17 +449,8 @@ int main()
             blockShader.setMat4("model", modelGS);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        */
-
-        // view and projection transformations for leaveShader
-        leaveShader.use();
-        leaveShader.setMat4("view", view);
-        leaveShader.setMat4("projection", projection); 
-
-        // render trees
-        trees.Draw(blockShader, leaveShader);
         
-        /*
+        
         // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
@@ -482,7 +464,7 @@ int main()
         handGun.DrawSpecificMesh(handGunShader, 3);
         handGun.DrawSpecificMesh(handGunShader, 4);
         handGun.DrawSpecificMesh(handGunShader, 6);
-        */
+        
 
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
@@ -512,7 +494,6 @@ int main()
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &dirtVAO);
-    glDeleteVertexArrays(1, &woodVAO);
     glDeleteVertexArrays(1, &glowStoneVAO);
     glDeleteBuffers(1, &positionVBO);
     glDeleteBuffers(1, &texCoordVBO);
