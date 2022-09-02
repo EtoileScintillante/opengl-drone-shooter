@@ -30,7 +30,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(25.0f, 0.0f, 25.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -41,12 +41,12 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-int numGlowStones = 6; 
-int numTrees = 15;
-int terrainSize = 25; // the for loop in which we generate the terrain goes from -terrainSize to terrainSize
-int heightTree = 5;
-float blockSize = 1.0f;
-float groundY = -1.8; // y level of terrain
+const unsigned int N_GLOWSTONES = 6; 
+const unsigned int N_TREES = 15;
+const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
+const unsigned int HEIGHT_TREE = 5;
+const float BLOCK_SIZE = 1.0f;
+const float GROUND_Y = -1.8; // y level of terrain
 
 // gun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
@@ -243,15 +243,15 @@ int main()
 
     // buffers
     // -------
-    unsigned int posNormVBO, texCoordVBO, skyboxVBO; 
+    unsigned int positionVBO, texCoordVBO, skyboxVBO; 
     unsigned int dirtVAO, woodVAO, leaveStoneVAO, glowStoneVAO, skyboxVAO;
 
     // configure dirt block VAO 
     // ------------------------
     glGenVertexArrays(1, &dirtVAO);
     glBindVertexArray(dirtVAO);
-    glGenBuffers(1, &posNormVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, posNormVBO);
+    glGenBuffers(1, &positionVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -267,7 +267,7 @@ int main()
     // ------------------------
     glGenVertexArrays(1, &woodVAO);
     glBindVertexArray(woodVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, posNormVBO); 
+    glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -282,7 +282,7 @@ int main()
     // -----------------------------------
     glGenVertexArrays(1, &leaveStoneVAO);
     glBindVertexArray(leaveStoneVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, posNormVBO); 
+    glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -297,7 +297,7 @@ int main()
     // ------------------------------
     glGenVertexArrays(1, &glowStoneVAO);
     glBindVertexArray(glowStoneVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, posNormVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
     // positions 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -352,10 +352,10 @@ int main()
 
     // position data for objects
     // -------------------------
-    std::vector < int > terrainOrder = dirtStonePositions(terrainSize); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
-    std::vector < glm::vec3 > treePositions = generateTreePositions(numTrees, terrainSize, groundY, blockSize, 0.0001f); // trees
-    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(numGlowStones, heightTree, groundY, blockSize, 3.0f, 0.5f, treePositions); // glow stones
-    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(heightTree, blockSize, groundY, 0.0001f, treePositions); // leaves
+    std::vector < int > terrainOrder = dirtStonePositions(TERRAIN_SIZE); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
+    std::vector < glm::vec3 > treePositions = generateTreePositions(N_TREES, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, 0.0001f); // trees
+    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(N_GLOWSTONES, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE, 3.0f, 0.5f, treePositions); // glow stones
+    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(HEIGHT_TREE, BLOCK_SIZE, GROUND_Y, 0.0001f, treePositions); // leaves
     
     // render loop
     // -----------
@@ -392,9 +392,9 @@ int main()
 
        // render terrain (dirt + stone blocks)
        int indexOrder = 0;
-       for (int i = -terrainSize; i < terrainSize; i++)
+       for (unsigned int i = 0; i < TERRAIN_SIZE; i++)
         {
-           for (int j = -terrainSize; j < terrainSize; j++)
+           for (unsigned int j = 0; j < TERRAIN_SIZE; j++)
            {
                 int num = terrainOrder[indexOrder + j];
                 if (num == 1) // dirt block
@@ -403,7 +403,7 @@ int main()
                     glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
                     glBindVertexArray(dirtVAO);
                     glm::mat4 modelDirt = glm::mat4(1.0f);
-                    modelDirt = glm::translate(modelDirt, glm::vec3(i, groundY, j));
+                    modelDirt = glm::translate(modelDirt, glm::vec3(i, GROUND_Y, j));
                     blockShader.setMat4("model", modelDirt);
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }
@@ -413,19 +413,19 @@ int main()
                     glBindTexture(GL_TEXTURE_2D, stoneTexture);
                     glBindVertexArray(leaveStoneVAO); 
                     glm::mat4 modelStone = glm::mat4(1.0f);
-                    modelStone = glm::translate(modelStone, glm::vec3(i, groundY, j));
+                    modelStone = glm::translate(modelStone, glm::vec3(i, GROUND_Y, j));
                     blockShader.setMat4("model", modelStone);
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }   
            }
-           indexOrder += terrainSize; // update index otherwise we keep indexing the first 25 spots
+           indexOrder += TERRAIN_SIZE; // update index otherwise we keep indexing the first 50 spots
         }
 
         // render glow stones
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, glowStoneTexture);
         glBindVertexArray(glowStoneVAO);
-        for (unsigned int i = 0; i < numGlowStones; i++)
+        for (unsigned int i = 0; i < N_GLOWSTONES; i++)
         {
             glm::mat4 modelGS = glm::mat4(1.0f);
             modelGS = glm::translate(modelGS, glowStonePositions[i]);
@@ -438,16 +438,16 @@ int main()
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
         glBindVertexArray(woodVAO);
-        for (unsigned int i = 0; i < numTrees; i++)
+        for (unsigned int i = 0; i < N_TREES; i++)
         {
             glm::vec3 tree = treePositions[i];
-            for (unsigned int j = 0; j < heightTree; j++) 
+            for (unsigned int j = 0; j < HEIGHT_TREE; j++) 
             {
                 glm::mat4 modelTree = glm::mat4(1.0f);
                 modelTree = glm::translate(modelTree, tree);
                 blockShader.setMat4("model", modelTree);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
-                tree.y += blockSize; // increase y with blockSize to place next wooden block exactly on top of the one before that
+                tree.y += BLOCK_SIZE; // increase y with BLOCK_SIZE to place next wooden block exactly on top of the one before that
             }
         }
 
@@ -512,7 +512,7 @@ int main()
     glDeleteVertexArrays(1, &dirtVAO);
     glDeleteVertexArrays(1, &woodVAO);
     glDeleteVertexArrays(1, &glowStoneVAO);
-    glDeleteBuffers(1, &posNormVBO);
+    glDeleteBuffers(1, &positionVBO);
     glDeleteBuffers(1, &texCoordVBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.

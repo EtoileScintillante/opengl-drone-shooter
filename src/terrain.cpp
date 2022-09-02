@@ -7,7 +7,7 @@ std::vector< glm::vec3 > generateTreePositions(int numTrees, int terrainSize, fl
 
     // create random positions 
     std::vector < glm::vec3 > positions;
-    std::uniform_int_distribution<> xzPlane(-terrainSize + 1, terrainSize - 1); // define the range for x and z axis 
+    std::uniform_int_distribution<> xzPlane(1, terrainSize - 1); // define the range for x and z axis 
     for (unsigned int i = 0; i < numTrees; i++)
     {
         float posX = xzPlane(gen); 
@@ -26,7 +26,7 @@ std::vector< glm::vec3 > generateRandomLampPositions(int numLamps, float heightL
 
     // create random positions 
     std::vector < glm::vec3 > positions;
-    std::uniform_int_distribution<> xzPlane(-terrainSize + 1, terrainSize - 1); // define the range for x and z axis 
+    std::uniform_int_distribution<> xzPlane(1, terrainSize - 1); // define the range for x and z axis 
     std::uniform_int_distribution<> yPlane(heightLowerRange, heightUpperRange); // define the range for y axis 
     for (unsigned int i = 0; i < numLamps; i++)
     {
@@ -93,7 +93,7 @@ std::vector < int > dirtStonePositions(int terrainSize)
 
     std::uniform_int_distribution<> numbers(1, 2); 
     std::vector < int > v;
-    for (unsigned int i = 0; i < (terrainSize * terrainSize * 4); i++)
+    for (unsigned int i = 0; i < (terrainSize * terrainSize); i++)
     {
         srand(time(NULL));
         int choice = numbers(gen);
