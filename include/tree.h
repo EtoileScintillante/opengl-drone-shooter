@@ -59,8 +59,8 @@ public:
     void Draw(Shader &shaderTrunk, Shader &shaderLeaves)
     {
         // first render tree trunk(s)
-        shaderTrunk.use();
         shaderTrunk.setInt("ourTexture", 0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureTrunk);
         glBindVertexArray(VAOtrunk);
         for (unsigned int i = 0; i < treePositions.size(); i++)
@@ -77,9 +77,10 @@ public:
         }
 
         // then render leaves
-        shaderLeaves.use();
         shaderLeaves.setInt("ourTexture", 0);
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, textureLeaves);
+        std::cout << "LEAVES " << textureLeaves << std::endl;
         glBindVertexArray(VAOleaves);
         for (unsigned int i = 0; i < leavesPositions.size(); i++)
         {
@@ -92,7 +93,8 @@ public:
 
 private:
     std::vector < glm::vec3 > leavesPositions;
-    unsigned int textureTrunk, textureLeaves;
+    unsigned int textureTrunk = 1;
+    unsigned int textureLeaves = 2;
     unsigned int VAOtrunk, VAOleaves;
     unsigned int VBOtrunk, VBOleaves;
 
@@ -158,8 +160,7 @@ private:
     {
         const char * c = path.c_str(); // convert std::string to const char*
 
-        unsigned int textureID;
-        glGenTextures(1, &textureID);
+        glGenTextures(1, &ID);
 
         stbi_set_flip_vertically_on_load(true); 
         int width, height, nrComponents;
@@ -173,7 +174,7 @@ private:
                 format = GL_RGB;
             else {format = GL_RGBA;}
 
-            glBindTexture(GL_TEXTURE_2D, textureID);
+            glBindTexture(GL_TEXTURE_2D, ID);
             glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
             glGenerateMipmap(GL_TEXTURE_2D);
 
