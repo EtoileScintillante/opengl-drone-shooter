@@ -2,7 +2,7 @@
  * tree.h
  *
  * Created by: EtoileScintillante
- * Vertex struct and loadTexture function from: https://learnopengl.com, both modified by me.
+ * LoadTexture function from: https://learnopengl.com, both modified by me.
  */
 
 #ifndef TREE_H
@@ -22,7 +22,7 @@
 #include "shader.h"
 #include "terrain.h"
 
-struct Vertex { 
+struct Data { 
     // position
     glm::vec3 Position;
     // texCoords
@@ -31,8 +31,8 @@ struct Vertex {
 
 class Tree {
 public:
-    std::vector < Vertex > verticesTrunk;
-    std::vector < Vertex > verticesLeaves;
+    std::vector < Data > verticesTrunk;
+    std::vector < Data > verticesLeaves;
     std::vector < glm::vec3 > treePositions;
     std::string pathTrunkTexture;
     std::string pathLeavesTexture;
@@ -41,7 +41,7 @@ public:
     float blockSize;
 
     // constructor
-    Tree(std::vector < Vertex > verticesTrunk, std::vector < Vertex > verticesLeaves, std::vector < glm::vec3 > treePositions, std::string pathLeavesTexture, unsigned int heightTree, float groundLevel, float blockSize)
+    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::vector < glm::vec3 > treePositions, std::string pathLeavesTexture, unsigned int heightTree, float groundLevel, float blockSize)
     {
         this->verticesTrunk = verticesTrunk;
         this->verticesLeaves = verticesLeaves;
@@ -103,31 +103,31 @@ private:
         glGenVertexArrays(1, &VAOtrunk);
         glGenBuffers(1, &VBOtrunk);
         glBindVertexArray(VAOtrunk);
-        // load data into vertex buffers
+        // load data into Data buffers
         glBindBuffer(GL_ARRAY_BUFFER, VBOtrunk);
-        glBufferData(GL_ARRAY_BUFFER, verticesTrunk.size() * sizeof(Vertex), &verticesTrunk[0], GL_STATIC_DRAW);  
-        // set the vertex attribute pointers
-        // vertex positions
+        glBufferData(GL_ARRAY_BUFFER, verticesTrunk.size() * sizeof(Data), &verticesTrunk[0], GL_STATIC_DRAW);  
+        // set the Data attribute pointers
+        // Data positions
         glEnableVertexAttribArray(0);	
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-        // vertex texture coords
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void*)0);
+        // Data texture coords
         glEnableVertexAttribArray(1);	
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void*)offsetof(Data, TexCoords));
 
         // now do the same for the leaves
         glGenVertexArrays(1, &VAOleaves);
         glGenBuffers(1, &VBOleaves);
         glBindVertexArray(VAOleaves);
-        // load data into vertex buffers
+        // load data into Data buffers
         glBindBuffer(GL_ARRAY_BUFFER, VBOleaves);
-        glBufferData(GL_ARRAY_BUFFER, verticesLeaves.size() * sizeof(Vertex), &verticesLeaves[0], GL_STATIC_DRAW);  
-        // set the vertex attribute pointers
-        // vertex positions
+        glBufferData(GL_ARRAY_BUFFER, verticesLeaves.size() * sizeof(Data), &verticesLeaves[0], GL_STATIC_DRAW);  
+        // set the Data attribute pointers
+        // Data positions
         glEnableVertexAttribArray(0);	
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
-        // vertex texture coords
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void*)0);
+        // Data texture coords
         glEnableVertexAttribArray(1);	
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void*)offsetof(Data, TexCoords));
 
         loadTexture(pathTrunkTexture, textureTrunk);
         loadTexture(pathLeavesTexture, textureLeaves);
