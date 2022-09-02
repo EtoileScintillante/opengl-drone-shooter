@@ -3,7 +3,8 @@
  *
  * Created by: EtoileScintillante
  * 
- * This file contains functions that help setup a flat terrain made out of blocks, including some trees and lamps.
+ * This file contains functions that help setup a flat terrain made out of blocks, 
+ * including some trees and glowstones attached to some of those trees.
  */
 
 #ifndef TERRAIN_H
@@ -17,7 +18,8 @@
  * @brief generates random positions for trees on a flat terrain.
  * 
  * @param numTrees number of trees for which a position will be generated.
- * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
+ * @param terrainSize terrain size. Note: the actual size of the terrain is calculated by terrainSize * terrainSize
+ * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
  * @param groundY y value of the ground.
  * @param blockSize blocksize. this value will be added to groundY in order to place the tree on the ground.
  * @param offsetY this value will be added to groundY and blockSize to avoid z fighting.
@@ -31,7 +33,8 @@ std::vector< glm::vec3 > generateTreePositions(int numTrees, int terrainSize, fl
  * @param numLamps number of lamps.
  * @param heightLowerRange lowest y value possible for position of lamp.
  * @param heightUpperRange highest y value possible for position of lamp.
- * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
+ * @param terrainSize terrain size. Note: the actual size of the terrain is calculated by terrainSize * terrainSize
+ * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
  * @return std::vector< glm::vec3 > vector containing all the positions.
  */
 std::vector< glm::vec3 > generateRandomLampPositions(int numLamps, float heightLowerRange, float heightUpperRange, int terrainSize);
@@ -75,7 +78,8 @@ std::vector< glm::vec3 > generateLeavesPositions(int heightTree, float blockSize
  * with creating a ground that is made up two types of blocks, so that there
  * is no need to hard code an order in which the blocks are rendered. 
  * 
- * @param terrainSize size of terrain (range goes from -terrainSize to terrainSize).
+ * @param terrainSize terrain size. Note: the actual size of the terrain is calculated by terrainSize * terrainSize
+ * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
  * @return std::vector < int > containing 1s and 2s.
  */
 std::vector < int > dirtStonePositions(int terrainSize);
