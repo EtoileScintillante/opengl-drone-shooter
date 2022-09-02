@@ -41,7 +41,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-int numGlowStones = 4; // must be equal to NR_POINT_LIGHTS in multiple_lights.fs (glow stones are just textured point lights)
+int numGlowStones = 6; 
 int numTrees = 15;
 int terrainSize = 25; // the for loop in which we generate the terrain goes from -terrainSize to terrainSize
 int heightTree = 5;
@@ -95,8 +95,8 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader lightingShader("shaders/lighting_map.vs", "shaders/multiple_lights.fs"); 
-    Shader glowStoneShader("shaders/light_cube_textured.vs", "shaders/light_cube_textured.fs"); 
+    Shader blockShader("shaders/blocks.vs", "shaders/blocks.fs");  
+    Shader leaveShader("shaders/blocks.vs", "shaders/transparent.fs");
     Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
     Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
 
@@ -107,7 +107,7 @@ int main()
     // set up vertex data 
     // ------------------
     float vertices[] = {
-    // position            // normals
+    // position            // normals (these are not used right now)
     -0.5f, -0.5f, -0.5f,   0.0f, 0.0f, -1.0f, 
      0.5f, -0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
      0.5f,  0.5f, -0.5f,   0.0f, 0.0f, -1.0f,
@@ -256,9 +256,6 @@ int main()
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // normals
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
     // texture coord
     glGenBuffers(1, &texCoordVBO); 
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
@@ -275,9 +272,6 @@ int main()
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // normals
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
     // texture coord
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
@@ -293,9 +287,6 @@ int main()
     // position
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // normals
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
     // texture coord
     glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
@@ -329,12 +320,12 @@ int main()
 
     // load textures 
     // -------------
-    unsigned int diffuseMapDW = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
-    unsigned int diffuseMapL = loadTexture(std::filesystem::path("resources/textures/leaves.png").c_str()); // leaves
-    unsigned int diffuseMapGS = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
-    unsigned int diffuseMapS = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
+    unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
+    unsigned int leavesTexture = loadTexture(std::filesystem::path("resources/textures/leaves.png").c_str()); // leaves
+    unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
+    unsigned int stoneTexture = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
 
-    // skybox related
+    // skybox texture
     std::vector<std::string> faces
     {
         std::filesystem::path("resources/skybox/right.jpg"),
@@ -346,11 +337,12 @@ int main()
     };
     unsigned int skyboxTexture = loadCubemap(faces);
 
-
     // shader configuration
     // --------------------
-    lightingShader.use();
-    lightingShader.setInt("material.diffuse", 0); // there is no specular or emission texture
+    blockShader.use();
+    blockShader.setInt("ourTexture", 0); 
+    leaveShader.use();
+    leaveShader.setInt("ourTexture", 0);
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
 
@@ -390,38 +382,13 @@ int main()
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        // activate shader before setting uniforms and drawing objects
-        lightingShader.use();
-        lightingShader.setBool("transparent", false); // none of the textures are transparent, except for the leaves
-        lightingShader.setVec3("viewPos", camera.Position);
-        lightingShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
-        lightingShader.setFloat("material.shininess", 32.0f);  
-
-        // directional light (from above, basically like the sun)
-        lightingShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-        lightingShader.setVec3("dirLight.ambient", 0.03f, 0.03f, 0.03f);
-        lightingShader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-        lightingShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-
-        // point lights (glow stones) (they only differ in position)
-        for (int i = 0; i < numGlowStones; i++)
-        {
-            std::string number = std::to_string(i);
-            lightingShader.setVec3("pointLights[" + number +"].position", glowStonePositions[i]);
-            lightingShader.setVec3("pointLights[" + number +"].ambient", 0.05f, 0.05f, 0.05f);
-            lightingShader.setVec3("pointLights[" + number +"].diffuse", 0.8f, 0.8f, 0.8f);
-            lightingShader.setVec3("pointLights[" + number +"].specular", 1.0f, 1.0f, 1.0f);
-            lightingShader.setFloat("pointLights[" + number +"].constant", 1.0f);
-            lightingShader.setFloat("pointLights[" + number +"].linear", 0.09f);
-            lightingShader.setFloat("pointLights[" + number +"].quadratic", 0.032f);
-        } 
         
-        // view/projection transformations
+        // view and projection transformations for blockShader
+        blockShader.use();
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
-        lightingShader.setMat4("view", view);
-        lightingShader.setMat4("projection", projection); 
+        blockShader.setMat4("view", view);
+        blockShader.setMat4("projection", projection); 
 
        // render terrain (dirt + stone blocks)
        int indexOrder = 0;
@@ -432,33 +399,44 @@ int main()
                 int num = terrainOrder[indexOrder + j];
                 if (num == 1) // dirt block
                 {
-                    // bind diffuse map for wooden blocks and dirt blocks
                     glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, diffuseMapDW);
+                    glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
                     glBindVertexArray(dirtVAO);
                     glm::mat4 modelDirt = glm::mat4(1.0f);
                     modelDirt = glm::translate(modelDirt, glm::vec3(i, groundY, j));
-                    lightingShader.setMat4("model", modelDirt);
+                    blockShader.setMat4("model", modelDirt);
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }
-                if (num == 2) // stone
+                if (num == 2) // stone block
                 {
-                    // bind diffuse map for stone block
                     glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, diffuseMapS);
+                    glBindTexture(GL_TEXTURE_2D, stoneTexture);
                     glBindVertexArray(leaveStoneVAO); 
                     glm::mat4 modelStone = glm::mat4(1.0f);
                     modelStone = glm::translate(modelStone, glm::vec3(i, groundY, j));
-                    lightingShader.setMat4("model", modelStone);
+                    blockShader.setMat4("model", modelStone);
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                 }   
            }
            indexOrder += terrainSize; // update index otherwise we keep indexing the first 25 spots
         }
 
+        // render glow stones
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, glowStoneTexture);
+        glBindVertexArray(glowStoneVAO);
+        for (unsigned int i = 0; i < numGlowStones; i++)
+        {
+            glm::mat4 modelGS = glm::mat4(1.0f);
+            modelGS = glm::translate(modelGS, glowStonePositions[i]);
+            modelGS = glm::scale(modelGS, glm::vec3(0.5f)); // make it a smaller cube
+            blockShader.setMat4("model", modelGS);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+
         // render tree trunks
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapDW);
+        glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
         glBindVertexArray(woodVAO);
         for (unsigned int i = 0; i < numTrees; i++)
         {
@@ -467,66 +445,61 @@ int main()
             {
                 glm::mat4 modelTree = glm::mat4(1.0f);
                 modelTree = glm::translate(modelTree, tree);
-                lightingShader.setMat4("model", modelTree);
+                blockShader.setMat4("model", modelTree);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
                 tree.y += blockSize; // increase y with blockSize to place next wooden block exactly on top of the one before that
             }
         }
 
+        // view and projection transformations for leaveShader
+        leaveShader.use();
+        leaveShader.setMat4("view", view);
+        leaveShader.setMat4("projection", projection); 
+
         // render leaves
-        lightingShader.setBool("transparent", true); // leaves texture is 100% transparent in some parts of the image
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapL);
+        glBindTexture(GL_TEXTURE_2D, leavesTexture);
         glBindVertexArray(leaveStoneVAO);
         for (unsigned int i = 0; i < leavesPositions.size(); i++)
         {
             glm::mat4 modelLeaves = glm::mat4(1.0f);
             modelLeaves = glm::translate(modelLeaves, leavesPositions[i]);
-            lightingShader.setMat4("model", modelLeaves);
+            leaveShader.setMat4("model", modelLeaves);
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-
-        // render glow stones
-        glowStoneShader.use();
-        glowStoneShader.setMat4("view", view);
-        glowStoneShader.setMat4("projection", projection);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, diffuseMapGS);
-        glBindVertexArray(glowStoneVAO);
-        for (unsigned int i = 0; i < 4; i++)
-        {
-            glm::mat4 modelGS = glm::mat4(1.0f);
-            modelGS = glm::translate(modelGS, glowStonePositions[i]);
-            modelGS = glm::scale(modelGS, glm::vec3(0.5f)); // make it a smaller cube
-            glowStoneShader.setMat4("model", modelGS);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-
-        // render gun (made up of 4 meshes)
+        
+        // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
         gunModel = glm::rotate(gunModel, 29.8f, glm::vec3(0.0f, -1.0f, 0.0f)); // rotate gun so it points inwards
         gunModel = glm::scale(gunModel, glm::vec3(0.6f, 0.55f, 0.6f)); // make gun a bit smaller
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
+
+        // render gun (made up of 4 meshes)
         handGun.DrawSpecificMesh(handGunShader, 1);
         handGun.DrawSpecificMesh(handGunShader, 3);
         handGun.DrawSpecificMesh(handGunShader, 4);
         handGun.DrawSpecificMesh(handGunShader, 6);
 
-        // draw skybox as last
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
+        glDepthFunc(GL_LEQUAL);  
+
+        // view and projection transformations for skyboxShader
         skyboxShader.use();
         view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", projection);
-        // skybox cube
+
+        // render skybox as last (for better perfomance)
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
-        glDepthFunc(GL_LESS); // set depth function back to default
+
+        // set depth function back to default
+        glDepthFunc(GL_LESS); 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
