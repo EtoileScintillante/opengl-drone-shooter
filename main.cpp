@@ -1,4 +1,5 @@
 /* Work in progress: basic FPS game */
+// TODO: test tree.h
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -12,6 +13,7 @@
 #include "camera.h"
 #include "model.h"
 #include "terrain.h"
+#include "tree.h"
 
 #include <iostream>
 #include <filesystem>
@@ -240,6 +242,13 @@ int main()
     -1.0f, -1.0f,  1.0f,
      1.0f, -1.0f,  1.0f
     };
+
+    std::vector< Data > trunkVertices;
+    std::vector< Data > leavesVertices;
+    for (unsigned i = 0; i < sizeof(vertices); i++)
+    {
+        std::cout << "TODO: fill vectors with the right vertex data";
+    }
 
     // buffers
     // -------
