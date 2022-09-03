@@ -240,11 +240,7 @@ int main()
      1.0f, -1.0f,  1.0f
     };
 
-    std::vector< Data > trunkVertices;
-    std::vector< Data > leavesVertices;
-    std::vector< Data > dirtVertices;
-    std::vector< Data > glowStoneVertices;
-    std::vector< Data > stoneVertices;
+    std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices;
     int indexPos = 0;
     int indexTex = 0;
     for (unsigned i = 0; i < 36; i++) // 36 lines of position data (all objects, except model(s) are just blocks)
@@ -337,12 +333,15 @@ int main()
 
     // load textures and initialize objects
     // ------------------------------------
-    std::string pathTrunkTex = "resources/textures/blocks.JPG";
-    std::string pathLeavesTex = "resources/textures/leaves.png";
+    std::string texturePath = "resources/textures/";
+    std::string pathTrunkTex = texturePath + "blocks.JPG"; // also for dirt blocks
+    std::string pathLeavesTex = texturePath + "leaves.png";
+    std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
+    std::string pathStoneTex = texturePath + "stone.jpg";
 
     Tree trees(trunkVertices, leavesVertices, pathTrunkTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
 
-    unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
+    unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and trunk blocks
     unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
     unsigned int stoneTexture = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
 
@@ -405,7 +404,6 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
         blockShader.setMat4("view", view);
         blockShader.setMat4("projection", projection); 
-
         
        // render terrain (dirt + stone blocks)
        int indexOrder = 0;
@@ -459,7 +457,6 @@ int main()
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
         
-        
         // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
@@ -474,7 +471,6 @@ int main()
         handGun.DrawSpecificMesh(handGunShader, 4);
         handGun.DrawSpecificMesh(handGunShader, 6);
         
-
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
 
