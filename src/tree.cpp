@@ -55,14 +55,14 @@ void Tree::configureTree()
     glGenVertexArrays(1, &VAOtrunk);
     glGenBuffers(1, &VBOtrunk);
     glBindVertexArray(VAOtrunk);
-    // load data into Data buffers
+    // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOtrunk);
     glBufferData(GL_ARRAY_BUFFER, verticesTrunk.size() * sizeof(Data), &verticesTrunk[0], GL_STATIC_DRAW);
-    // set the Data attribute pointers
-    // Data positions
+    // set the vertex attribute pointers
+    // positions
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
-    // Data texture coords
+    // texture coords
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
 
@@ -70,14 +70,14 @@ void Tree::configureTree()
     glGenVertexArrays(1, &VAOleaves);
     glGenBuffers(1, &VBOleaves);
     glBindVertexArray(VAOleaves);
-    // load data into Data buffers
+    // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOleaves);
     glBufferData(GL_ARRAY_BUFFER, verticesLeaves.size() * sizeof(Data), &verticesLeaves[0], GL_STATIC_DRAW);
-    // set the Data attribute pointers
-    // Data positions
+    // set the vertex attribute pointers
+    // positions
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
-    // Data texture coords
+    // texture coords
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
 
