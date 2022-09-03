@@ -1,5 +1,4 @@
 /* Work in progress: basic FPS game */
-// TODO: create classes for ground and glow stones to clean up code in main (especially the render loop)
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -16,6 +15,7 @@
 #include "tree.h"
 #include "data.h"
 #include "ground.h"
+#include "glowstone.h"
 
 #include <iostream>
 #include <filesystem>
@@ -23,7 +23,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void updateGunMovement();
 unsigned int loadTexture(const char *path);
@@ -52,7 +51,7 @@ const unsigned int HEIGHT_TREE = 5;
 const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of terrain
 
-// gun 
+// handgun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
 
 int main()
@@ -80,7 +79,6 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -107,7 +105,7 @@ int main()
     // set up vertex data 
     // ------------------
     float vertices[] = {
-    // position            // normals (these are not used right now)
+    // position           
     -0.5f, -0.5f, -0.5f,    
      0.5f, -0.5f, -0.5f,   
      0.5f,  0.5f, -0.5f,   
@@ -241,6 +239,8 @@ int main()
      1.0f, -1.0f,  1.0f
     };
 
+    // setup vertices for every block
+    // ------------------------------
     std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices;
     int indexPos = 0;
     int indexTex = 0;
@@ -264,59 +264,11 @@ int main()
         stoneVertices.push_back(vertexLeaves);
     }
 
-    // buffers
-    // -------
-    unsigned int positionVBO, texCoordVBO, skyboxVBO; 
-    unsigned int dirtVAO, leaveStoneVAO, glowStoneVAO, skyboxVAO;
+    // buffers for skybox
+    // ------------------
+    unsigned int skyboxVBO; 
+    unsigned int skyboxVAO;
 
-    // configure dirt block VAO 
-    // ------------------------
-    glGenVertexArrays(1, &dirtVAO);
-    glBindVertexArray(dirtVAO);
-    glGenBuffers(1, &positionVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord
-    glGenBuffers(1, &texCoordVBO); 
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(2 * sizeof(float))); 
-    glEnableVertexAttribArray(1);
-
-    // configure leaves and wall block VAO
-    // -----------------------------------
-    glGenVertexArrays(1, &leaveStoneVAO);
-    glBindVertexArray(leaveStoneVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, positionVBO); 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);  
-    // position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float))); 
-    glEnableVertexAttribArray(1);
-
-    // configure the glow stones VAO 
-    // ------------------------------
-    glGenVertexArrays(1, &glowStoneVAO);
-    glBindVertexArray(glowStoneVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, positionVBO);
-    // positions 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texture coord (same coordinates as leaves block)
-    glBindBuffer(GL_ARRAY_BUFFER, texCoordVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(textureCoords), textureCoords, GL_STATIC_DRAW); 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(4 * sizeof(float))); 
-    glEnableVertexAttribArray(1);
-
-    // configure skybox VAO
-    // --------------------
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
@@ -325,27 +277,22 @@ int main()
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    // position data for objects
-    // -------------------------
-    std::vector < int > terrainOrder = dirtStonePositions(TERRAIN_SIZE); // return vector with 1s and 2s (in this context: 1 = dirt, 2 = stone)
-    std::vector < glm::vec3 > treePositions = generateTreePositions(N_TREES, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, 0.0001f); // trees
-    std::vector < glm::vec3 > glowStonePositions = generateLampPosStickToTree(N_GLOWSTONES, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE, 3.0f, 0.5f, treePositions); // glow stones
-    std::vector < glm::vec3 > leavesPositions = generateLeavesPositions(HEIGHT_TREE, BLOCK_SIZE, GROUND_Y, 0.0001f, treePositions); // leaves
-
-    // load textures and initialize objects
-    // ------------------------------------
+    // block textures
+    // --------------
     std::string texturePath = "resources/textures/";
     std::string pathTrunkTex = texturePath + "blocks.JPG"; // also for dirt blocks
     std::string pathLeavesTex = texturePath + "leaves.png";
     std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
     std::string pathStoneTex = texturePath + "stone.jpg";
 
+    // initialize block objects
+    // ------------------------
     Tree trees(trunkVertices, leavesVertices, pathTrunkTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
     Ground ground(dirtVertices, stoneVertices, pathTrunkTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
+    GlowStone glowstones(glowStoneVertices, pathGlowStoneTex, trees.treePositions, N_GLOWSTONES, 3);
 
-    unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
-
-    // skybox texture
+    // load skybox texture
+    // -------------------
     std::vector<std::string> faces
     {
         std::filesystem::path("resources/skybox/right.jpg"),
@@ -357,16 +304,14 @@ int main()
     };
     unsigned int skyboxTexture = loadCubemap(faces);
 
+    // skybox shader configuration
+    // ---------------------------
+    skyboxShader.use();
+    skyboxShader.setInt("skybox", 0);
+
     // load model(s)
     // -------------
     Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
-
-    // shader configuration
-    // --------------------
-    blockShader.use();
-    blockShader.setInt("ourTexture", 0); 
-    skyboxShader.use();
-    skyboxShader.setInt("skybox", 0);
 
     // camera configuration
     // --------------------
@@ -408,6 +353,9 @@ int main()
         // render ground
         ground.Draw(blockShader);
 
+        // render glow stones
+        glowstones.Draw(blockShader);
+
         // view and projection transformations for leaveShader
         leaveShader.use();
         leaveShader.setMat4("view", view);
@@ -416,19 +364,6 @@ int main()
         // render trees
         trees.Draw(blockShader, leaveShader);
 
-        // render glow stones
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, glowStoneTexture);
-        glBindVertexArray(glowStoneVAO);
-        for (unsigned int i = 0; i < N_GLOWSTONES; i++)
-        {
-            glm::mat4 modelGS = glm::mat4(1.0f);
-            modelGS = glm::translate(modelGS, glowStonePositions[i]);
-            modelGS = glm::scale(modelGS, glm::vec3(0.5f)); // make it a smaller cube
-            blockShader.setMat4("model", modelGS);
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
-        
         // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
@@ -436,7 +371,7 @@ int main()
         gunModel = glm::scale(gunModel, glm::vec3(0.6f, 0.55f, 0.6f)); // make gun a bit smaller
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
-
+        
         // render gun 
         handGun.drawhandGun(handGunShader);
         
@@ -467,10 +402,8 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &dirtVAO);
-    glDeleteVertexArrays(1, &glowStoneVAO);
-    glDeleteBuffers(1, &positionVBO);
-    glDeleteBuffers(1, &texCoordVBO);
+    glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteBuffers(1, &skyboxVBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -542,13 +475,6 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.ProcessMouseScroll(static_cast<float>(yoffset));
 }
 
 // utility function for loading a 2D texture from file
