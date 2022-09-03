@@ -39,27 +39,36 @@ public:
     std::string directory;
     bool gammaCorrection;
 
-    // constructor, expects a filepath to a 3D model.
+    /// constructor, expects a filepath to a 3D model.
     Model(std::string const &path, bool gamma = false) : gammaCorrection(gamma)
     {
         loadModel(path);
     }
 
-    // draws the model, and thus all its meshes
+    /// draws the model, and thus all its meshes
     void Draw(Shader &shader)
     {
         for(unsigned int i = 0; i < meshes.size(); i++)
             meshes[i].Draw(shader);
     }
 
-    // only draw mesh at given index
-    void DrawSpecificMesh(Shader &shader, int index)
+    /// only draws mesh at given index
+    void drawSpecificMesh(Shader &shader, int index)
     {
         meshes[index].Draw(shader);
     }
+
+    /// draws handgun (without the fire and bullet)
+    void drawhandGun(Shader &shader)
+    {
+        drawSpecificMesh(shader, 1);
+        drawSpecificMesh(shader, 3);
+        drawSpecificMesh(shader, 4);
+        drawSpecificMesh(shader, 6);
+    }
     
 private:
-    // loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
+    /// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(std::string const &path)
     {
         // read file via ASSIMP
@@ -84,7 +93,7 @@ private:
         processNode(scene->mRootNode, scene);
     }
 
-    // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+    /// processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     void processNode(aiNode *node, const aiScene *scene)
     {
         // process each mesh located at the current node
@@ -197,8 +206,7 @@ private:
         return Mesh(vertices, indices, textures);
     }
 
-    // checks all material textures of a given type and loads the textures if they're not loaded yet.
-    // the required info is returned as a Texture struct.
+    /// checks all material textures of a given type and loads the textures if they're not loaded yet. The required info is returned as a Texture struct.
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName)
     {
         std::vector<Texture> textures;
@@ -233,7 +241,7 @@ private:
     }
 };
 
-
+/// loads a texture
 unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma)
 {
     std::string filename = std::string(path);
