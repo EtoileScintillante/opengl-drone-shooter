@@ -15,6 +15,7 @@
 #include "terrain.h"
 #include "tree.h"
 #include "data.h"
+#include "ground.h"
 
 #include <iostream>
 #include <filesystem>
@@ -340,10 +341,9 @@ int main()
     std::string pathStoneTex = texturePath + "stone.jpg";
 
     Tree trees(trunkVertices, leavesVertices, pathTrunkTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
+    Ground ground(dirtVertices, stoneVertices, pathTrunkTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
 
-    unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and trunk blocks
     unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
-    unsigned int stoneTexture = loadTexture(std::filesystem::path("resources/textures/stone.jpg").c_str()); // stone
 
     // skybox texture
     std::vector<std::string> faces
@@ -404,37 +404,9 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
         blockShader.setMat4("view", view);
         blockShader.setMat4("projection", projection); 
-        
-       // render terrain (dirt + stone blocks)
-       int indexOrder = 0;
-       for (unsigned int i = 0; i < TERRAIN_SIZE; i++)
-        {
-           for (unsigned int j = 0; j < TERRAIN_SIZE; j++)
-           {
-                int num = terrainOrder[indexOrder + j];
-                if (num == 1) // dirt block
-                {
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, dirtWoodTexture);
-                    glBindVertexArray(dirtVAO);
-                    glm::mat4 modelDirt = glm::mat4(1.0f);
-                    modelDirt = glm::translate(modelDirt, glm::vec3(i, GROUND_Y, j));
-                    blockShader.setMat4("model", modelDirt);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }
-                if (num == 2) // stone block
-                {
-                    glActiveTexture(GL_TEXTURE0);
-                    glBindTexture(GL_TEXTURE_2D, stoneTexture);
-                    glBindVertexArray(leaveStoneVAO); 
-                    glm::mat4 modelStone = glm::mat4(1.0f);
-                    modelStone = glm::translate(modelStone, glm::vec3(i, GROUND_Y, j));
-                    blockShader.setMat4("model", modelStone);
-                    glDrawArrays(GL_TRIANGLES, 0, 36);
-                }   
-           }
-           indexOrder += TERRAIN_SIZE; // update index otherwise we keep indexing the first 50 spots
-        }
+
+        // render ground
+        ground.Draw(blockShader);
 
         // view and projection transformations for leaveShader
         leaveShader.use();
@@ -465,11 +437,8 @@ int main()
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
 
-        // render gun (made up of 4 meshes)
-        handGun.DrawSpecificMesh(handGunShader, 1);
-        handGun.DrawSpecificMesh(handGunShader, 3);
-        handGun.DrawSpecificMesh(handGunShader, 4);
-        handGun.DrawSpecificMesh(handGunShader, 6);
+        // render gun 
+        handGun.drawhandGun(handGunShader);
         
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
