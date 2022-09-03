@@ -1,5 +1,5 @@
 /*                                  
- * terrain.h
+ * ground.h
  *
  * Created by: EtoileScintillante
  */
