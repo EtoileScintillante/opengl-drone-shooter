@@ -151,7 +151,7 @@ int main()
     };
 
     float textureCoords[] = {
-     // wood        // dirt        // leaves/stone    
+     // trunk        // dirt        // leaves/stone    
      0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,  // side    
      1.0f, 0.5f,    0.5f, 0.75f,   1.0f, 0.0f,   
      1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,   
@@ -242,20 +242,29 @@ int main()
 
     std::vector< Data > trunkVertices;
     std::vector< Data > leavesVertices;
+    std::vector< Data > dirtVertices;
+    std::vector< Data > glowStoneVertices;
+    std::vector< Data > stoneVertices;
     int indexPos = 0;
     int indexTex = 0;
     for (unsigned i = 0; i < 36; i++) // 36 lines of position data (all objects, except model(s) are just blocks)
-    {
-        Data vertexTrunk;
-        Data vertexLeaves;
-        vertexTrunk.Position = vertexLeaves.Position = glm::vec3(vertices[indexPos],vertices[indexPos+1], vertices[indexPos + 2]); // same positon data
+    {   
+        Data vertexTrunk, vertexLeaves, vertexDirt;
+        // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
+        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = glm::vec3(vertices[indexPos],vertices[indexPos+1], vertices[indexPos + 2]); 
+        // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
         vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
         vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
-        indexPos += 3; // every line is 3 floats/spots in array, so here we move to the next line
-        indexTex += 6; // every line is 6 floats/spots in array
+        vertexDirt.TexCoords = glm::vec2(textureCoords[indexTex + 2], textureCoords[indexTex + 3]);
+        // move to the next line in the arrays
+        indexPos += 3;
+        indexTex += 6; 
+        // push data into vectors
         trunkVertices.push_back(vertexTrunk);
         leavesVertices.push_back(vertexLeaves);
-
+        dirtVertices.push_back(vertexDirt);
+        glowStoneVertices.push_back(vertexLeaves);
+        stoneVertices.push_back(vertexLeaves);
     }
 
     // buffers
@@ -331,7 +340,7 @@ int main()
     std::string pathTrunkTex = "resources/textures/blocks.JPG";
     std::string pathLeavesTex = "resources/textures/leaves.png";
 
-    Tree trees(trunkVertices, leavesVertices, treePositions, pathTrunkTex, pathLeavesTex, HEIGHT_TREE, GROUND_Y, BLOCK_SIZE);
+    Tree trees(trunkVertices, leavesVertices, pathTrunkTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
 
     unsigned int dirtWoodTexture = loadTexture(std::filesystem::path("resources/textures/blocks.JPG").c_str()); // dirt blocks and wooden blocks
     unsigned int glowStoneTexture = loadTexture(std::filesystem::path("resources/textures/glowstone.jpg").c_str()); // glow stone (lamp texture)
