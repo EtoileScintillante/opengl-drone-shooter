@@ -52,6 +52,7 @@ const float GROUND_Y = -1.8; // y level of terrain
 
 // handgun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
+bool shot;
 
 int main()
 {
@@ -378,7 +379,13 @@ int main()
         
         // render gun 
         handGun.drawhandGun(handGunShader);
-        
+
+        if (shot == true)
+        {
+            handGun.drawSpecificMesh(handGunShader, 5);
+        }
+        shot = false;
+
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
 
@@ -445,6 +452,10 @@ void processInput(GLFWwindow *window)
         isWalking = true;
         updateGunMovement();
         camera.ProcessKeyboard(RIGHT, deltaTime); 
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        shot = true;
     }
     isWalking = false;
 }
