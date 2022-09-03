@@ -2,7 +2,7 @@
  * tree.h
  *
  * Created by: EtoileScintillante
- * LoadTexture function from: https://learnopengl.com, both modified by me.
+ * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
 #ifndef TREE_H

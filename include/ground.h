@@ -2,6 +2,7 @@
  * ground.h
  *
  * Created by: EtoileScintillante
+ * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
 #ifndef GROUND_H
