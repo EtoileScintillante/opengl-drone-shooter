@@ -16,6 +16,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
+#include <random>
+#include <vector>
 
 #include "shader.h"
 #include "data.h"
@@ -27,19 +29,22 @@ public:
     std::vector < glm::vec3 > treePositions;
     std::string pathTrunkTexture;
     std::string pathLeavesTexture;
+    unsigned int numTrees;
     unsigned int heightTree;
+    unsigned int terrainSize;
     float groundLevel;
     float blockSize;
 
     // constructor
-    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::vector < glm::vec3 > treePositions, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int heightTree, float groundLevel, float blockSize)
+    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize)
     {
         this->verticesTrunk = verticesTrunk;
         this->verticesLeaves = verticesLeaves;
-        this->treePositions = treePositions;
         this->pathTrunkTexture = pathTrunkTexture;
         this->pathLeavesTexture = pathLeavesTexture;
+        this->numTrees = numTrees;
         this->heightTree = heightTree;
+        this->terrainSize = terrainSize;
         this->groundLevel = groundLevel;
         this->blockSize = blockSize;
 
@@ -123,7 +128,25 @@ private:
 
         loadTexture(pathTrunkTexture, textureTrunk);
         loadTexture(pathLeavesTexture, textureLeaves);
+        createTreePositions();
         createLeavesPositions();
+    }
+
+    // creates numTrees random positions
+    void createTreePositions()
+    {
+        std::random_device rd; // obtain a random number from hardware
+        std::mt19937 gen(rd()); // seed the generator
+
+        // create random positions 
+        std::uniform_int_distribution<> xzPlane(1, terrainSize - 1); // define the range for x and z axis 
+        for (unsigned int i = 0; i < numTrees; i++)
+        {
+            float posX = xzPlane(gen); 
+            float posZ = xzPlane(gen);
+            glm::vec3 vec = {posX, groundLevel + blockSize + 0.0001f, posZ}; 
+            treePositions.push_back(vec);
+        }
     }
 
     // creates 5 leaves blocks for every tree
