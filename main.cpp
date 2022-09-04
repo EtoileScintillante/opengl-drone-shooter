@@ -1,5 +1,16 @@
 /* Work in progress: basic FPS game */
 
+// TODO (from most important to least important)
+// ---------------------------------------------
+// add mobs (they should only spawn on places where there is no tree) 
+// add collision detection (needed: gun direction, fragment position and knowing if fragment belongs to mob) 
+// add some spawning mechanism: only one mob per time. When mob is hit, let new one spawn in different position 
+// add some small animation when mob is killed (maybe make mob explode?)
+// add recoil to gun when space is pressed (space = shoot)
+// add score (needed: global variable score (render top left) [text rendering]
+// add instructions: movement = w,a,s,d. shoot = space (render top right) [text rendering]
+// optionally: limited bullets (so adding a reload function + adding bullet counter)
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
