@@ -332,13 +332,16 @@ int main()
     // camera configuration
     // --------------------
     camera.nonFlying = true; // set to FPS
+
+    // set projection matrix (this one never changes so we do it outside the render loop)
+    // ----------------------------------------------------------------------------------
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
     
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
-        // --------------------
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -351,18 +354,15 @@ int main()
         } 
 
         // input
-        // -----
         processInput(window);
 
         // render
-        // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
         // view and projection transformations for blockShader
         blockShader.use();
         glm::mat4 view = camera.GetViewMatrix();
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
         blockShader.setMat4("view", view);
         blockShader.setMat4("projection", projection); 
 
@@ -384,6 +384,9 @@ int main()
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
         gunModel = glm::rotate(gunModel, 29.8f, glm::vec3(0.0f, -1.0f, 0.0f)); // rotate gun so it points inwards
+        //float angle = glfwGetTime();
+        //std::cout << angle << std::endl;
+        //gunModel = glm::rotate(gunModel, (float) angle, glm::vec3(0.0f,  0.0f,1.0f)); // rotate gun so it points inwards
         gunModel = glm::scale(gunModel, glm::vec3(0.6f, 0.55f, 0.6f)); // make gun a bit smaller
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
@@ -417,18 +420,15 @@ int main()
         glDepthFunc(GL_LESS); 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
-    // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteBuffers(1, &skyboxVBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
-    // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
@@ -479,7 +479,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
-
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
