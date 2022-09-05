@@ -10,6 +10,8 @@
 // add score (needed: global variable score (render top left) [text rendering]
 // add instructions: movement = w,a,s,d. shoot = space (render top right) [text rendering]
 // optionally: limited bullets (so adding a reload function + adding bullet counter)
+// optionally: use instancing (for better performance since it requires less draw calls, but this is game is very small so it is not really necessary)
+// optionally: put functions (which are now at the bottom of the file) in a header file to clean up main
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -26,6 +28,7 @@
 #include "data.h"
 #include "ground.h"
 #include "glowstone.h"
+#include "gun.h"
 
 #include <iostream>
 #include <filesystem>
@@ -47,19 +50,20 @@ Camera camera(glm::vec3(25.0f, 0.0f, 25.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-bool isWalking;
+bool isWalking; 
 
 // timing
+float currentFrame;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-const unsigned int N_GLOWSTONES = 6; 
-const unsigned int N_TREES = 15;
+const unsigned int N_GLOWSTONES = 10; 
+const unsigned int N_TREES = 25;
 const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
 const unsigned int HEIGHT_TREE = 5;
 const float BLOCK_SIZE = 1.0f;
-const float GROUND_Y = -1.8; // y level of terrain
+const float GROUND_Y = -1.8; // y level of ground
 
 // handgun 
 glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
@@ -331,7 +335,7 @@ int main()
 
     // camera configuration
     // --------------------
-    camera.nonFlying = true; // set to FPS
+    camera.FPS = true; 
 
     // set projection matrix (this one never changes so we do it outside the render loop)
     // ----------------------------------------------------------------------------------
@@ -342,16 +346,13 @@ int main()
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
-        float currentFrame = static_cast<float>(glfwGetTime());
+        currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        camera.time = currentFrame; // pass time to camera
+        camera.currentFrame = currentFrame; // pass time to camera
 
-        // camera movement when standing still (to make the player look more alive)
-        if (isWalking == false)
-        {
-            camera.Position.y = sin(currentFrame*2) * 0.02f;
-        } 
+        // camera movement when player is not moving (to make the player look more alive)
+        camera.passiveMotion(isWalking);
 
         // input
         processInput(window);
@@ -383,10 +384,10 @@ int main()
         // view and model transformation for handGunShader
         glm::mat4 gunModel = glm::mat4(1.0); 
         gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
-        gunModel = glm::rotate(gunModel, 29.8f, glm::vec3(0.0f, -1.0f, 0.0f)); // rotate gun so it points inwards
+        gunModel = glm::rotate(gunModel, glm::radians(95.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate gun so it points inwards
         //float angle = glfwGetTime();
         //std::cout << angle << std::endl;
-        //gunModel = glm::rotate(gunModel, (float) angle, glm::vec3(0.0f,  0.0f,1.0f)); // rotate gun so it points inwards
+        //gunModel = glm::rotate(gunModel, glm::radians(angle), glm::vec3(0.0f,  0.0f,1.0f)); // rotate gun so it points inwards
         gunModel = glm::scale(gunModel, glm::vec3(0.6f, 0.55f, 0.6f)); // make gun a bit smaller
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
@@ -443,25 +444,25 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         isWalking = true;
-        updateGunMovement();
+        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        isWalking = true;   
-        updateGunMovement();
+        isWalking = true;  
+        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         isWalking = true;
-        updateGunMovement();
+        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         isWalking = true;
-        updateGunMovement();
+        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(RIGHT, deltaTime); 
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
@@ -539,14 +540,6 @@ unsigned int loadTexture(char const * path)
     }
 
     return textureID;
-}
-
-// adds some extra movement to the gun while the player is walking 
-// -----------------------------------------------------------------
-void updateGunMovement()
-{
-    gunPosition.z += sin(glfwGetTime()*10) * 0.004f;
-    gunPosition.y += sin(glfwGetTime()*10) * 0.004f;
 }
 
 // loads a cubemap texture from 6 individual texture faces
