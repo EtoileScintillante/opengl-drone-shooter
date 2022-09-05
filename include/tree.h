@@ -2,11 +2,10 @@
  * tree.h
  *
  * Created by: EtoileScintillante
- * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
-#ifndef TREE_H
-#define TREE_H
+#ifndef __TREE_H__
+#define __TREE_H__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +20,7 @@
 
 #include "shader.h"
 #include "data.h"
+#include "texture_loading.h"
 
 class Tree {
 public:
@@ -74,9 +74,6 @@ private:
 
     /// creates positions for leaves blocks for every tree (5 leaves blocks per tree)
     void createLeavesPositions();
-
-    /// loads a texture 
-    void loadTexture(std::string path, unsigned int ID);
 };
 
 #endif /*__TREE__*/

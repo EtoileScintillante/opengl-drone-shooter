@@ -81,8 +81,8 @@ void Tree::configureTree()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
 
-    loadTexture(pathTrunkTexture, textureTrunk);
-    loadTexture(pathLeavesTexture, textureLeaves);
+    loadTexture(pathTrunkTexture, textureTrunk, true);
+    loadTexture(pathLeavesTexture, textureLeaves, true);
     if (treePositions.size() == 0) {createTreePositions();} // generate positions for trees if not already done
     createLeavesPositions();
 }
@@ -119,44 +119,5 @@ void Tree::createLeavesPositions()
         leavesPositions.push_back(leavesBlock3);
         leavesPositions.push_back(leavesBlock4);
         leavesPositions.push_back(leavesBlock5);
-    }
-}
-
-void Tree::loadTexture(std::string path, unsigned int ID)
-{
-    const char *c = path.c_str(); // convert std::string to const char*
-
-    glGenTextures(1, &ID);
-
-    stbi_set_flip_vertically_on_load(true);
-    int width, height, nrComponents;
-    unsigned char *data = stbi_load(c, &width, &height, &nrComponents, 0);
-    if (data)
-    {
-        GLenum format;
-        if (nrComponents == 1)
-            format = GL_RED;
-        else if (nrComponents == 3)
-            format = GL_RGB;
-        else
-        {
-            format = GL_RGBA;
-        }
-
-        glBindTexture(GL_TEXTURE_2D, ID);
-        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        stbi_image_free(data);
-    }
-    else
-    {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
-        stbi_image_free(data);
     }
 }

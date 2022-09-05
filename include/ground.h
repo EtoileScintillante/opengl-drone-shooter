@@ -2,11 +2,10 @@
  * ground.h
  *
  * Created by: EtoileScintillante
- * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
-#ifndef GROUND_H
-#define GROUND_H
+#ifndef __GROUND_H__
+#define __GROUND_H__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +20,7 @@
 
 #include "shader.h"
 #include "data.h"
+#include "texture_loading.h"
 
 class Ground {
 public:
@@ -63,9 +63,6 @@ private:
 
     /// creates a vector containing 1s and 2s in random order which can be used as the order in which the dirt and stone blocks are rendered to create some variation
     void orderOfBlocks();
-
-    /// loads a texture
-    void loadTexture(std::string path, unsigned int ID);
 };
 
 #endif /*__GROUND__*/

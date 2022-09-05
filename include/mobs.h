@@ -2,11 +2,10 @@
  * mobs.h
  * 
  * Created by EtoileScintillante.
- * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
-#ifndef MOBS.H
-#define MOBS.H
+#ifndef __MOBS_H__
+#define __MOBS_H__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +20,7 @@
 
 #include "shader.h"
 #include "data.h"
+#include "texture_loading.h"
 
 class Mobs {
 public:
@@ -70,9 +70,6 @@ private:
     /// @brief  generates a random spawn position.
     /// @return vector containing random positions.
     std::vector < glm::vec3 > randomPositions();
-
-    /// loads a texture 
-    void loadTexture(std::string path, unsigned int ID);
 
     /// play little animation when mob has been killed.
     void dyingAnimation();

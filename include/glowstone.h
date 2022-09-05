@@ -2,11 +2,10 @@
  * glowstone.h
  *
  * Created by: EtoileScintillante
- * LoadTexture function from: https://learnopengl.com and modified by me.
  */
 
-#ifndef GLOWSTONE_H
-#define GLOWSTONE_H
+#ifndef __GLOWSTONE_H__
+#define __GLOWSTONE_H__
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -21,6 +20,7 @@
 
 #include "shader.h"
 #include "data.h"
+#include "texture_loading.h"
 
 class GlowStone {
 public:
@@ -59,9 +59,6 @@ private:
 
     /// creates a vector containing all the positions. For the purpose of this program, the glow stones are positioned on the side of a tree trunk.
     void createPositions();
-
-    /// loads a texture
-    void loadTexture(std::string path, unsigned int ID);
 };
 
 #endif /*__GLOWSTONE__*/
