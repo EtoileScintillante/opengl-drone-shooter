@@ -6,8 +6,8 @@
  */
 
 
-#ifndef SHADER_H
-#define SHADER_H
+#ifndef __SHADER_H__
+#define __SHADER_H__
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>

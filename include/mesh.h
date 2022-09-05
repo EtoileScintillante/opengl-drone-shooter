@@ -6,8 +6,8 @@
  */
 
 
-#ifndef MESH_H
-#define MESH_H
+#ifndef __MESH_H__
+#define __MESH_H__
 
 #include <glad/glad.h> // holds all OpenGL type declarations
 

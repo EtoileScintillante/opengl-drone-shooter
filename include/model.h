@@ -6,8 +6,8 @@
  */
 
 
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef __MODEL_H__
+#define __MODEL_H__
 
 #include <glad/glad.h> 
 
