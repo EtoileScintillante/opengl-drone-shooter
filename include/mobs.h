@@ -31,6 +31,7 @@ public:
     unsigned int terrainSize;
     float blockSize;
     bool isShot;
+    float currentTime; // needed to play animation
 
     /**
      * @brief Construct a new Mobs object. Also configures it automatically.
@@ -50,8 +51,9 @@ public:
      * @brief draws a mob.
      * 
      * @param shader shader for mob blocks.
+     * @param currentTime current frame.
      */
-    void Spawn(Shader &shader);
+    void Spawn(Shader &shader, float currentFrame);
 
     void collisionDetection();
 
@@ -60,7 +62,7 @@ private:
     unsigned int VAOcreeper, VAOzombie;
     unsigned int VBOcreeper, VBOzombie;
     glm::vec3 currentPosition;
-    std::string currentMob; // has to be chosen in configrureMobs and changed in collisionDetection if mob had been shot
+    std::string currentMob; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot
 
     /// sets up and configures buffers/arrays
     void configureMobs();
@@ -71,6 +73,9 @@ private:
 
     /// loads a texture 
     void loadTexture(std::string path, unsigned int ID);
+
+    /// play little animation when mob has been killed.
+    void dyingAnimation();
 };
 
 #endif /*__MOBS__*/
