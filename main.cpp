@@ -29,6 +29,7 @@
 #include "ground.h"
 #include "glowstone.h"
 #include "gun.h"
+#include "vertex_data.h"
 
 #include <iostream>
 #include <filesystem>
@@ -117,153 +118,22 @@ int main()
     Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
     Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
 
-    // set up vertex data 
+    // get vertex data 
     // ------------------
-    float vertices[] = {
-    // position           
-    -0.5f, -0.5f, -0.5f,    
-     0.5f, -0.5f, -0.5f,   
-     0.5f,  0.5f, -0.5f,   
-     0.5f,  0.5f, -0.5f,   
-    -0.5f,  0.5f, -0.5f,   
-    -0.5f, -0.5f, -0.5f,   
-
-    -0.5f, -0.5f,  0.5f,    
-     0.5f, -0.5f,  0.5f,   
-     0.5f,  0.5f,  0.5f,   
-     0.5f,  0.5f,  0.5f,   
-    -0.5f,  0.5f,  0.5f,   
-    -0.5f, -0.5f,  0.5f,   
-
-    -0.5f,  0.5f,  0.5f,   
-    -0.5f,  0.5f, -0.5f,  
-    -0.5f, -0.5f, -0.5f,  
-    -0.5f, -0.5f, -0.5f,  
-    -0.5f, -0.5f,  0.5f,  
-    -0.5f,  0.5f,  0.5f,  
-
-     0.5f,  0.5f,  0.5f,    
-     0.5f,  0.5f, -0.5f,   
-     0.5f, -0.5f, -0.5f,   
-     0.5f, -0.5f, -0.5f,   
-     0.5f, -0.5f,  0.5f,   
-     0.5f,  0.5f,  0.5f,   
-
-    -0.5f, -0.5f, -0.5f,   
-     0.5f, -0.5f, -0.5f,   
-     0.5f, -0.5f,  0.5f,   
-     0.5f, -0.5f,  0.5f,   
-    -0.5f, -0.5f,  0.5f,   
-    -0.5f, -0.5f, -0.5f,   
-
-    -0.5f,  0.5f, -0.5f,   
-     0.5f,  0.5f, -0.5f,   
-     0.5f,  0.5f,  0.5f,   
-     0.5f,  0.5f,  0.5f,   
-    -0.5f,  0.5f,  0.5f,   
-    -0.5f,  0.5f, -0.5f
-    };
-
-    float textureCoords[] = {
-    // trunk        // dirt        // leaves/stone  // creeper/zombie
-     0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,      0.0f, 0.5f, // side    
-     1.0f, 0.5f,    0.5f, 0.75f,   1.0f, 0.0f,      0.5f, 0.5f,
-     1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,      0.5f, 1.0f,
-     1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,      0.5f, 1.0f,
-     0.5f, 0.72f,   0.0f, 1.0f,    0.0f, 1.0f,      0.0f, 1.0f,
-     0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,      0.0f, 0.5f,
-
-     0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,      0.5f, 0.5f, // side
-     1.0f, 0.5f,    0.5f, 0.75f,   1.0f, 0.0f,      1.0f, 0.5f,
-     1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,      1.0f, 1.0f,
-     1.0f, 0.72f,   0.5f, 1.0f,    1.0f, 1.0f,      1.0f, 1.0f,
-     0.5f, 0.72f,   0.0f, 1.0f,    0.0f, 1.0f,      0.5f, 1.0f,
-     0.5f, 0.5f,    0.0f, 0.75f,   0.0f, 0.0f,      0.5f, 0.5f,
-
-     0.5f, 0.72f,   0.0f, 0.75f,   1.0f, 0.0f,      0.5f, 1.0f, // side
-     1.0f, 0.72f,   0.5f, 0.75f,   1.0f, 1.0f,      1.0f, 1.0f,
-     1.0f, 0.5f,    0.5f, 1.0f,    0.0f, 1.0f,      1.0f, 0.5f,
-     1.0f, 0.5f,    0.5f, 1.0f,    0.0f, 1.0f,      1.0f, 0.5f,
-     0.5f, 0.5f,    0.0f, 1.0f,    0.0f, 0.0f,      0.5f, 0.5f,
-     0.5f, 0.72f,   0.0f, 0.75f,   1.0f, 0.0f,      0.5f, 1.0f,
-
-     0.5f, 0.72f,   0.0f, 0.75f,   1.0f, 0.0f,      0.5f, 1.0f, // side 
-     1.0f, 0.72f,   0.5f, 0.75f,   1.0f, 1.0f,      1.0f, 1.0f,
-     1.0f, 0.5f,    0.5f, 1.0f,    0.0f, 1.0f,      1.0f, 0.5f,
-     1.0f, 0.5f,    0.5f, 1.0f,    0.0f, 1.0f,      1.0f, 0.5f,
-     0.5f, 0.5f,    0.0f, 1.0f,    0.0f, 0.0f,      0.5f, 0.5f,
-     0.5f, 0.72f,   0.0f, 0.75f,   1.0f, 0.0f,      0.5f, 1.0f,
-
-     0.0f, 0.5f,    0.0f, 0.75f,   0.0f, 1.0f,      0.5f, 1.0f, // bottom
-     0.5f, 0.5f,    0.5f, 0.75f,   1.0f, 1.0f,      1.0f, 1.0f,
-     0.5f, 0.745f,  0.5f, 0.90f,   1.0f, 0.0f,      1.0f, 0.5f,
-     0.5f, 0.745f,  0.5f, 0.90f,   1.0f, 0.0f,      1.0f, 0.5f,
-     0.0f, 0.745f,  0.0f, 0.90f,   0.0f, 0.0f,      0.5f, 0.5f,
-     0.0f, 0.5f,    0.0f, 0.75f,   0.0f, 1.0f,      0.5f, 1.0f,
-
-     0.0f, 0.5f,    0.52f, 0.75f,  0.0f, 1.0f,      0.5f, 1.0f, // top
-     0.5f, 0.5f,    1.0f,  0.75f,  1.0f, 1.0f,      1.0f, 1.0f,
-     0.5f, 0.745f,  1.0f,  1.0f,   1.0f, 0.0f,      1.0f, 0.5f,
-     0.5f, 0.745f,  1.0f,  1.0f,   1.0f, 0.0f,      1.0f, 0.5f,
-     0.0f, 0.745f,  0.52f, 1.0f,   0.0f, 0.0f,      0.5f, 0.5f,
-     0.0f, 0.5f,    0.52f, 0.75f,  0.0f, 1.0f,      0.5f, 1.0f
-    };
-
-    float skyboxVertices[] = {
-    // positions          
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
-    };
-
+    std::vector< float > positionData = getPositionData(); // position data for blocks
+    std::vector< float > textureCoords = getTextureCoordsData(); // texture coordinates for blocks
+    std::vector< float > skyboxVertices = getSkyboxPositionData(); // position data for skybox
+    
     // setup vertices for every block
     // ------------------------------
     std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
     int indexPos = 0;
     int indexTex = 0;
-    for (unsigned i = 0; i < 36; i++) // 36 lines of position data (all objects, except model(s) are just blocks)
+    for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
     {   
         Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
         // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
-        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(vertices[indexPos],vertices[indexPos+1], vertices[indexPos + 2]); 
+        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos+1], positionData[indexPos + 2]); 
         // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
         vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
         vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
@@ -293,7 +163,7 @@ int main()
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
     glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, skyboxVertices.size()*sizeof(float), &skyboxVertices[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
