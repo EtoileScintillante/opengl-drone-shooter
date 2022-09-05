@@ -47,7 +47,7 @@ public:
     float MouseSensitivity;
     float Zoom;
     // non flying camera
-    bool nonFlying;
+    bool FPS;
     float time; // create walking motion (little bit up and down)
 
     /// constructor with vectors
@@ -88,7 +88,7 @@ public:
         if (direction == RIGHT)
             Position += Right * velocity;
         
-        if (nonFlying == true)
+        if (FPS == true)
         {
             // make sure the user stays at the ground level
             Position.y = 0;
@@ -130,7 +130,7 @@ public:
     /// when players is not moving create slow up and down movement to make player seem alive
     void passiveMotion(bool isWalking)
     {
-        if ((!isWalking) & nonFlying) {Position.y = sin(glfwGetTime()*2) * 0.02f;}
+        if ((!isWalking) & FPS) {Position.y = sin(glfwGetTime()*2) * 0.02f;}
     }
 
 private:
