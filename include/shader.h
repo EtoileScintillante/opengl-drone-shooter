@@ -5,7 +5,6 @@
  * Modified by: EtoileScintillante
  */
 
-
 #ifndef __SHADER_H__
 #define __SHADER_H__
 
@@ -21,8 +20,7 @@ class Shader
 {
 public:
     unsigned int ID;
-    // constructor generates the shader on the fly
-    // ------------------------------------------------------------------------
+    /// constructor (it generates the shader on the fly)
     Shader(const char* vertexPath, const char* fragmentPath)
     {
         // 1. retrieve the vertex/fragment source code from filePath
@@ -78,74 +76,152 @@ public:
         glDeleteShader(fragment);
 
     }
-    // activate the shader
-    // ------------------------------------------------------------------------
+    /// activates the shader
     void use() const
     { 
         glUseProgram(ID); 
     }
-    // utility uniform functions
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set bool uniform.
+     * 
+     * @param name name of uniform.
+     * @param value bool.
+     */
     void setBool(const std::string &name, bool value) const
     {         
         glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value); 
     }
-    // ------------------------------------------------------------------------
+
+    /**
+     * @brief Set int uniform.
+     * 
+     * @param name name of uniform.
+     * @param value int.
+     */
     void setInt(const std::string &name, int value) const
     { 
         glUniform1i(glGetUniformLocation(ID, name.c_str()), value); 
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set float uniform.
+     * 
+     * @param name name of uniform.
+     * @param value float.
+     */
     void setFloat(const std::string &name, float value) const
     { 
         glUniform1f(glGetUniformLocation(ID, name.c_str()), value); 
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set vec2 uniform: glm::vec2.
+     * 
+     * @param name name of uniform.
+     * @param value glm::vec2.
+     */
     void setVec2(const std::string &name, const glm::vec2 &value) const
     { 
         glUniform2fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]); 
     }
+
+    /**
+     * @brief Set vec2 uniform: x, y.
+     * 
+     * @param name name of uniform.
+     * @param x x.
+     * @param y y.
+     */
     void setVec2(const std::string &name, float x, float y) const
     { 
         glUniform2f(glGetUniformLocation(ID, name.c_str()), x, y); 
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set vec3 uniform: glm::vec3.
+     * 
+     * @param name name of uniform.
+     * @param value glm::vec3.
+     */
     void setVec3(const std::string &name, const glm::vec3 &value) const
     { 
         glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]); 
     }
+
+    /**
+     * @brief Set vec3 uniform: x, y, z.
+     * 
+     * @param name name of uniform.
+     * @param x x.
+     * @param y y.
+     * @param z z.
+     */
     void setVec3(const std::string &name, float x, float y, float z) const
     { 
         glUniform3f(glGetUniformLocation(ID, name.c_str()), x, y, z); 
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set vec4 uniform: glm::vec4.
+     * 
+     * @param name name of uniform.
+     * @param value glm::vec4.
+     */
     void setVec4(const std::string &name, const glm::vec4 &value) const
     { 
         glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]); 
     }
+
+    /**
+     * @brief Set vec4 uniform: x, y, z, w.
+     * 
+     * @param name name of uniform.
+     * @param x x.
+     * @param y y.
+     * @param z z.
+     * @param w w.
+     */
     void setVec4(const std::string &name, float x, float y, float z, float w) const
     { 
         glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w); 
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set mat2 uniform.
+     * 
+     * @param name name of uniform.
+     * @param mat glm::mat2.
+     */
     void setMat2(const std::string &name, const glm::mat2 &mat) const
     {
         glUniformMatrix2fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
-    // ------------------------------------------------------------------------
+
+    /**
+     * @brief Set mat3 uniform.
+     * 
+     * @param name name of uniform.
+     * @param mat glm::mat3.
+     */
     void setMat3(const std::string &name, const glm::mat3 &mat) const
     {
         glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
-    // ------------------------------------------------------------------------
+    
+    /**
+     * @brief Set mat4 uniform.
+     * 
+     * @param name name of uniform.
+     * @param mat glm::mat4.
+     */
     void setMat4(const std::string &name, const glm::mat4 &mat) const
     {
         glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
     }
 
 private:
-    // utility function for checking shader compilation/linking errors.
-    // ------------------------------------------------------------------------
+    /// utility function for checking shader compilation/linking errors.
     void checkCompileErrors(GLuint shader, std::string type)
     {
         GLint success;

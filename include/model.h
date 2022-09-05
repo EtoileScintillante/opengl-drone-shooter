@@ -5,7 +5,6 @@
  * Modified by: EtoileScintillante
  */
 
-
 #ifndef __MODEL_H__
 #define __MODEL_H__
 
@@ -113,6 +112,8 @@ private:
 
     /* Processing a mesh is a 3-part process: retrieve all the vertex data, retrieve the mesh's indices, and finally retrieve the relevant material data. 
     The processed data is stored in one of the 3 vectors and from those a Mesh is created and returned to the function's caller */
+
+    /// processes the data of a mesh
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
     {
         // data to fill

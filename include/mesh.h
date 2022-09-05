@@ -5,7 +5,6 @@
  * Modified by: EtoileScintillante
  */
 
-
 #ifndef __MESH_H__
 #define __MESH_H__
 
@@ -54,7 +53,7 @@ public:
     std::vector<Texture>      textures;
     unsigned int VAO;
 
-    // constructor (here we give the mesh all the necessary data)
+    /// constructor (here we give the mesh all the necessary data)
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
     {
         this->vertices = vertices;
@@ -65,7 +64,7 @@ public:
         setupMesh();
     }
 
-    // render the mesh (here we give a shader to the Draw function; by passing the shader to the mesh we can set several uniforms before drawing (like linking samplers to texture units))
+    /// render the mesh (here we give a shader to the Draw function; by passing the shader to the mesh we can set several uniforms before drawing (like linking samplers to texture units))
     void Draw(Shader &shader) 
     {
         // bind appropriate textures
@@ -107,7 +106,7 @@ private:
     // render data 
     unsigned int VBO, EBO;
 
-    // initializes all the buffer objects/arrays
+    /// initializes all the buffer objects/arrays
     void setupMesh()
     {
         // create buffers/arrays
