@@ -67,7 +67,10 @@ private:
 
     /// @brief  generates a random spawn position.
     /// @return vector containing random positions.
-    std::vector < glm::vec3 > randomPos();
+    std::vector < glm::vec3 > randomPositions();
+
+    /// loads a texture 
+    void loadTexture(std::string path, unsigned int ID);
 };
 
 #endif /*__MOBS__*/

@@ -50,7 +50,7 @@ public:
     bool nonFlying;
     float time; // create walking motion (little bit up and down)
 
-    // constructor with vectors
+    /// constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
         Position = position;
@@ -59,7 +59,7 @@ public:
         Pitch = pitch;
         updateCameraVectors();
     }
-    // constructor with scalar values
+    /// constructor with scalar values
     Camera(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
     {
         Position = glm::vec3(posX, posY, posZ);
@@ -69,13 +69,13 @@ public:
         updateCameraVectors();
     }
 
-    // returns the view matrix calculated using Euler Angles and the LookAt Matrix
+    /// returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix()
     {
         return glm::lookAt(Position, Position + Front, Up);
     }
 
-    // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
+    /// processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
@@ -92,11 +92,10 @@ public:
         {
             // make sure the user stays at the ground level
             Position.y = 0;
-            //Position.y = sin(time*10) * 0.04f; // <-- simulate walking (slight up and down movement)
         }
     }
 
-    // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
+    /// processes input received from a mouse input system. Expects the offset value in both the x and y direction.
     void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true)
     {
         xoffset *= MouseSensitivity;
@@ -118,7 +117,7 @@ public:
         updateCameraVectors();
     }
 
-    // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
+    /// processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
     void ProcessMouseScroll(float yoffset)
     {
         Zoom -= (float)yoffset;
@@ -128,8 +127,14 @@ public:
             Zoom = 45.0f; 
     }
 
+    /// when players is not moving create slow up and down movement to make player seem alive
+    void passiveMotion(bool isWalking)
+    {
+        if ((!isWalking) & nonFlying) {Position.y = sin(glfwGetTime()*2) * 0.02f;}
+    }
+
 private:
-    // calculates the front vector from the Camera's (updated) Euler Angles
+    /// calculates the front vector from the Camera's (updated) Euler Angles
     void updateCameraVectors()
     {
         // calculate the new Front vector
@@ -143,4 +148,5 @@ private:
         Up    = glm::normalize(glm::cross(Right, Front));
     }
 };
+
 #endif
