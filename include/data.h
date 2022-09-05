@@ -5,8 +5,8 @@
  * This struct represents vertex data.
  */
 
-#ifndef DATA_H
-#define DATA_H
+#ifndef __DATA_H__
+#define __DATA_H__
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -20,4 +20,4 @@ struct Data {
     glm::vec2 TexCoords;
 };
 
-#endif
+#endif /*__DATA__*/
