@@ -25,7 +25,7 @@ enum Camera_Movement {
 // Default camera values
 const float YAW         = -90.0f;
 const float PITCH       =  0.0f;
-const float SPEED       =  2.5f;
+const float SPEED       =  4.0f; // 2.5
 const float SENSITIVITY =  0.1f;
 const float ZOOM        =  45.0f;
 
@@ -91,7 +91,8 @@ public:
         if (nonFlying == true)
         {
             // make sure the user stays at the ground level
-            Position.y = sin(time*10) * 0.04f; // <-- simulate walking (slight up and down movement)
+            Position.y = 0;
+            //Position.y = sin(time*10) * 0.04f; // <-- simulate walking (slight up and down movement)
         }
     }
 
