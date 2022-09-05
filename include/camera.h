@@ -48,8 +48,8 @@ public:
     float Zoom;
     // non flying camera
     bool FPS;
-    // handgun related
-    float currentFrame; // needed to create animations
+    // time
+    float currentFrame; 
 
     /// constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -132,12 +132,6 @@ public:
     void passiveMotion(bool isWalking)
     {
         if ((!isWalking) & FPS) {Position.y = sin(currentFrame*2) * 0.02f;}
-    }
-
-    void walkingMotion(float &gunY, float &gunZ)
-    {
-        gunZ += sin(currentFrame*15) * 0.004f;
-        gunY += sin(currentFrame*15) * 0.004f;
     }
 
 private:
