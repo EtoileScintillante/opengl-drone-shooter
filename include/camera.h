@@ -48,7 +48,8 @@ public:
     float Zoom;
     // non flying camera
     bool FPS;
-    float time; // create walking motion (little bit up and down)
+    // handgun related
+    float currentFrame; // needed to create animations
 
     /// constructor with vectors
     Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -130,7 +131,13 @@ public:
     /// when players is not moving create slow up and down movement to make player seem alive
     void passiveMotion(bool isWalking)
     {
-        if ((!isWalking) & FPS) {Position.y = sin(glfwGetTime()*2) * 0.02f;}
+        if ((!isWalking) & FPS) {Position.y = sin(currentFrame*2) * 0.02f;}
+    }
+
+    void walkingMotion(float &gunY, float &gunZ)
+    {
+        gunZ += sin(currentFrame*15) * 0.004f;
+        gunY += sin(currentFrame*15) * 0.004f;
     }
 
 private:
