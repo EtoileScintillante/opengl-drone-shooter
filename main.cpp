@@ -39,16 +39,13 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
-void updateGunMovement();
-unsigned int loadTexture(const char *path);
-unsigned int loadCubemap(std::vector<std::string> faces);
 
 // settings screen
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(25.0f, 0.0f, 25.0f));
+Camera camera(glm::vec3(25.0f, 0.0f, 25.0f)); // starting position of camera (player)
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -60,21 +57,21 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-const unsigned int N_GLOWSTONES = 10; 
-const unsigned int N_TREES = 25;
+const unsigned int N_GLOWSTONES = 10; // number of glowstones
+const unsigned int N_TREES = 25; // number of trees
 const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
-const unsigned int HEIGHT_TREE = 5;
+const unsigned int HEIGHT_TREE = 5; 
 const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of ground
 
 // handgun
-const float gunBaseX = 0.45f;
-const float gunBaseY = -0.5f;
-const float gunBaseZ = -1.5;
-const float gunBaseRotation = 95.0f; 
-const float gunScalefactor = 0.6f;
-glm::vec3 gunPosition = glm::vec3(gunBaseX, gunBaseY, gunBaseZ); // initialize gun position here so we can access it in function outside of main
-bool shot;
+glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // base position for gun
+const float gunBaseRotation = 95.0f; // y axis rotation to make gun point slightly inwards
+const float gunScalefactor = 0.6f; // make gun smaller
+bool shot = false; // has player taken a shot? (pressed space)
+bool startRecoil; // start recoil animation?
+bool goDown = false; // needed for recoil animation --> gun needs to move down if true
+float angle = 0; // needed for recoil animation, this angle will be updated with every new frame to make the gun rotate up and then down
 
 int main()
 {
@@ -249,7 +246,7 @@ int main()
         // render glow stones
         glowstones.Draw(blockShader);
 
-        // view and projection transformations for leaveShader
+        // view and projection transformations for leaveShader (we need to set these uniforms before drawing trees)
         leaveShader.use();
         leaveShader.setMat4("view", view);
         leaveShader.setMat4("projection", projection); 
@@ -258,16 +255,30 @@ int main()
         trees.Draw(blockShader, leaveShader);
 
         // view and model transformation for handGunShader
-        configureGunShader(handGunShader, gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation);
-        
-        // render gun 
-        drawhandGun(handGun, handGunShader);
+        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation); // initialize gun model matrix
+        handGunShader.setMat4("view", camera.GetViewMatrix()); 
+        handGunShader.setMat4("model", gunModel);
 
-        if (shot == true)
-        {
-            handGun.drawSpecificMesh(handGunShader, 5);
+        // render gun in base position
+        if (!shot)
+        { 
+            drawhandGun(handGun, handGunShader); 
         }
-        shot = false;
+
+        // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
+        if (shot == true && startRecoil == false)
+        {
+            handGun.drawSpecificMesh(handGunShader, 5); 
+            startRecoil = true;
+        }
+        
+        // start the recoil animation
+        if (startRecoil) 
+        {
+            if (!goDown) {startRecoilAnimation(handGunShader, gunModel, angle, goDown);} // start moving up
+            else {goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil);} // start moving down
+            drawhandGun(handGun, handGunShader); // render upwards or downwards rotating gun
+        } 
 
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
