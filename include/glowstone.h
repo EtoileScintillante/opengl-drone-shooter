@@ -45,9 +45,11 @@ public:
     /**
      * @brief draw the glow stone(s). 
      * 
-     * @param shader shader.
+     * @param shader shader for glow stone.
+     * @param cameraView camera view matrix.
+     * @param projection projection matrix.
      */
-    void Draw(Shader &shader);
+    void Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection);
 
 private:
     unsigned int textureGlowStone = 5;

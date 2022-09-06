@@ -12,8 +12,14 @@ Ground::Ground(std::vector<Data> verticesDirt, std::vector<Data> verticesStone, 
     configureGround();
 }
 
-void Ground::Draw(Shader &shader)
+void Ground::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
 {
+    // set uniforms
+    shader.use();
+    shader.setMat4("view", cameraView);
+    shader.setMat4("projection", projection); 
+    
+    // draw
     int indexOrder = 0;
     for (unsigned int i = 0; i < terrainSize; i++)
     {

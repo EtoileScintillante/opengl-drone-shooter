@@ -15,10 +15,15 @@ Tree::Tree(std::vector<Data> verticesTrunk, std::vector<Data> verticesLeaves, st
     configureTree();
 }
 
-void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves)
-{
+void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView, glm::mat4 projection)
+{   
+    // set uniforms
+    shaderTrunk.use();
+    shaderTrunk.setMat4("view", cameraView);
+    shaderTrunk.setMat4("projection", projection); 
+    //haderTrunk.setInt("ourTexture", 0);
+
     // first render tree trunk(s)
-    shaderTrunk.setInt("ourTexture", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureTrunk);
     glBindVertexArray(VAOtrunk);
@@ -35,8 +40,13 @@ void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves)
         }
     }
 
+    // set uniforms
+    shaderLeaves.use();
+    shaderLeaves.setMat4("view", cameraView);
+    shaderLeaves.setMat4("projection", projection); 
+    //shaderLeaves.setInt("ourTexture", 0);
+
     // then render leaves
-    shaderLeaves.setInt("ourTexture", 0);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureLeaves);
     glBindVertexArray(VAOleaves);

@@ -11,8 +11,14 @@ GlowStone::GlowStone(std::vector<Data> verticesGlowStone, std::string texturePat
     configureGlowStone();
 }
 
-void GlowStone::Draw(Shader &shader)
+void GlowStone::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
 {
+    // set uniforms
+    shader.use();
+    shader.setMat4("view", cameraView);
+    shader.setMat4("projection", projection); 
+
+    // draw
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureGlowStone);
     glBindVertexArray(VAO);

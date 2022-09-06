@@ -48,8 +48,10 @@ public:
      * @brief draw the ground. 
      * 
      * @param shader shader.
+     * @param cameraView camera view matrix.
+     * @param projection projection matrix.
      */
-    void Draw(Shader &shader);
+    void Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection);
 
 private:
     std::vector < int > blockOrder;

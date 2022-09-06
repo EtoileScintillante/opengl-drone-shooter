@@ -56,8 +56,10 @@ public:
      * 
      * @param shaderTrunk shader for trunk block.
      * @param shaderLeaves shader for leaves block. 
+     * @param cameraView camera view matrix.
+     * @param projection projection matrix.
      */
-    void Draw(Shader &shaderTrunk, Shader &shaderLeaves);
+    void Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView, glm::mat4 projection);
 
 private:
     std::vector < glm::vec3 > leavesPositions;
