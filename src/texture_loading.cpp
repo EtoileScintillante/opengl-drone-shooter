@@ -1,10 +1,9 @@
 #include "texture_loading.h"
 
-unsigned int loadCubemap(std::vector<std::string> faces)
+void loadCubemap(std::vector<std::string> faces, unsigned int ID)
 {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    glGenTextures(1, &ID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
 
     stbi_set_flip_vertically_on_load(false); 
     int width, height, nrChannels;
@@ -27,8 +26,6 @@ unsigned int loadCubemap(std::vector<std::string> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-
-    return textureID;
 }
 
 void loadTexture(std::string path, unsigned int ID, bool flipVertically)

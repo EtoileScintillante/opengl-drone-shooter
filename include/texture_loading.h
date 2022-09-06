@@ -27,9 +27,9 @@
  * -Z (back)
  * 
  * @param faces paths to the 6 sides (faces) of the cubemap. Paths must be ordered as stated in function description.
- * @return unsigned int (texture ID)
+ * @param ID unsigned int texture ID
  */
-unsigned int loadCubemap(std::vector<std::string> faces);
+void loadCubemap(std::vector<std::string> faces, unsigned int ID);
 
 /**
  * @brief loads a texture.
