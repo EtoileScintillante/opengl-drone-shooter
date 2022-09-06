@@ -55,15 +55,6 @@ public:
     {
         meshes[index].Draw(shader);
     }
-
-    /// draws handgun (without the fire and bullet)
-    void drawhandGun(Shader &shader)
-    {
-        drawSpecificMesh(shader, 1);
-        drawSpecificMesh(shader, 3);
-        drawSpecificMesh(shader, 4);
-        drawSpecificMesh(shader, 6);
-    }
     
 private:
     /// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
