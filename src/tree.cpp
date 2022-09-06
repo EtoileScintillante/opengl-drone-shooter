@@ -21,7 +21,6 @@ void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView,
     shaderTrunk.use();
     shaderTrunk.setMat4("view", cameraView);
     shaderTrunk.setMat4("projection", projection); 
-    //haderTrunk.setInt("ourTexture", 0);
 
     // first render tree trunk(s)
     glActiveTexture(GL_TEXTURE0);
@@ -44,7 +43,6 @@ void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView,
     shaderLeaves.use();
     shaderLeaves.setMat4("view", cameraView);
     shaderLeaves.setMat4("projection", projection); 
-    //shaderLeaves.setInt("ourTexture", 0);
 
     // then render leaves
     glActiveTexture(GL_TEXTURE0);
