@@ -166,25 +166,14 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         
-        // view and projection transformations for blockShader
-        blockShader.use();
-        glm::mat4 view = camera.GetViewMatrix();
-        blockShader.setMat4("view", view);
-        blockShader.setMat4("projection", projection); 
-
         // render ground
-        ground.Draw(blockShader);
+        ground.Draw(blockShader, camera.GetViewMatrix(), projection);
 
         // render glow stones
-        glowstones.Draw(blockShader);
-
-        // view and projection transformations for leaveShader (we need to set these uniforms before drawing trees)
-        leaveShader.use();
-        leaveShader.setMat4("view", view);
-        leaveShader.setMat4("projection", projection); 
+        glowstones.Draw(blockShader, camera.GetViewMatrix(), projection);
 
         // render trees
-        trees.Draw(blockShader, leaveShader);
+        trees.Draw(blockShader, leaveShader, camera.GetViewMatrix(), projection);
 
         // view and model transformation for handGunShader
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation); // initialize gun model matrix
