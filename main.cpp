@@ -67,8 +67,13 @@ const unsigned int HEIGHT_TREE = 5;
 const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of ground
 
-// handgun 
-glm::vec3 gunPosition = glm::vec3(0.45f,-0.5f,-1.5f); // initialize gun position here so we can access it in function outside of main
+// handgun
+const float gunBaseX = 0.45f;
+const float gunBaseY = -0.5f;
+const float gunBaseZ = -1.5;
+const float gunBaseRotation = 95.0f; 
+const float gunScalefactor = 0.6f;
+glm::vec3 gunPosition = glm::vec3(gunBaseX, gunBaseY, gunBaseZ); // initialize gun position here so we can access it in function outside of main
 bool shot;
 
 int main()
@@ -253,18 +258,10 @@ int main()
         trees.Draw(blockShader, leaveShader);
 
         // view and model transformation for handGunShader
-        glm::mat4 gunModel = glm::mat4(1.0); 
-        gunModel = glm::translate(gunModel, gunPosition); // place gun in bottom right corner
-        gunModel = glm::rotate(gunModel, glm::radians(95.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate gun so it points inwards
-        //float angle = glfwGetTime();
-        //std::cout << angle << std::endl;
-        //gunModel = glm::rotate(gunModel, glm::radians(angle), glm::vec3(0.0f,  0.0f,1.0f)); // rotate gun so it points inwards
-        gunModel = glm::scale(gunModel, glm::vec3(0.6f, 0.55f, 0.6f)); // make gun a bit smaller
-        handGunShader.setMat4("view", camera.GetViewMatrix()); 
-        handGunShader.setMat4("model", glm::inverse(camera.GetViewMatrix()) * gunModel); 
+        configureGunShader(handGunShader, gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation);
         
         // render gun 
-        handGun.drawhandGun(handGunShader);
+        drawhandGun(handGun, handGunShader);
 
         if (shot == true)
         {
