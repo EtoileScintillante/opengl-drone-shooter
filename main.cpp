@@ -12,14 +12,6 @@
 // optionally: use instancing (for better performance since it requires less draw calls, but this is game is very small so it is not really necessary)
 // optionally: put functions (which are now at the bottom of the file) in a header file to clean up main
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stb_image.h>
-
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
 #include "shader.h"
 #include "camera.h"
 #include "model.h"
@@ -31,10 +23,6 @@
 #include "vertex_data.h"
 #include "texture_loading.h"
 #include "skybox.h"
-
-#include <iostream>
-#include <filesystem>
-#include <ctime>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -148,7 +136,7 @@ int main()
 
     // load handgun model
     // ------------------
-    Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
+    Model handGun("resources/models/handgun/Handgun_obj.obj");
 
     // camera configuration
     // --------------------
