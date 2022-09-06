@@ -21,12 +21,23 @@
 void walkingMotion(float &gunY, float &gunZ, float currentFrame);
 
 /**
- * @brief draws the handgun model.
+ * @brief draws the gun model.
  * 
  * @param gun gun model.
- * @param shader shader for gun model.
+ * @param[out] shader shader for gun model.
  */
 void drawhandGun(Model gun, Shader &shader);
+
+/**
+ * @brief calculates the model matrix for the gun and sets all the uniforms for the handgun shader.
+ * 
+ * @param[out] shader shader for gun model.
+ * @param gunPosition position vector for gun.
+ * @param cameraView camera view matrix.
+ * @param scaleFactor make gun smaller/larger by a certain factor.
+ * @param rotation y-axis rotation (counter clockwise).
+ */
+void configureGunShader(Shader &shader,  glm::vec3 gunPosition, glm::mat4 cameraView, float scaleFactor, float rotation);
 
 #endif /*__GUN__*/
 
