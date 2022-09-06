@@ -6,7 +6,6 @@
 // add collision detection (needed: gun direction, fragment position and knowing if fragment belongs to mob) 
 // add some spawning mechanism: only one mob per time. When mob is hit, let new one spawn in different position 
 // add some small animation when mob is killed (maybe make mob explode?)
-// add recoil to gun when space is pressed (space = shoot)
 // add score (needed: global variable score (render top left) [text rendering]
 // add instructions: movement = w,a,s,d. shoot = space (render top right) [text rendering]
 // optionally: limited bullets (so adding a reload function + adding bullet counter)
@@ -31,6 +30,7 @@
 #include "gun.h"
 #include "vertex_data.h"
 #include "texture_loading.h"
+#include "skybox.h"
 
 #include <iostream>
 #include <filesystem>
@@ -39,6 +39,7 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
+void setupData();
 
 // settings screen
 const unsigned int SCR_WIDTH = 800;
@@ -63,6 +64,9 @@ const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TE
 const unsigned int HEIGHT_TREE = 5; 
 const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of ground
+
+// vectors containg all the data needed for rendering the blocks
+std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
 
 // handgun
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // base position for gun
@@ -121,97 +125,37 @@ int main()
     Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
     Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
 
-    // get vertex data 
-    // ------------------
-    std::vector< float > positionData = getPositionData(); // position data for blocks
-    std::vector< float > textureCoords = getTextureCoordsData(); // texture coordinates for blocks
-    std::vector< float > skyboxVertices = getSkyboxPositionData(); // position data for skybox
-    
-    // setup vertices for every block
-    // ------------------------------
-    std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
-    int indexPos = 0;
-    int indexTex = 0;
-    for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
-    {   
-        Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
-        // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
-        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos+1], positionData[indexPos + 2]); 
-        // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
-        vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
-        vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
-        vertexDirt.TexCoords = glm::vec2(textureCoords[indexTex + 2], textureCoords[indexTex + 3]);
-        vertexCreeper.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7]);
-        // zombue tex coords are almost the same as creeper tex coords, the only difference is that each y in zombie tex coords is 0.5f lower than y in creeper tex coords
-        vertexZombie.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7] - 0.5f); // subtract 0.5f from y value
-        // move to the next line in the arrays
-        indexPos += 3;
-        indexTex += 8; 
-        // push data into vectors
-        trunkVertices.push_back(vertexTrunk);
-        leavesVertices.push_back(vertexLeaves);
-        dirtVertices.push_back(vertexDirt);
-        glowStoneVertices.push_back(vertexLeaves);
-        stoneVertices.push_back(vertexLeaves);
-        creeperVertices.push_back(vertexCreeper);
-        zombieVertices.push_back(vertexZombie);
-    }
+    // initialize block objects
+    // ------------------------
+    setupData();
 
-    // buffers for skybox
-    // ------------------
-    unsigned int skyboxVBO; 
-    unsigned int skyboxVAO;
-
-    glGenVertexArrays(1, &skyboxVAO);
-    glGenBuffers(1, &skyboxVBO);
-    glBindVertexArray(skyboxVAO);
-    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
-    glBufferData(GL_ARRAY_BUFFER, skyboxVertices.size()*sizeof(float), &skyboxVertices[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-    // block textures
-    // --------------
     std::string texturePath = "resources/textures/";
-    std::string pathTrunkTex = texturePath + "blocks.JPG"; // also for dirt blocks
+    std::string pathTrunkDirtTex = texturePath + "blocks.JPG"; 
     std::string pathLeavesTex = texturePath + "leaves.png";
     std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
     std::string pathStoneTex = texturePath + "stone.jpg";
 
-    // initialize block objects
-    // ------------------------
-    Tree trees(trunkVertices, leavesVertices, pathTrunkTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
-    Ground ground(dirtVertices, stoneVertices, pathTrunkTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
+    Tree trees(trunkVertices, leavesVertices, pathTrunkDirtTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
+    Ground ground(dirtVertices, stoneVertices, pathTrunkDirtTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
     GlowStone glowstones(glowStoneVertices, pathGlowStoneTex, trees.treePositions, N_GLOWSTONES, 3);
 
-    // load skybox texture
-    // -------------------
-    std::vector<std::string> faces
-    {
-        std::filesystem::path("resources/skybox/right.jpg"),
-        std::filesystem::path("resources/skybox/left.jpg"),
-        std::filesystem::path("resources/skybox/top.jpg"),
-        std::filesystem::path("resources/skybox/bottom.jpg"),
-        std::filesystem::path("resources/skybox/front.jpg"),
-        std::filesystem::path("resources/skybox/back.jpg")
-    };
-    unsigned int skyboxTexture = loadCubemap(faces);
+    // initialize skybox object
+    // ------------------------
+    std::vector< float > skyboxVertices = getSkyboxPositionData(); 
+    std::vector< std::string > filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
+    std::string dirName = "resources/skybox";
+    SkyBox skybox(skyboxVertices, filenames, dirName);
 
-    // skybox shader configuration
-    // ---------------------------
-    skyboxShader.use();
-    skyboxShader.setInt("skybox", 0);
-
-    // load model(s)
-    // -------------
+    // load handgun model
+    // ------------------
     Model handGun(std::filesystem::path("resources/models/handgun/Handgun_obj.obj"));
 
     // camera configuration
     // --------------------
     camera.FPS = true; 
 
-    // set projection matrix (this one never changes so we do it outside the render loop)
-    // ----------------------------------------------------------------------------------
+    // set projection matrix 
+    // ---------------------
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
     
     // render loop
@@ -283,19 +227,9 @@ int main()
         // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
         glDepthFunc(GL_LEQUAL);  
 
-        // view and projection transformations for skyboxShader
-        skyboxShader.use();
-        view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // remove translation from the view matrix
-        skyboxShader.setMat4("view", view);
-        skyboxShader.setMat4("projection", projection);
-
-        // render skybox as last (for better perfomance)
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
-
+        // render skybox
+        skybox.Draw(skyboxShader, camera.GetViewMatrix(), projection);
+    
         // set depth function back to default
         glDepthFunc(GL_LESS); 
 
@@ -303,10 +237,6 @@ int main()
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
-    // optional: de-allocate all resources once they've outlived their purpose:
-    glDeleteVertexArrays(1, &skyboxVAO);
-    glDeleteBuffers(1, &skyboxVBO);
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
@@ -381,3 +311,38 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
+
+// setup vertex data for all the blocks
+// ------------------------------------
+void setupData()
+{
+    std::vector< float > positionData = getPositionData(); // position data for blocks
+    std::vector< float > textureCoords = getTextureCoordsData(); // texture coordinates for blocks
+    
+    int indexPos = 0;
+    int indexTex = 0;
+    for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
+    {   
+        Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
+        // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
+        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos+1], positionData[indexPos + 2]); 
+        // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
+        vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
+        vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
+        vertexDirt.TexCoords = glm::vec2(textureCoords[indexTex + 2], textureCoords[indexTex + 3]);
+        vertexCreeper.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7]);
+        // zombue tex coords are almost the same as creeper tex coords, the only difference is that each y in zombie tex coords is 0.5f lower than y in creeper tex coords
+        vertexZombie.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7] - 0.5f); // subtract 0.5f from y value
+        // move to the next line in the arrays
+        indexPos += 3;
+        indexTex += 8; 
+        // push data into vectors
+        trunkVertices.push_back(vertexTrunk);
+        leavesVertices.push_back(vertexLeaves);
+        dirtVertices.push_back(vertexDirt);
+        glowStoneVertices.push_back(vertexLeaves);
+        stoneVertices.push_back(vertexLeaves);
+        creeperVertices.push_back(vertexCreeper);
+        zombieVertices.push_back(vertexZombie);
+    }
+} 
