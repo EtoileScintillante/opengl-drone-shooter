@@ -11,6 +11,7 @@ SkyBox::SkyBox(std::vector< float > skyboxVertices, std::vector< std::string > f
 
 void SkyBox::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
 {
+    // set uniforms
     shader.use();
     glm::mat4 view = glm::mat4(glm::mat3(cameraView)); // remove translation from the view matrix
     shader.setMat4("view", view);
