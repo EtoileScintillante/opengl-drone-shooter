@@ -46,8 +46,8 @@ public:
      * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
      * @param groundY y value of ground.
      * @param blockSize size of a block.
-     * @param minHeight minimum y value for floating position of mob.
-     * @param maxheight maximum y value for floating position of mob.
+     * @param minHeight minimum y value for floating height of mob.
+     * @param maxheight maximum y value for floating height of mob.
      */
     Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight);
 
@@ -55,10 +55,11 @@ public:
      * @brief draws a mob.
      * 
      * @param shader shader for mob blocks.
+     * @param time current time/frame, to let mob rotate over time (y - axis rotation).
      * @param cameraView camera view matrix.
      * @param projection projection matrix.
      */
-    void Spawn(Shader &shader, glm::mat4 cameraView, glm::mat4 projection);
+    void Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 projection);
 
     // TODO
     void collisionDetection();
@@ -82,6 +83,11 @@ private:
 
     /// chooses a mob (zombie or creeper).
     void chooseMob();
+
+    /// @brief checks whether getRandomPos created a position that overlaps with a position of a tree.
+    /// @param position position vector.
+    /// @return true if there is an overlap, else false.
+    bool spawnsInTree(glm::vec3 position);
 };
 
 #endif /*__MOBS__*/
