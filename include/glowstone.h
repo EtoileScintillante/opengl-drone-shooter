@@ -29,7 +29,7 @@ public:
     std::vector < glm::vec3 > treePositions;
     std::vector < glm::vec3 > glowStonePositions;
     unsigned int numGlowStones;
-    unsigned int height;
+    float height;
 
    /**
     * @brief Construct a new GlowStone object. Also configures the glow stone automatically.
@@ -40,7 +40,7 @@ public:
     * @param numGlowStones number of glow stones.
     * @param height floating height of glow stone(s). Measured from the the bottom trunk block of a tree.
     */
-    GlowStone(std::vector < Data > verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, unsigned int height);
+    GlowStone(std::vector < Data > verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height);
 
     /**
      * @brief draw the glow stone(s). 

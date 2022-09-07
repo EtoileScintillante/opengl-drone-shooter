@@ -1,6 +1,6 @@
 #include "glowstone.h"
 
-GlowStone::GlowStone(std::vector<Data> verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, unsigned int height)
+GlowStone::GlowStone(std::vector<Data> verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height)
 {
     this->verticesGlowStone = verticesGlowStone;
     this->texturePathGlowStone = texturePathGlowStone;
