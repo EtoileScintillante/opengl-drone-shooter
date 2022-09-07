@@ -96,7 +96,6 @@ void Ground::orderOfBlocks()
     std::uniform_int_distribution<> numbers(1, 2); 
     for (unsigned int i = 0; i < (terrainSize * terrainSize); i++)
     {
-        srand(time(NULL));
         int choice = numbers(gen);
         blockOrder.push_back(choice);
     }
