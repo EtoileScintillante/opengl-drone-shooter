@@ -23,6 +23,7 @@
 #include "vertex_data.h"
 #include "texture_loading.h"
 #include "skybox.h"
+#include "mobs.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -49,7 +50,8 @@ float lastFrame = 0.0f;
 const unsigned int N_GLOWSTONES = 10; // number of glowstones
 const unsigned int N_TREES = 25; // number of trees
 const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
-const unsigned int HEIGHT_TREE = 5; 
+const unsigned int HEIGHT_TREE = 5;
+const float HEIGHT_GLOWSTONES = 3.0;
 const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of ground
 
@@ -64,6 +66,10 @@ bool shot = false; // has player taken a shot? (pressed space)
 bool startRecoil; // start recoil animation?
 bool goDown = false; // needed for recoil animation --> gun needs to move down if true
 float angle = 0; // needed for recoil animation, this angle will be updated with every new frame to make the gun rotate up and then down
+
+// mobs
+const float MIN_HEIGHT = 2.0f;
+const float MAX_HEIGHT = 5.0f;
 
 int main()
 {
@@ -122,10 +128,12 @@ int main()
     std::string pathLeavesTex = texturePath + "leaves.png";
     std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
     std::string pathStoneTex = texturePath + "stone.jpg";
+    std::string pathMobsTex = texturePath + "mobs.JPG"; 
 
     Tree trees(trunkVertices, leavesVertices, pathTrunkDirtTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
     Ground ground(dirtVertices, stoneVertices, pathTrunkDirtTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
-    GlowStone glowstones(glowStoneVertices, pathGlowStoneTex, trees.treePositions, N_GLOWSTONES, 3);
+    GlowStone glowstones(glowStoneVertices, pathGlowStoneTex, trees.treePositions, N_GLOWSTONES, HEIGHT_GLOWSTONES);
+    Mobs mobs(zombieVertices, creeperVertices, trees.treePositions, pathMobsTex, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, MIN_HEIGHT, MAX_HEIGHT);
 
     // initialize skybox object
     // ------------------------
@@ -174,6 +182,9 @@ int main()
 
         // render trees
         trees.Draw(blockShader, leaveShader, camera.GetViewMatrix(), projection);
+
+        // render a mob
+        mobs.Spawn(blockShader, currentFrame, camera.GetViewMatrix(), projection);
 
         // view and model transformation for handGunShader
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation); // initialize gun model matrix
