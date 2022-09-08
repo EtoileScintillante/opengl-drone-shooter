@@ -90,7 +90,7 @@ void Mobs::getRandomPos()
     std::uniform_int_distribution<> xzPlane(1, terrainSize - 1); // define the range for x and z axis
     std::uniform_int_distribution<>yPlane(minHeight, maxHeight); // define the range for y axis
 
-    currentPosition = glm::vec3(xzPlane(gen), yPlane(gen), xzPlane(gen)); // create random pos
+    currentPosition = glm::vec3(xzPlane(gen), yPlane(gen) + groundY, xzPlane(gen)); // create random pos
 }
 
 void Mobs::chooseMob()
