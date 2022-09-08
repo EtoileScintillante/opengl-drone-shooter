@@ -24,6 +24,7 @@
 #include "texture_loading.h"
 #include "skybox.h"
 #include "mobs.h"
+#include "box.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -60,16 +61,17 @@ std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertic
 
 // handgun
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // base position for gun
-const float gunBaseRotation = 95.0f; // y axis rotation to make gun point slightly inwards
-const float gunScalefactor = 0.6f; // make gun smaller
+const float BASE_ROTATION = 95.0f; // y axis rotation to make gun point slightly inwards
+const float SCALE_FACTOR = 0.6f; // make gun smaller
+const float RANGE = (TERRAIN_SIZE * TERRAIN_SIZE) / 2; // how far the bullet can travel
 bool shot = false; // has player taken a shot? (pressed space)
 bool startRecoil; // start recoil animation?
 bool goDown = false; // needed for recoil animation --> gun needs to move down if true
 float angle = 0; // needed for recoil animation, this angle will be updated with every new frame to make the gun rotate up and then down
 
 // mobs
-const float MIN_HEIGHT = 2.0f;
-const float MAX_HEIGHT = 5.0f;
+const float MIN_HEIGHT = 2.0f; // minimum floating height
+const float MAX_HEIGHT = 5.0f; // maximum floating height
 
 int main()
 {
@@ -166,7 +168,7 @@ int main()
 
         // camera movement when player is not moving (to make the player look more alive)
         camera.passiveMotion(isWalking);
-
+       
         // input
         processInput(window);
 
@@ -187,7 +189,7 @@ int main()
         mobs.Spawn(blockShader, currentFrame, camera.GetViewMatrix(), projection);
 
         // view and model transformation for handGunShader
-        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), gunScalefactor, gunBaseRotation); // initialize gun model matrix
+        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), SCALE_FACTOR, BASE_ROTATION); // initialize gun model matrix
         handGunShader.setMat4("view", camera.GetViewMatrix()); 
         handGunShader.setMat4("model", gunModel);
 
@@ -200,8 +202,9 @@ int main()
         // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
         if (shot == true && startRecoil == false)
         {
-            handGun.drawSpecificMesh(handGunShader, 5); 
+            handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
+            mobs.collisionDetection(camera.Position, camera.Front, RANGE);
         }
         
         // start the recoil animation
