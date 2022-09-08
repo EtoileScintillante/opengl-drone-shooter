@@ -21,6 +21,7 @@
 #include "shader.h"
 #include "data.h"
 #include "texture_loading.h"
+#include "box.h"
 
 class Mobs {
 public:
@@ -61,8 +62,15 @@ public:
      */
     void Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 projection);
 
-    // TODO
-    void collisionDetection();
+    /**
+     * @brief detects whether the mob has been hit by a bullet (using ray-box intersection).
+     * Info from https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.
+     * 
+     * @param bulletStartPos starting position of the bullet (in this program that is the camera position).
+     * @param bulletDir direction of the bullet (in this program that is the front vector of the camera).
+     * @param bulletRange range of bullet (maximum distance it can travel).
+     */
+    void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
 
 private:
     unsigned int texture = 6;
@@ -84,9 +92,13 @@ private:
     /// chooses a mob (zombie or creeper).
     void chooseMob();
 
-    /// @brief checks whether getRandomPos created a position that overlaps with a position of a tree.
-    /// @param position position vector.
-    /// @return true if there is an overlap, else false.
+    /**
+     * @brief checks whether getRandomPos created a position that overlaps with a position of a tree.
+     * 
+     * @param position position of tree.
+     * @return true if overlap.
+     * @return false if no overlap.
+     */
     bool spawnsInTree(glm::vec3 position);
 };
 

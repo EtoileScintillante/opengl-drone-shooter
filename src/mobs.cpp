@@ -45,6 +45,26 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
     }
 }
 
+// TODO: finish this function (mob has to die and new mob has to spawn in new position)
+void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
+{   
+    // comstruct ray object with start position and direction of bullet (but first we need to convert them to Vec3)
+    Vec3<float> orig = {bulletStartPos.x, bulletStartPos.y, bulletStartPos.z};
+    Vec3<float> dir = {bulletDir.x, bulletDir.y, bulletDir.z};
+    Ray ray(orig, dir);
+
+    // construct bounding box object using the current position of the mob (also conversion to vec3 needed)
+    Vec3<float> vmin = {currentPosition.x, currentPosition.y, currentPosition.z};
+    Vec3<float> vmax = {currentPosition.x - blockSize, currentPosition.y + blockSize, currentPosition.z + blockSize};
+    AABBox box(vmin, vmax);
+
+    if (box.intersect(ray, bulletRange) == true)
+    {
+        std::cout << "HIT" << std::endl;
+    }
+    else {std::cout << "NO HIT" << std::endl;}
+}
+
 void Mobs::configureMobs()
 {
     // create buffers/arrays for zombie block first
