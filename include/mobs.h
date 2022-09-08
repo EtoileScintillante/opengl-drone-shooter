@@ -46,8 +46,8 @@ public:
      * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
      * @param groundY y value of ground.
      * @param blockSize size of a block.
-     * @param minHeight minimum y value for floating height of mob.
-     * @param maxheight maximum y value for floating height of mob.
+     * @param minHeight minimum y value for floating height of mob (measured from the ground).
+     * @param maxheight maximum y value for floating height of mob (measured from the ground).
      */
     Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight);
 
