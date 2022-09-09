@@ -14,20 +14,60 @@
 class AABBox 
 { 
 public: 
+    Vec3<float> bounds[2]; 
+
     /**
      * @brief Construct a new AABBox object.
      * 
      * @param vmim mimimum bound of box.
      * @param vmax maximum bound of box.
      */
-    AABBox(const Vec3<float> &vmin, const Vec3<float> &vmax) { bounds[0] = vmin, bounds[1] = vmax; }
+    AABBox(Vec3<float> vmin, Vec3<float> vmax)
+    {
+        this->bounds[0] = vmin;
+        this->bounds[1] = vmax;
+
+        if (!isValid())
+        {
+            fix();
+        }
+    };
+
+    /// @brief checks whether the min values are acually smaller than max values.
+    /// @return true if valid, else false.
+    bool isValid()
+    {
+        return bounds[0].x < bounds[1].x && bounds[0].y < bounds[1].y && bounds[0].z < bounds[1].z;
+    };
+
+    /// @brief swaps values when necessary (when they are not valid).
+    void fix()
+    {
+        if (bounds[0].x > bounds[1].x)
+        {
+            float temp = bounds[0].x;
+            bounds[0].x = bounds[1].x;
+            bounds[1].x = temp;
+        }
+        if (bounds[0].y > bounds[1].y)
+        {
+            float temp = bounds[0].y;
+            bounds[0].y = bounds[1].y;
+            bounds[1].y = temp;
+        }
+        if (bounds[0].z > bounds[1].z)
+        {
+            float temp = bounds[0].z;
+            bounds[0].z = bounds[1].z;
+            bounds[1].z = temp;
+        }
+    }
 
     /**
      * @brief checks whether a ray hits the bounding box.
      * 
      * @param r ray.
-     * @param t constant. Ray (basically a line) is defined by O + Dt. 
-     * Where O is the origin, D the direction and t could be any value.
+     * @param t length of ray.
      * @return true if hit.
      * @return false if no hit.
      */
@@ -70,7 +110,6 @@ public:
 
         return true;
     };
-    Vec3<float> bounds[2]; 
 }; 
 
 #endif /*__BOX__*/

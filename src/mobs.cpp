@@ -54,8 +54,8 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
     Ray ray(orig, dir);
 
     // construct bounding box object using the current position of the mob (also conversion to vec3 needed)
-    Vec3<float> vmin = {currentPosition.x, currentPosition.y, currentPosition.z};
-    Vec3<float> vmax = {currentPosition.x - blockSize, currentPosition.y + blockSize, currentPosition.z + blockSize};
+    Vec3<float> vmin = {currentPosition.x - blockSize/2, currentPosition.y - blockSize/2, currentPosition.z - blockSize/2};
+    Vec3<float> vmax = {currentPosition.x + blockSize/2, currentPosition.y + blockSize/2, currentPosition.z + blockSize/2};
     AABBox box(vmin, vmax);
 
     if (box.intersect(ray, bulletRange) == true)
