@@ -62,12 +62,6 @@ private:
     {
         // read file via ASSIMP
         Assimp::Importer importer; // declare importer object
-        /* The ReadFile function expects a file path and several post-processing options as its second argument. 
-        Assimp allows us to specify several options that forces Assimp to do extra calculations/operations on the imported data. 
-        By setting aiProcess_Triangulate we tell Assimp that if the model does not (entirely) consist of triangles, 
-        it should transform all the model's primitive shapes to triangles first. 
-        The aiProcess_FlipUVs flips the texture coordinates on the y-axis where necessary during processing 
-        (you may remember from the Textures chapter that most images in OpenGL were reversed around the y-axis; this little postprocessing option fixes that for us) */
         const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
         // check for errors (check if the scene and root node of the scene are not null and check one of its flags to see if the returned data is incomplete)
         if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
@@ -88,10 +82,8 @@ private:
         // process each mesh located at the current node
         for(unsigned int i = 0; i < node->mNumMeshes; i++)
         {
-            // the node object only contains indices to index the actual objects in the scene. 
-            // the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]]; // first check each of the node's mesh indices and retrieve the corresponding mesh by indexing the scene's mMeshes array
-            meshes.push_back(processMesh(mesh, scene)); // the returned mesh is then passed to the processMesh function that returns a Mesh object that we can store in the meshes list/vector
+            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]]; 
+            meshes.push_back(processMesh(mesh, scene));
         }
         // after we've processed all of the meshes (if any) we then recursively process each of the children nodes
         for(unsigned int i = 0; i < node->mNumChildren; i++)
@@ -100,9 +92,6 @@ private:
         }
 
     }
-
-    /* Processing a mesh is a 3-part process: retrieve all the vertex data, retrieve the mesh's indices, and finally retrieve the relevant material data. 
-    The processed data is stored in one of the 3 vectors and from those a Mesh is created and returned to the function's caller */
 
     /// processes the data of a mesh
     Mesh processMesh(aiMesh *mesh, const aiScene *scene)
@@ -115,9 +104,6 @@ private:
         // walk through each of the mesh's vertices
         for(unsigned int i = 0; i < mesh->mNumVertices; i++)
         {
-            /* Retrieving the vertex data is pretty simple: we define a Vertex struct that we add to the vertices array after each loop iteration. 
-            We loop for as much vertices there exist within the mesh (retrieved via mesh->mNumVertices). 
-            Within the iteration we want to fill this struct with all the relevant data */
             Vertex vertex;
             glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
             // positions
@@ -137,9 +123,6 @@ private:
             if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
             {
                 glm::vec2 vec;
-                /* A vertex can contain up to 8 different texture coordinates. 
-                But for now we're not going to use 8, so we only care about the first set of texture coordinates.
-                We thus make the assumption that we won't use models where a vertex can have multiple texture coordinates so we always take the first set (0) */
                 vec.x = mesh->mTextureCoords[0][i].x; 
                 vec.y = mesh->mTextureCoords[0][i].y;
                 vertex.TexCoords = vec;
@@ -159,9 +142,7 @@ private:
 
             vertices.push_back(vertex);
         }
-        /* Assimp's interface defines each mesh as having an array of faces, where each face represents a single primitive, which in our case 
-        (due to the aiProcess_Triangulate option) are always triangles. A face contains the indices of the vertices we need to draw in what order for its primitive. 
-        Here we iterate over all the faces and store al the faces' indices in the indices vector */
+       
         for(unsigned int i = 0; i < mesh->mNumFaces; i++)
         {
             aiFace face = mesh->mFaces[i];
@@ -169,16 +150,13 @@ private:
                 indices.push_back(face.mIndices[j]);        
         }
         // process materials
-        /* Similar to nodes, a mesh only contains an index to a material object. To retrieve the material of a mesh, we need to index the scene's mMaterials array. 
-        The mesh's material index is set in its mMaterialIndex property, which we can also query to check if the mesh contains a material or not */
         aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex]; // retrieve the aiMaterial object from the scene's mMaterials array 
         
-        /* we assume a convention for sampler names in the shaders. Each diffuse texture should be named
-        as 'texture_diffuseN' where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. 
-        Same applies to other texture as the following list summarizes:
+        /* We assume that the textures are named in the sampler as follows:
         diffuse: texture_diffuseN
         specular: texture_specularN
-        normal: texture_normalN */
+        normal: texture_normalN
+        Where N is a sequential number ranging from 1 to MAX_SAMPLER_NUMBER. */
 
         // 1. diffuse maps
         std::vector<Texture> diffuseMaps = loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -219,8 +197,7 @@ private:
             if(!skip)
             {   // if texture hasn't been loaded already, load it
                 Texture texture;
-                /* Note that we make the assumption that texture file paths in model files are local to the actual model object e.g. in the same directory as the location of the model itself. 
-                We can then simply concatenate the texture location string and the directory string we retrieved earlier (in the loadModel function) to get the complete texture path */
+                // note that we make the assumption that texture file paths in model files are local to the actual model object e.g. in the same directory as the location of the model itself. 
                 texture.id = TextureFromFile(str.C_Str(), this->directory);
                 texture.type = typeName;
                 texture.path = str.C_Str();
