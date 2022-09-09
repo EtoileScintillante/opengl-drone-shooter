@@ -193,7 +193,6 @@ int main()
         // render gun in base position
         if (!shot)
         { 
-            std::cout << gunPosition.x << " " << gunPosition.y << " " << gunPosition.z << std::endl;
             drawhandGun(handGun, handGunShader); 
         }
 
