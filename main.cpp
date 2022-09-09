@@ -2,8 +2,6 @@
 
 // TODO (from most important to least important)
 // ---------------------------------------------
-// add mobs (they should only spawn on places where there is no tree) 
-// add collision detection (needed: gun direction, fragment position and knowing if fragment belongs to mob) 
 // add some spawning mechanism: only one mob per time. When mob is hit, let new one spawn in different position 
 // add some small animation when mob is killed (maybe make mob explode?)
 // add score (needed: global variable score (render top left) [text rendering]
@@ -322,11 +320,8 @@ void setupData()
         vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
         vertexDirt.TexCoords = glm::vec2(textureCoords[indexTex + 2], textureCoords[indexTex + 3]);
         vertexCreeper.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7]);
-        // zombue tex coords are almost the same as creeper tex coords, the only difference is that each y in zombie tex coords is 0.5f lower than y in creeper tex coords
+        // zombie tex coords are almost the same as creeper tex coords, the only difference is that each y in zombie tex coords is 0.5f lower than y in creeper tex coords
         vertexZombie.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7] - 0.5f); // subtract 0.5f from y value
-        // move to the next line in the arrays
-        indexPos += 3;
-        indexTex += 8; 
         // push data into vectors
         trunkVertices.push_back(vertexTrunk);
         leavesVertices.push_back(vertexLeaves);
@@ -335,5 +330,8 @@ void setupData()
         stoneVertices.push_back(vertexLeaves);
         creeperVertices.push_back(vertexCreeper);
         zombieVertices.push_back(vertexZombie);
+        // move to the next line in the arrays
+        indexPos += 3;
+        indexTex += 8; 
     }
 } 
