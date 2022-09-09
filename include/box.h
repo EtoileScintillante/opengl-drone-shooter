@@ -1,20 +1,19 @@
 /**
  * box.h
  * 
- * code from https://www.scratchapixel.com/code.php?id=10&origin=/lessons/3d-basic-rendering/ray-tracing-rendering-simple-shapes&src=1.
- * Modified by: EtoileScintillante
+ * Created by: EtoileScintillante
+ * Resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
  */
 
 #ifndef __BOX_H__
 #define __BOX_H__
 
-#include "geometry.h"
 #include "ray.h"
 
 class AABBox 
 { 
 public: 
-    Vec3<float> bounds[2]; 
+    glm::vec3 bounds[2]; 
 
     /**
      * @brief Construct a new AABBox object.
@@ -22,7 +21,7 @@ public:
      * @param vmim mimimum bound of box.
      * @param vmax maximum bound of box.
      */
-    AABBox(Vec3<float> vmin, Vec3<float> vmax)
+    AABBox(glm::vec3 vmin, glm::vec3 vmax)
     {
         this->bounds[0] = vmin;
         this->bounds[1] = vmax;

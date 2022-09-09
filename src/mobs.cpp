@@ -20,7 +20,11 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
     // set uniforms
     shader.use();
     shader.setMat4("view", cameraView);
-    shader.setMat4("projection", projection); 
+    shader.setMat4("projection", projection);
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, currentPosition);
+    model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
+    shader.setMat4("model", model);
 
     // draw
     glActiveTexture(GL_TEXTURE0);
@@ -28,19 +32,11 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
     if (currentMob == 1) // 1 = zombie
     {
         glBindVertexArray(zombieVAO);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, currentPosition);
-        model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
     if (currentMob == 2) // 2 = creeper
     {
         glBindVertexArray(creeperVAO);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, currentPosition);
-        model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
@@ -48,14 +44,14 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
 // TODO: finish this function (mob has to die and new mob has to spawn in new position)
 void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
 {   
-    // comstruct ray object with start position and direction of bullet (but first we need to convert them to Vec3)
-    Vec3<float> orig = {bulletStartPos.x, bulletStartPos.y, bulletStartPos.z};
-    Vec3<float> dir = {bulletDir.x, bulletDir.y, bulletDir.z};
+    // comstruct ray object with start position and direction of bullet 
+    glm::vec3 orig = bulletStartPos;
+    glm::vec3 dir = bulletDir;
     Ray ray(orig, dir);
 
-    // construct bounding box object using the current position of the mob (also conversion to vec3 needed)
-    Vec3<float> vmin = {currentPosition.x - blockSize/2, currentPosition.y - blockSize/2, currentPosition.z - blockSize/2};
-    Vec3<float> vmax = {currentPosition.x + blockSize/2, currentPosition.y + blockSize/2, currentPosition.z + blockSize/2};
+    // construct bounding box object using the current position of the mob 
+    glm::vec3 vmin = {currentPosition.x - blockSize/2, currentPosition.y - blockSize/2, currentPosition.z - blockSize/2};
+    glm::vec3 vmax = {currentPosition.x + blockSize/2, currentPosition.y + blockSize/2, currentPosition.z + blockSize/2};
     AABBox box(vmin, vmax);
 
     if (box.intersect(ray, bulletRange) == true)
