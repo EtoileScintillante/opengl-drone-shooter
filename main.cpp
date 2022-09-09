@@ -63,7 +63,7 @@ std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertic
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // base position for gun
 const float BASE_ROTATION = 95.0f; // y axis rotation to make gun point slightly inwards
 const float SCALE_FACTOR = 0.6f; // make gun smaller
-const float RANGE = (TERRAIN_SIZE * TERRAIN_SIZE) / 2; // how far the bullet can travel
+const float GUN_RANGE = TERRAIN_SIZE * 2; // how far the bullet can travel
 bool shot = false; // has player taken a shot? (pressed space)
 bool startRecoil; // start recoil animation?
 bool goDown = false; // needed for recoil animation --> gun needs to move down if true
@@ -204,7 +204,7 @@ int main()
         {
             handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
-            mobs.collisionDetection(camera.Position, camera.Front, RANGE);
+            mobs.collisionDetection(camera.Position, camera.Front, GUN_RANGE);
         }
         
         // start the recoil animation
