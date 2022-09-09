@@ -56,9 +56,11 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
 
     if (box.intersect(ray, bulletRange) == true)
     {
-        std::cout << "HIT" << std::endl;
+        //std::cout << "HIT" << std::endl;
+        chooseMob();
+        getRandomPos();
     }
-    else {std::cout << "NO HIT" << std::endl;}
+    //else {std::cout << "NO HIT" << std::endl;}
 }
 
 void Mobs::configureMobs()
