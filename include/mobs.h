@@ -74,8 +74,8 @@ public:
 
 private:
     unsigned int texture = 6;
-    unsigned int VAOcreeper, VAOzombie;
-    unsigned int VBOcreeper, VBOzombie;
+    unsigned int creeperVAO, creeperVBO;
+    unsigned int zombieVAO, zombieVBO;
     glm::vec3 currentPosition; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot
     unsigned int currentMob; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot
     bool isShot;

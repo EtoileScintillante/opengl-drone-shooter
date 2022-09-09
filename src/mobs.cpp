@@ -3,7 +3,7 @@
 Mobs::Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight)
 {
     this->verticesZombie = verticesZombie;
-    this->verticesZombie = verticesCreeper;
+    this->verticesCreeper = verticesCreeper;
     this->treePositions = treePositions;
     this->texturePath = texturePath;
     this->terrainSize = terrainSize;
@@ -27,20 +27,20 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
     glBindTexture(GL_TEXTURE_2D, texture);
     if (currentMob == 1) // 1 = zombie
     {
-        glBindVertexArray(VAOzombie);
-        glm::mat4 modelZombie = glm::mat4(1.0f);
-        modelZombie = glm::translate(modelZombie, currentPosition);
-        modelZombie = glm::rotate(modelZombie, time, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setMat4("model", modelZombie);
+        glBindVertexArray(zombieVAO);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, currentPosition);
+        model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
     if (currentMob == 2) // 2 = creeper
     {
-        glBindVertexArray(VAOcreeper);
-        glm::mat4 modelCreeper = glm::mat4(1.0f);
-        modelCreeper = glm::translate(modelCreeper, currentPosition);
-        modelCreeper = glm::rotate(modelCreeper, time, glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setMat4("model", modelCreeper);
+        glBindVertexArray(creeperVAO);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, currentPosition);
+        model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
 }
@@ -68,11 +68,11 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
 void Mobs::configureMobs()
 {
     // create buffers/arrays for zombie block first
-    glGenVertexArrays(1, &VAOzombie);
-    glGenBuffers(1, &VBOzombie);
-    glBindVertexArray(VAOzombie);
+    glGenVertexArrays(1, &zombieVAO);
+    glGenBuffers(1, &zombieVBO);
+    glBindVertexArray(zombieVAO);
     // load vertex data into vertex buffers
-    glBindBuffer(GL_ARRAY_BUFFER, VBOzombie);
+    glBindBuffer(GL_ARRAY_BUFFER, zombieVBO);
     glBufferData(GL_ARRAY_BUFFER, verticesZombie.size() * sizeof(Data), &verticesZombie[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
@@ -83,11 +83,11 @@ void Mobs::configureMobs()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
 
     // now do the same for the creeper block
-    glGenVertexArrays(1, &VAOcreeper);
-    glGenBuffers(1, &VBOcreeper);
-    glBindVertexArray(VAOcreeper);
+    glGenVertexArrays(1, &creeperVAO);
+    glGenBuffers(1, &creeperVBO);
+    glBindVertexArray(creeperVAO);
     // load vertex data into vertex buffers
-    glBindBuffer(GL_ARRAY_BUFFER, VBOcreeper);
+    glBindBuffer(GL_ARRAY_BUFFER, creeperVBO);
     glBufferData(GL_ARRAY_BUFFER, verticesCreeper.size() * sizeof(Data), &verticesCreeper[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
@@ -120,7 +120,8 @@ void Mobs::chooseMob()
 
     std::uniform_int_distribution<> numbers(1, 2); // define the range, we only have two mobs
 
-    currentMob = numbers(gen); // choose mob (1 = zombie and 2 = creeper)
+    currentMob = numbers(gen);
+    std::cout << currentMob << std::endl;
 }
 
 bool Mobs::spawnsInTree(glm::vec3 position)
