@@ -121,7 +121,6 @@ void Mobs::chooseMob()
     std::uniform_int_distribution<> numbers(1, 2); // define the range, we only have two mobs
 
     currentMob = numbers(gen);
-    std::cout << currentMob << std::endl;
 }
 
 bool Mobs::spawnsInTree(glm::vec3 position)
