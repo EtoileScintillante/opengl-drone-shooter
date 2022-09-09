@@ -128,7 +128,7 @@ public:
             Zoom = 45.0f; 
     }
 
-    /// when players is not moving create slow up and down movement to make player seem alive
+    /// when player is not moving create slow up and down movement to make player seem alive
     void passiveMotion(bool isWalking)
     {
         if ((!isWalking) & FPS) {Position.y = sin(currentFrame*2) * 0.02f;}
