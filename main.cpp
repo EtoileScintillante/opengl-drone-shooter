@@ -2,7 +2,6 @@
 
 // TODO (from most important to least important)
 // ---------------------------------------------
-// add some spawning mechanism: only one mob per time. When mob is hit, let new one spawn in different position 
 // add some small animation when mob is killed (maybe make mob explode?)
 // add score (needed: global variable score (render top left) [text rendering]
 // add instructions: movement = w,a,s,d. shoot = space (render top right) [text rendering]
@@ -58,14 +57,14 @@ const float GROUND_Y = -1.8; // y level of ground
 std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
 
 // handgun
-glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // base position for gun
+glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // (base) position for gun
 const float BASE_ROTATION = 95.0f; // y axis rotation to make gun point slightly inwards
 const float SCALE_FACTOR = 0.6f; // make gun smaller
 const float GUN_RANGE = TERRAIN_SIZE * 2; // how far the bullet can travel
 bool shot = false; // has player taken a shot? (pressed space)
 bool startRecoil; // start recoil animation?
 bool goDown = false; // needed for recoil animation --> gun needs to move down if true
-float angle = 0; // needed for recoil animation, this angle will be updated with every new frame to make the gun rotate up and then down
+float angle = 0; // needed for recoil animation, this angle will be updated every frame to make the gun rotate up and then down
 
 // mobs
 const float MIN_HEIGHT = 2.0f; // minimum floating height
@@ -194,6 +193,7 @@ int main()
         // render gun in base position
         if (!shot)
         { 
+            std::cout << gunPosition.x << " " << gunPosition.y << " " << gunPosition.z << std::endl;
             drawhandGun(handGun, handGunShader); 
         }
 
@@ -237,37 +237,38 @@ int main()
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
         glfwSetWindowShouldClose(window, true);
-
+    }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         isWalking = true;
-        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         isWalking = true;  
-        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         isWalking = true;
-        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         isWalking = true;
-        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
         camera.ProcessKeyboard(RIGHT, deltaTime); 
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
         shot = true;
     }
-    isWalking = false;
+    if (isWalking)
+    {
+        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
+    }
+    isWalking = false; 
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

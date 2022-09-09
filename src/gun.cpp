@@ -2,8 +2,18 @@
 
 void walkingMotion(float &gunY, float &gunZ, float currentFrame)
 {
-    gunZ += sin(currentFrame*15) * 0.004f;
-    gunY += sin(currentFrame*15) * 0.004f;
+    /* Here we make sure that the gun position always stays within a certain range,
+    otherwise the gun will slowly move out of view */
+    float newPosZ = gunZ + sin(currentFrame * 15) * 0.004f;
+    if (newPosZ > -1.52 && newPosZ < -1.48) 
+    {
+        gunZ = newPosZ;
+    }
+    float newPosY = gunY + sin(currentFrame * 15) * 0.004f;
+    if (newPosY > -0.52 && newPosY < -0.48) 
+    {
+        gunY = newPosY;
+    }
 }
 
 void drawhandGun(Model gun, Shader &shader)
@@ -35,7 +45,7 @@ void startRecoilAnimation(Shader &shader, glm::mat4 &modelMatrixGun, float &angl
     modelMatrixGun = glm::rotate(modelMatrixGun, glm::radians(angle), glm::vec3(0.0f,  0.0f, 1.0f)); // rotate upwards
     shader.setMat4("model", modelMatrixGun);
     
-    angle+=6.0; // increase angle with every frame
+    angle += 6.0; // increase angle with every frame
 }
 
 void goBackToBase(Shader &shader, glm::mat4 &modelMatrixGun, float &angle, bool &shot, bool &down, bool &startRecoil)
@@ -54,5 +64,5 @@ void goBackToBase(Shader &shader, glm::mat4 &modelMatrixGun, float &angle, bool 
         startRecoil = false;
     }
 
-    angle-=6.0; // decrease angle with every frame
+    angle -= 6.0; // decrease angle with every frame
 }
