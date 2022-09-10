@@ -48,6 +48,10 @@ public:
     float Zoom;
     // non flying camera
     bool FPS;
+    float bottomLimitX;
+    float bottomLimitZ;
+    float upperLimitX;
+    float upperLimitZ;
     // time
     float currentFrame; 
 
@@ -93,6 +97,12 @@ public:
         {
             // make sure the user stays at the ground level
             Position.y = 0;
+
+            // also make sure player stays between the accepted x and z limits
+            if (Position.x < bottomLimitX) {Position.x = bottomLimitX;}
+            if (Position.x > upperLimitX - 1.0f) {Position.x = upperLimitX - 1.0f;}
+            if (Position.z < bottomLimitZ) {Position.z = bottomLimitZ;}
+            if (Position.z > upperLimitZ - 1.0f) {Position.z = upperLimitZ - 1.0f;}
         }
     }
 

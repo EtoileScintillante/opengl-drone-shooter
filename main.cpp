@@ -1,13 +1,4 @@
-/* Work in progress: basic FPS game */
-
-// TODO (from most important to least important)
-// ---------------------------------------------
-// add some small animation when mob is killed (maybe make mob explode?)
-// add score (needed: global variable score (render top left) [text rendering]
-// add instructions: movement = w,a,s,d. shoot = space (render top right) [text rendering]
-// optionally: limited bullets (so adding a reload function + adding bullet counter)
-// optionally: use instancing (for better performance since it requires less draw calls, but this is game is very small so it is not really necessary)
-// optionally: put functions (which are now at the bottom of the file) in a header file to clean up main
+/* Shoot zombie and creeper heads */
 
 #include "shader.h"
 #include "camera.h"
@@ -33,7 +24,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(25.0f, 0.0f, 25.0f)); // starting position of camera (player)
+Camera camera(glm::vec3(15.0f, 0.0f, 15.0f)); // starting position of camera (player)
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -45,13 +36,13 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 // terrain
-const unsigned int N_GLOWSTONES = 10; // number of glowstones
-const unsigned int N_TREES = 25;      // number of trees
-const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
-const unsigned int HEIGHT_TREE = 5;
-const float HEIGHT_GLOWSTONES = 3.0;
-const float BLOCK_SIZE = 1.0f;
-const float GROUND_Y = -1.8; // y level of ground
+const unsigned int N_GLOWSTONES = 6;  // number of glowstones
+const unsigned int N_TREES = 12;      // number of trees
+const unsigned int TERRAIN_SIZE = 30; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
+const unsigned int HEIGHT_TREE = 5;   // height of tree (amount of blocks that make up a trunk)
+const float HEIGHT_GLOWSTONES = 3.0;  // height of glow stone (counted from GROUND_Y + BLOCK_SIZE)
+const float BLOCK_SIZE = 1.0f;        // all blocks are this size
+const float GROUND_Y = -1.8f;         // y level of ground 
 
 // vectors containg all the data needed for rendering the blocks
 std::vector<Data> trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
@@ -68,7 +59,7 @@ float angle = 0;                                        // needed for recoil ani
 
 // mobs
 const float MIN_HEIGHT = 2.0f; // minimum floating height
-const float MAX_HEIGHT = 5.0f; // maximum floating height
+const float MAX_HEIGHT = 6.0f; // maximum floating height
 
 int main()
 {
@@ -148,6 +139,10 @@ int main()
     // camera configuration
     // --------------------
     camera.FPS = true;
+    camera.bottomLimitX = 0.0f;
+    camera.bottomLimitZ = 0.0f;
+    camera.upperLimitX = TERRAIN_SIZE;
+    camera.upperLimitZ = TERRAIN_SIZE;
 
     // set projection matrix
     // ---------------------
