@@ -113,11 +113,11 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader blockShader("shaders/blocks.vs", "shaders/blocks.fs");  
-    Shader leaveShader("shaders/blocks.vs", "shaders/transparent.fs");
-    Shader handGunShader("shaders/model_loading.vs", "shaders/model_loading.fs");
-    Shader skyboxShader("shaders/skybox.vs", "shaders/skybox.fs");
-
+    Shader blockShader("shaders/blocks.vert", "shaders/blocks.frag");  
+    Shader leaveShader("shaders/blocks.vert", "shaders/transparent.frag");
+    Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
+    Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+  
     // initialize block objects
     // ------------------------
     setupData();
