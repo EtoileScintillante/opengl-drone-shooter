@@ -102,15 +102,15 @@ void Mobs::getRandomPos()
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
 
-    std::uniform_int_distribution<> xzPlane(1, terrainSize - 1); // define the range for x and z axis
-    std::uniform_int_distribution<>yPlane(minHeight, maxHeight); // define the range for y axis
+    std::uniform_int_distribution<> xzPlane(1, terrainSize - 1);  // define the range for x and z axis
+    std::uniform_int_distribution<> yPlane(minHeight, maxHeight); // define the range for y axis
 
     currentPosition = glm::vec3(xzPlane(gen), yPlane(gen) + groundY, xzPlane(gen)); // create random pos
 }
 
 void Mobs::chooseMob()
 {
-    std::random_device rd; // obtain a random number from hardware
+    std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
 
     std::uniform_int_distribution<> numbers(1, 2); // define the range, we only have two mobs
