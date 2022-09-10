@@ -34,7 +34,6 @@ public:
     float blockSize;
     float minHeight;
     float maxHeight;
-    float currentTime; // needed to play animation
 
     /**
      * @brief Construct a new Mobs object. Also configures it automatically.
@@ -78,13 +77,9 @@ private:
     unsigned int zombieVAO, zombieVBO;
     glm::vec3 currentPosition; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot
     unsigned int currentMob; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot
-    bool isShot;
 
     /// sets up and configures buffers/arrays
     void configureMobs();
-
-    /// play little animation when mob has been killed.
-    void dyingAnimation();
 
     /// generates a random position
     void getRandomPos();
