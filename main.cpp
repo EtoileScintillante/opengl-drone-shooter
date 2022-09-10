@@ -23,8 +23,8 @@
 #include "mobs.h"
 #include "box.h"
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
 void setupData();
 
@@ -37,7 +37,7 @@ Camera camera(glm::vec3(25.0f, 0.0f, 25.0f)); // starting position of camera (pl
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-bool isWalking; 
+bool isWalking;
 
 // timing
 float currentFrame;
@@ -46,7 +46,7 @@ float lastFrame = 0.0f;
 
 // terrain
 const unsigned int N_GLOWSTONES = 10; // number of glowstones
-const unsigned int N_TREES = 25; // number of trees
+const unsigned int N_TREES = 25;      // number of trees
 const unsigned int TERRAIN_SIZE = 50; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
 const unsigned int HEIGHT_TREE = 5;
 const float HEIGHT_GLOWSTONES = 3.0;
@@ -54,17 +54,17 @@ const float BLOCK_SIZE = 1.0f;
 const float GROUND_Y = -1.8; // y level of ground
 
 // vectors containg all the data needed for rendering the blocks
-std::vector< Data > trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
+std::vector<Data> trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
 
 // handgun
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // (base) position for gun
-const float BASE_ROTATION = 95.0f; // y axis rotation to make gun point slightly inwards
-const float SCALE_FACTOR = 0.6f; // make gun smaller
-const float GUN_RANGE = TERRAIN_SIZE * 2; // how far the bullet can travel
-bool shot = false; // has player taken a shot? (pressed space)
-bool startRecoil; // start recoil animation?
-bool goDown = false; // needed for recoil animation --> gun needs to move down if true
-float angle = 0; // needed for recoil animation, this angle will be updated every frame to make the gun rotate up and then down
+const float BASE_ROTATION = 95.0f;                      // y axis rotation to make gun point slightly inwards
+const float SCALE_FACTOR = 0.6f;                        // make gun smaller
+const float GUN_RANGE = TERRAIN_SIZE * 2;               // how far the bullet can travel
+bool shot = false;                                      // has player taken a shot? (pressed space)
+bool startRecoil;                                       // start recoil animation?
+bool goDown = false;                                    // needed for recoil animation --> gun needs to move down if true
+float angle = 0;                                        // needed for recoil animation, this angle will be updated every frame to make the gun rotate up and then down
 
 // mobs
 const float MIN_HEIGHT = 2.0f; // minimum floating height
@@ -85,7 +85,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FPS", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FPS", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -113,21 +113,21 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader blockShader("shaders/blocks.vert", "shaders/blocks.frag");  
+    Shader blockShader("shaders/blocks.vert", "shaders/blocks.frag");
     Shader leaveShader("shaders/blocks.vert", "shaders/transparent.frag");
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
     Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
-  
+
     // initialize block objects
     // ------------------------
     setupData();
 
     std::string texturePath = "resources/textures/";
-    std::string pathTrunkDirtTex = texturePath + "blocks.JPG"; 
+    std::string pathTrunkDirtTex = texturePath + "blocks.JPG";
     std::string pathLeavesTex = texturePath + "leaves.png";
     std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
     std::string pathStoneTex = texturePath + "stone.jpg";
-    std::string pathMobsTex = texturePath + "mobs.JPG"; 
+    std::string pathMobsTex = texturePath + "mobs.JPG";
 
     Tree trees(trunkVertices, leavesVertices, pathTrunkDirtTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
     Ground ground(dirtVertices, stoneVertices, pathTrunkDirtTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
@@ -136,8 +136,8 @@ int main()
 
     // initialize skybox object
     // ------------------------
-    std::vector< float > skyboxVertices = getSkyboxPositionData(); 
-    std::vector< std::string > filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
+    std::vector<float> skyboxVertices = getSkyboxPositionData();
+    std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
     std::string dirName = "resources/skybox";
     SkyBox skybox(skyboxVertices, filenames, dirName);
 
@@ -147,12 +147,12 @@ int main()
 
     // camera configuration
     // --------------------
-    camera.FPS = true; 
+    camera.FPS = true;
 
-    // set projection matrix 
+    // set projection matrix
     // ---------------------
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f); 
-    
+    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -165,14 +165,14 @@ int main()
 
         // camera movement when player is not moving (to make the player look more alive)
         camera.passiveMotion(isWalking);
-       
+
         // input
         processInput(window);
 
         // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        
+
         // render ground
         ground.Draw(blockShader, camera.GetViewMatrix(), projection);
 
@@ -187,13 +187,13 @@ int main()
 
         // view and model transformation for handGunShader
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), SCALE_FACTOR, BASE_ROTATION); // initialize gun model matrix
-        handGunShader.setMat4("view", camera.GetViewMatrix()); 
+        handGunShader.setMat4("view", camera.GetViewMatrix());
         handGunShader.setMat4("model", gunModel);
 
         // render gun in base position
         if (!shot)
-        { 
-            drawhandGun(handGun, handGunShader); 
+        {
+            drawhandGun(handGun, handGunShader);
         }
 
         // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
@@ -203,23 +203,25 @@ int main()
             startRecoil = true;
             mobs.collisionDetection(camera.Position, camera.Front, GUN_RANGE);
         }
-        
+
         // start the recoil animation
-        if (startRecoil) 
+        if (startRecoil)
         {
-            if (!goDown) {startRecoilAnimation(handGunShader, gunModel, angle, goDown);} // start moving up
-            else {goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil);} // start moving down
+            if (!goDown)
+            {
+                startRecoilAnimation(handGunShader, gunModel, angle, goDown); // start moving up
+            } 
+            else
+            {
+                goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil);  // start moving down
+            }                                   
             drawhandGun(handGun, handGunShader); // render upwards or downwards rotating gun
-        } 
+        }
 
-        // before rendering skybox, change depth function so depth test passes when values are equal to depth buffer's content
-        glDepthFunc(GL_LEQUAL);  
-
-        // render skybox
+        // render skybox 
+        glDepthFunc(GL_LEQUAL);
         skybox.Draw(skyboxShader, camera.GetViewMatrix(), projection);
-    
-        // set depth function back to default
-        glDepthFunc(GL_LESS); 
+        glDepthFunc(GL_LESS);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -246,7 +248,7 @@ void processInput(GLFWwindow *window)
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        isWalking = true;  
+        isWalking = true;
         camera.ProcessKeyboard(BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -257,7 +259,7 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         isWalking = true;
-        camera.ProcessKeyboard(RIGHT, deltaTime); 
+        camera.ProcessKeyboard(RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
@@ -267,21 +269,21 @@ void processInput(GLFWwindow *window)
     {
         walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
     }
-    isWalking = false; 
+    isWalking = false;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
+    // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -305,16 +307,16 @@ void mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 // ------------------------------------
 void setupData()
 {
-    std::vector< float > positionData = getPositionData(); // position data for blocks
-    std::vector< float > textureCoords = getTextureCoordsData(); // texture coordinates for blocks
-    
+    std::vector<float> positionData = getPositionData();       // position data for blocks
+    std::vector<float> textureCoords = getTextureCoordsData(); // texture coordinates for blocks
+
     int indexPos = 0;
     int indexTex = 0;
     for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
-    {   
+    {
         Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
         // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
-        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos+1], positionData[indexPos + 2]); 
+        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos + 1], positionData[indexPos + 2]);
         // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
         vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
         vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
@@ -332,6 +334,6 @@ void setupData()
         zombieVertices.push_back(vertexZombie);
         // move to the next line in the arrays
         indexPos += 3;
-        indexTex += 8; 
+        indexTex += 8;
     }
-} 
+}
