@@ -45,9 +45,10 @@ void loadTexture(std::string path, unsigned int ID, bool flipVertically);
  * 
  * @param path filename
  * @param directory directory where filename is located.
+ * @param flipVertically flip texture vertically on load or not?
  * @param gamma gamma correction? default is false.
  * @return unsigned int texture ID.
  */
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+unsigned int TextureFromFile(const char *path, const std::string &directory, bool flipVertically, bool gamma = false);
 
 #endif /*__TEXTURE_LOADING__*/
