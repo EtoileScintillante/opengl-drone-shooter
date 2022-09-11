@@ -152,7 +152,7 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
         { // if texture hasn't been loaded already, load it
             Texture texture;
             // note that we make the assumption that texture file paths in model files are local to the actual model object e.g. in the same directory as the location of the model itself.
-            texture.id = TextureFromFile(str.C_Str(), this->directory, true);
+            texture.id = TextureFromFile(str.C_Str(), this->directory, false);
             texture.type = typeName;
             texture.path = str.C_Str();
             textures.push_back(texture);
