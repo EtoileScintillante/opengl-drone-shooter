@@ -13,6 +13,8 @@ Mobs::Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCre
     this->blockSize = blockSize;
     this->minHeight = minHeight;
     this->maxHeight = maxHeight;
+    deathTime = 0;
+    hasDied = false;
 
     configureMobs();
 }
@@ -58,9 +60,15 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
 
     if (box.intersect(ray, bulletRange) == true)
     {
-        chooseMob();
-        getRandomPos();
+        hasDied = true;
     }
+}
+
+void Mobs::died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime)
+{
+    // TODO: finish this function --> render skull for x time before spawning new mob.
+    getRandomPos();
+    chooseMob();
 }
 
 glm::vec3 Mobs::getCurrentPos()

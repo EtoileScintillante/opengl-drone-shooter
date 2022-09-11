@@ -22,6 +22,7 @@
 #include "data.h"
 #include "texture_loading.h"
 #include "box.h"
+#include "model.h"
 
 class Mobs {
 public:
@@ -34,6 +35,8 @@ public:
     float blockSize;
     float minHeight;
     float maxHeight;
+    float deathTime; 
+    bool hasDied;
 
     /// default constructor
     Mobs();
@@ -73,6 +76,17 @@ public:
      * @param bulletRange range of bullet (maximum distance it can travel).
      */
     void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
+
+    /**
+     * @brief renders a 3D skull at the position of the mob that just got killed.
+     * 
+     * @param skullModel 3D skull model.
+     * @param skullShader shader of skull model.
+     * @param cameraView camera view matrix.
+     * @param projection projection matrix.
+     * @param deltaTime time between 2 frames. Needed to control the time between a mob dying and another one spawning. 
+     */
+    void died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime);
 
     /// returns the current position of the mob.
     glm::vec3 getCurrentPos();
