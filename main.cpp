@@ -96,7 +96,7 @@ int main()
     std::string dirName = "resources/skybox";
     SkyBox skybox(skyboxVertices, filenames, dirName);
 
-    // load handgun model
+    // load handgun and skull model
     Model handGun("resources/models/handgun/Handgun_obj.obj");
     Model skull("resources/models/skull/skull.obj");
 
@@ -166,6 +166,14 @@ int main()
             drawhandGun(handGun, handGunShader); // render rotating handgun
         }
 
+        // render skull when a mob has been killed
+        if (world.mobs.hasDied)
+        {
+            world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime);
+        }
+
+        /*
+        ----Use this in mobs.died-----
         skullShader.use();
         skullShader.setMat4("view", camera.GetViewMatrix());
         skullShader.setMat4("projection", projection);
@@ -175,6 +183,8 @@ int main()
         model = glm::scale(model, glm::vec3(0.02f));
         skullShader.setMat4("model", model);
         skull.Draw(skullShader);
+        --------------------------------
+        */
 
         // render skybox
         glDepthFunc(GL_LEQUAL);
