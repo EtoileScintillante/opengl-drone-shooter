@@ -1,5 +1,7 @@
 #include "glowstone.h"
 
+GlowStone::GlowStone(){};
+
 GlowStone::GlowStone(std::vector<Data> verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height)
 {
     this->verticesGlowStone = verticesGlowStone;
@@ -30,6 +32,7 @@ void GlowStone::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
         shader.setMat4("model", modelGS);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void GlowStone::configureGlowStone()

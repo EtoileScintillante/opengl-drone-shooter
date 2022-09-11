@@ -1,5 +1,7 @@
 #include "tree.h"
 
+Tree::Tree(){};
+
 Tree::Tree(std::vector<Data> verticesTrunk, std::vector<Data> verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize)
 {
     this->verticesTrunk = verticesTrunk;
@@ -38,6 +40,7 @@ void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView,
             tree.y += blockSize; // increase y with BLOCK_SIZE to place next wooden block exactly on top of the one before that
         }
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 
     // set uniforms
     shaderLeaves.use();
@@ -55,6 +58,7 @@ void Tree::Draw(Shader &shaderTrunk, Shader &shaderLeaves, glm::mat4 cameraView,
         shaderLeaves.setMat4("model", modelLeaves);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Tree::configureTree()

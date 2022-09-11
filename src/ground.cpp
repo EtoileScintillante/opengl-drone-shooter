@@ -1,5 +1,7 @@
 #include "ground.h"
 
+Ground::Ground(){};
+
 Ground::Ground(std::vector<Data> verticesDirt, std::vector<Data> verticesStone, std::string texturePathDirt, std::string texturePathStone, unsigned int terrainSize, float groundLevel)
 {
     this->verticesDirt = verticesDirt;
@@ -35,6 +37,7 @@ void Ground::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
                 modelDirt = glm::translate(modelDirt, glm::vec3(i, groundLevel, j));
                 shader.setMat4("model", modelDirt);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
             if (num == 2) // stone block
             {
@@ -45,6 +48,7 @@ void Ground::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
                 modelStone = glm::translate(modelStone, glm::vec3(i, groundLevel, j));
                 shader.setMat4("model", modelStone);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
+                glBindTexture(GL_TEXTURE_2D, 0);
             }
         }
         indexOrder += terrainSize; // update index otherwise we keep indexing the first 50 spots

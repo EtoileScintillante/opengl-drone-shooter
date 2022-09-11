@@ -35,6 +35,9 @@ public:
     float minHeight;
     float maxHeight;
 
+    /// default constructor
+    Mobs();
+
     /**
      * @brief Construct a new Mobs object. Also configures it automatically.
      * 
@@ -72,7 +75,7 @@ public:
     void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
 
 private:
-    unsigned int texture = 6;
+    unsigned int texture = 5;
     unsigned int creeperVAO, creeperVBO;
     unsigned int zombieVAO, zombieVBO;
     glm::vec3 currentPosition; // has to be chosen in configrureMobs and changed in dyingAnimation if mob has been shot

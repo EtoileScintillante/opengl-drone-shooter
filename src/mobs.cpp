@@ -1,5 +1,7 @@
 #include "mobs.h"
 
+Mobs::Mobs(){};
+
 Mobs::Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight)
 {
     this->verticesZombie = verticesZombie;
@@ -39,6 +41,7 @@ void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 pro
         glBindVertexArray(creeperVAO);
         glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)

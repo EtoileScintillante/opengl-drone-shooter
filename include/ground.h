@@ -30,6 +30,9 @@ public:
     std::string texturePathStone;
     unsigned int terrainSize;
     float groundLevel;
+    
+    /// default constructor
+    Ground();
 
    /**
     * @brief Construct a new Ground object. Also configures the ground automatically.

@@ -35,6 +35,9 @@ public:
     float groundLevel;
     float blockSize;
 
+    /// default constructor
+    Tree();
+
     /**
      * @brief Construct a new Tree object. Also configures the tree automatically.
      * 

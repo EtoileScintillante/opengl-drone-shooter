@@ -20,6 +20,10 @@ class Shader
 {
 public:
     unsigned int ID;
+
+    /// default constructor
+    Shader() = default;
+
     /// constructor (it generates the shader on the fly)
     Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
     {

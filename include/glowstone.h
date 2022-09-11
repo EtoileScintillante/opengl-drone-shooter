@@ -31,6 +31,9 @@ public:
     unsigned int numGlowStones;
     float height;
 
+    /// default constructor
+    GlowStone();
+
    /**
     * @brief Construct a new GlowStone object. Also configures the glow stone automatically.
     * 
@@ -52,7 +55,7 @@ public:
     void Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection);
 
 private:
-    unsigned int textureGlowStone = 5;
+    unsigned int textureGlowStone = 6;
     unsigned int VAO;
     unsigned int VBO;
 
