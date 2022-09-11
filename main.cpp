@@ -1,18 +1,11 @@
 /* Shoot zombie and creeper heads */
 
-#include "shader.h"
 #include "camera.h"
 #include "model.h"
-#include "tree.h"
-#include "data.h"
-#include "ground.h"
-#include "glowstone.h"
 #include "gun.h"
-#include "vertex_data.h"
-#include "texture_loading.h"
 #include "skybox.h"
-#include "mobs.h"
 #include "box.h"
+#include "world.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xpos, double ypos);
@@ -35,31 +28,15 @@ float currentFrame;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-// terrain
-const unsigned int N_GLOWSTONES = 6;  // number of glowstones
-const unsigned int N_TREES = 12;      // number of trees
-const unsigned int TERRAIN_SIZE = 30; // actual terrain size = TERRAIN_SIZE * TERRAIN_SIZE (it's a square)
-const unsigned int HEIGHT_TREE = 5;   // height of tree (amount of blocks that make up a trunk)
-const float HEIGHT_GLOWSTONES = 3.0;  // height of glow stone (counted from GROUND_Y + BLOCK_SIZE)
-const float BLOCK_SIZE = 1.0f;        // all blocks are this size
-const float GROUND_Y = -1.8f;         // y level of ground 
-
-// vectors containg all the data needed for rendering the blocks
-std::vector<Data> trunkVertices, leavesVertices, dirtVertices, glowStoneVertices, stoneVertices, creeperVertices, zombieVertices;
-
 // handgun
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // (base) position for gun
 const float BASE_ROTATION = 95.0f;                      // y axis rotation to make gun point slightly inwards
 const float SCALE_FACTOR = 0.6f;                        // make gun smaller
-const float GUN_RANGE = TERRAIN_SIZE * 2;               // how far the bullet can travel
+const float GUN_RANGE = World::TERRAIN_SIZE * 2;        // how far the bullet can travel
 bool shot = false;                                      // has player taken a shot? (pressed space)
 bool startRecoil;                                       // start recoil animation?
 bool goDown = false;                                    // needed for recoil animation --> gun needs to move down if true
 float angle = 0;                                        // needed for recoil animation, this angle will be updated every frame to make the gun rotate up and then down
-
-// mobs
-const float MIN_HEIGHT = 2.0f; // minimum floating height
-const float MAX_HEIGHT = 6.0f; // maximum floating height
 
 int main()
 {
@@ -104,26 +81,12 @@ int main()
 
     // build and compile shaders
     // -------------------------
-    Shader blockShader("shaders/blocks.vert", "shaders/blocks.frag");
-    Shader leaveShader("shaders/blocks.vert", "shaders/transparent.frag");
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
     Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
-    // initialize block objects
-    // ------------------------
-    setupData();
-
-    std::string texturePath = "resources/textures/";
-    std::string pathTrunkDirtTex = texturePath + "blocks.JPG";
-    std::string pathLeavesTex = texturePath + "leaves.png";
-    std::string pathGlowStoneTex = texturePath + "glowstone.jpg";
-    std::string pathStoneTex = texturePath + "stone.jpg";
-    std::string pathMobsTex = texturePath + "mobs.JPG";
-
-    Tree trees(trunkVertices, leavesVertices, pathTrunkDirtTex, pathLeavesTex, N_TREES, HEIGHT_TREE, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE);
-    Ground ground(dirtVertices, stoneVertices, pathTrunkDirtTex, pathStoneTex, TERRAIN_SIZE, GROUND_Y);
-    GlowStone glowstones(glowStoneVertices, pathGlowStoneTex, trees.treePositions, N_GLOWSTONES, HEIGHT_GLOWSTONES);
-    Mobs mobs(zombieVertices, creeperVertices, trees.treePositions, pathMobsTex, TERRAIN_SIZE, GROUND_Y, BLOCK_SIZE, MIN_HEIGHT, MAX_HEIGHT);
+    // initialize world
+    // ----------------
+    World world;
 
     // initialize skybox object
     // ------------------------
@@ -141,8 +104,8 @@ int main()
     camera.FPS = true;
     camera.bottomLimitX = 0.0f;
     camera.bottomLimitZ = 0.0f;
-    camera.upperLimitX = TERRAIN_SIZE;
-    camera.upperLimitZ = TERRAIN_SIZE;
+    camera.upperLimitX = World::TERRAIN_SIZE;
+    camera.upperLimitZ = World::TERRAIN_SIZE;
 
     // set projection matrix
     // ---------------------
@@ -168,24 +131,15 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // render ground
-        ground.Draw(blockShader, camera.GetViewMatrix(), projection);
+        // draw the world (ground + trees + glow stones + mobs)
+        world.Draw(camera.GetViewMatrix(), projection, currentFrame);
 
-        // render glow stones
-        glowstones.Draw(blockShader, camera.GetViewMatrix(), projection);
-
-        // render trees
-        trees.Draw(blockShader, leaveShader, camera.GetViewMatrix(), projection);
-
-        // render a mob
-        mobs.Spawn(blockShader, currentFrame, camera.GetViewMatrix(), projection);
-
-        // view and model transformation for handGunShader
+        // view and model transformation for handgun
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), SCALE_FACTOR, BASE_ROTATION); // initialize gun model matrix
         handGunShader.setMat4("view", camera.GetViewMatrix());
         handGunShader.setMat4("model", gunModel);
 
-        // render gun in base position
+        // draw the handgun in base position
         if (!shot)
         {
             drawhandGun(handGun, handGunShader);
@@ -196,7 +150,7 @@ int main()
         {
             handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
-            mobs.collisionDetection(camera.Position, camera.Front, GUN_RANGE);
+            world.mobs.collisionDetection(camera.Position, camera.Front, GUN_RANGE);
         }
 
         // start the recoil animation
@@ -210,7 +164,7 @@ int main()
             {
                 goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil);  // start moving down
             }                                   
-            drawhandGun(handGun, handGunShader); // render upwards or downwards rotating gun
+            drawhandGun(handGun, handGunShader); // render rotating handgun
         }
 
         // render skybox 
@@ -296,39 +250,4 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
     lastY = ypos;
 
     camera.ProcessMouseMovement(xoffset, yoffset);
-}
-
-// setup vertex data for all the blocks
-// ------------------------------------
-void setupData()
-{
-    std::vector<float> positionData = getPositionData();       // position data for blocks
-    std::vector<float> textureCoords = getTextureCoordsData(); // texture coordinates for blocks
-
-    int indexPos = 0;
-    int indexTex = 0;
-    for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
-    {
-        Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
-        // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
-        vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos + 1], positionData[indexPos + 2]);
-        // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)
-        vertexTrunk.TexCoords = glm::vec2(textureCoords[indexTex], textureCoords[indexTex + 1]);
-        vertexLeaves.TexCoords = glm::vec2(textureCoords[indexTex + 4], textureCoords[indexTex + 5]);
-        vertexDirt.TexCoords = glm::vec2(textureCoords[indexTex + 2], textureCoords[indexTex + 3]);
-        vertexCreeper.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7]);
-        // zombie tex coords are almost the same as creeper tex coords, the only difference is that each y in zombie tex coords is 0.5f lower than y in creeper tex coords
-        vertexZombie.TexCoords = glm::vec2(textureCoords[indexTex + 6], textureCoords[indexTex + 7] - 0.5f); // subtract 0.5f from y value
-        // push data into vectors
-        trunkVertices.push_back(vertexTrunk);
-        leavesVertices.push_back(vertexLeaves);
-        dirtVertices.push_back(vertexDirt);
-        glowStoneVertices.push_back(vertexLeaves);
-        stoneVertices.push_back(vertexLeaves);
-        creeperVertices.push_back(vertexCreeper);
-        zombieVertices.push_back(vertexZombie);
-        // move to the next line in the arrays
-        indexPos += 3;
-        indexTex += 8;
-    }
 }
