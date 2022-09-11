@@ -7,10 +7,9 @@
 #include "box.h"
 #include "world.h"
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
 void processInput(GLFWwindow *window);
-void setupData();
+void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void mouse_callback(GLFWwindow *window, double xposIn, double yposIn);
 
 // settings screen
 const unsigned int SCR_WIDTH = 800;
@@ -18,6 +17,8 @@ const unsigned int SCR_HEIGHT = 600;
 
 // camera
 Camera camera(glm::vec3(15.0f, 0.0f, 15.0f)); // starting position of camera (player)
+float mouseX;
+float mouseY;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -60,6 +61,8 @@ int main()
         glfwTerminate();
         return -1;
     }
+    
+    // set callback functions
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
@@ -79,36 +82,32 @@ int main()
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // build and compile shaders
-    // -------------------------
+    // prepare game related objects
+    // ----------------------------
+    // build and compile shaders for handgun and skybox
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
     Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
 
-    // initialize world
-    // ----------------
+    // initialize world object (includes ground, trees, glow stones and mobs)
     World world;
 
     // initialize skybox object
-    // ------------------------
     std::vector<float> skyboxVertices = getSkyboxPositionData();
     std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
     std::string dirName = "resources/skybox";
     SkyBox skybox(skyboxVertices, filenames, dirName);
 
     // load handgun model
-    // ------------------
     Model handGun("resources/models/handgun/Handgun_obj.obj");
 
     // camera configuration
-    // --------------------
     camera.FPS = true;
     camera.bottomLimitX = 0.0f;
     camera.bottomLimitZ = 0.0f;
     camera.upperLimitX = World::TERRAIN_SIZE;
     camera.upperLimitZ = World::TERRAIN_SIZE;
 
-    // set projection matrix
-    // ---------------------
+    // set projection matrix (this does not change so we set it outside of the render loop)
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     // render loop
@@ -182,8 +181,7 @@ int main()
     return 0;
 }
 
-// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
+/// processes all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly.
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -193,22 +191,22 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         isWalking = true;
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(Camera::FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         isWalking = true;
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(Camera::BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         isWalking = true;
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(Camera::LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         isWalking = true;
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(Camera::RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
@@ -221,8 +219,7 @@ void processInput(GLFWwindow *window)
     isWalking = false;
 }
 
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
+/// glfw: whenever the window size changed (by OS or user resize) this callback function executes.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     // make sure the viewport matches the new window dimensions; note that width and
@@ -230,8 +227,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-// glfw: whenever the mouse moves, this callback is called
-// -------------------------------------------------------
+/// glfw: whenever the mouse moves, this callback is called
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
 {
     float xpos = static_cast<float>(xposIn);
@@ -244,7 +240,7 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top.
 
     lastX = xpos;
     lastY = ypos;
