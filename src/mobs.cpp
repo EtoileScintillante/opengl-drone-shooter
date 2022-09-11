@@ -113,7 +113,11 @@ void Mobs::getRandomPos()
     std::uniform_int_distribution<> xzPlane(1, terrainSize - 1);  // define the range for x and z axis
     std::uniform_int_distribution<> yPlane(minHeight, maxHeight); // define the range for y axis
 
-    currentPosition = glm::vec3(xzPlane(gen), yPlane(gen) + groundY, xzPlane(gen)); // create random pos
+    glm::vec3 newPos = glm::vec3(xzPlane(gen), yPlane(gen) + groundY, xzPlane(gen));
+
+    if (!spawnsInTree(newPos)) {currentPosition = newPos;} // make sure the mob does not spawn inside a tree
+    else {getRandomPos();}
+
 }
 
 void Mobs::chooseMob()
