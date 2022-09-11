@@ -20,8 +20,6 @@ const unsigned int SCR_HEIGHT = 600;
 
 // camera
 Camera camera(glm::vec3(15.0f, 0.0f, 15.0f)); // starting position of camera (player)
-float mouseX;
-float mouseY;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -34,9 +32,6 @@ float lastFrame = 0.0f;
 
 // handgun
 glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // (base) position for gun
-const float BASE_ROTATION = 95.0f;                      // y axis rotation to make gun point slightly inwards
-const float SCALE_FACTOR = 0.6f;                        // make gun smaller
-const float GUN_RANGE = World::TERRAIN_SIZE * 2;        // how far the bullet can travel
 bool shot = false;                                      // has player taken a shot? (pressed space)
 bool startRecoil;                                       // start recoil animation?
 bool goDown = false;                                    // needed for recoil animation --> gun needs to move down if true
@@ -139,7 +134,7 @@ int main()
         world.Draw(camera.GetViewMatrix(), projection, currentFrame);
 
         // view and model transformation for handgun
-        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), SCALE_FACTOR, BASE_ROTATION); // initialize gun model matrix
+        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), 0.6f, 95.0f); 
         handGunShader.setMat4("view", camera.GetViewMatrix());
         handGunShader.setMat4("model", gunModel);
 
@@ -154,7 +149,7 @@ int main()
         {
             handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
-            world.mobs.collisionDetection(camera.Position, camera.Front, GUN_RANGE);
+            world.mobs.collisionDetection(camera.Position, camera.Front, world.TERRAIN_SIZE * 2);
         }
 
         // start the recoil animation
