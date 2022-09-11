@@ -1,5 +1,8 @@
 /* Shoot zombie and creeper heads */
 
+// TODO: make it so that the skull appears for a split second at the position of the mob after killing it
+// (before a new mob spawns)
+
 #include "camera.h"
 #include "model.h"
 #include "gun.h"
@@ -61,7 +64,7 @@ int main()
         glfwTerminate();
         return -1;
     }
-    
+
     // set callback functions
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
@@ -87,6 +90,7 @@ int main()
     // build and compile shaders for handgun and skybox
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
     Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
+    Shader skullShader("shaders/model_loading.vert", "shaders/model_loading.frag");
 
     // initialize world object (includes ground, trees, glow stones and mobs)
     World world;
@@ -99,6 +103,7 @@ int main()
 
     // load handgun model
     Model handGun("resources/models/handgun/Handgun_obj.obj");
+    Model skull("resources/models/skull/skull.obj");
 
     // camera configuration
     camera.FPS = true;
@@ -158,15 +163,25 @@ int main()
             if (!goDown)
             {
                 startRecoilAnimation(handGunShader, gunModel, angle, goDown); // start moving up
-            } 
+            }
             else
             {
-                goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil);  // start moving down
-            }                                   
+                goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil); // start moving down
+            }
             drawhandGun(handGun, handGunShader); // render rotating handgun
         }
 
-        // render skybox 
+        skullShader.use();
+        skullShader.setMat4("view", camera.GetViewMatrix());
+        skullShader.setMat4("projection", projection);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(10.0f, 0.0f, 10.0f));
+        model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.02f));
+        skullShader.setMat4("model", model);
+        skull.Draw(skullShader);
+
+        // render skybox
         glDepthFunc(GL_LEQUAL);
         skybox.Draw(skyboxShader, camera.GetViewMatrix(), projection);
         glDepthFunc(GL_LESS);
