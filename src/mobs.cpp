@@ -63,6 +63,11 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
     }
 }
 
+glm::vec3 Mobs::getCurrentPos()
+{
+    return currentPosition;
+}
+
 void Mobs::configureMobs()
 {
     // create buffers/arrays for zombie block first

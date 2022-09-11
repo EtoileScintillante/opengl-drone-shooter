@@ -74,6 +74,9 @@ public:
      */
     void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
 
+    /// returns the current position of the mob.
+    glm::vec3 getCurrentPos();
+
 private:
     unsigned int texture = 5;
     unsigned int creeperVAO, creeperVBO;
