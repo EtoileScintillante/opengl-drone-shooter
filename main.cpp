@@ -145,7 +145,7 @@ int main()
         }
 
         // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
-        if (shot == true && startRecoil == false)
+        if (shot && !startRecoil)
         {
             handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
@@ -169,22 +169,8 @@ int main()
         // render skull when a mob has been killed
         if (world.mobs.hasDied)
         {
-            world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime);
+            world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime, currentFrame);
         }
-
-        /*
-        ----Use this in mobs.died-----
-        skullShader.use();
-        skullShader.setMat4("view", camera.GetViewMatrix());
-        skullShader.setMat4("projection", projection);
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(10.0f, 0.0f, 10.0f));
-        model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.02f));
-        skullShader.setMat4("model", model);
-        skull.Draw(skullShader);
-        --------------------------------
-        */
 
         // render skybox
         glDepthFunc(GL_LEQUAL);
