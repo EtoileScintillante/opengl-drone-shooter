@@ -21,29 +21,33 @@ Mobs::Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCre
 
 void Mobs::Spawn(Shader &shader, float time, glm::mat4 cameraView, glm::mat4 projection)
 {
-    // set uniforms
-    shader.use();
-    shader.setMat4("view", cameraView);
-    shader.setMat4("projection", projection);
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, currentPosition);
-    model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
-    shader.setMat4("model", model);
+    // draw mob if it is alive
+    if (!hasDied)
+    {
+        // set uniforms
+        shader.use();
+        shader.setMat4("view", cameraView);
+        shader.setMat4("projection", projection);
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, currentPosition);
+        model = glm::rotate(model, time, glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.setMat4("model", model);
 
-    // draw
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    if (currentMob == 1) // 1 = zombie
-    {
-        glBindVertexArray(zombieVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        // draw
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        if (currentMob == 1) // 1 = zombie
+        {
+            glBindVertexArray(zombieVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        if (currentMob == 2) // 2 = creeper
+        {
+            glBindVertexArray(creeperVAO);
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
+        glBindTexture(GL_TEXTURE_2D, 0);
     }
-    if (currentMob == 2) // 2 = creeper
-    {
-        glBindVertexArray(creeperVAO);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
@@ -64,11 +68,36 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
     }
 }
 
-void Mobs::died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime)
+void Mobs::died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time)
 {
-    // TODO: finish this function --> render skull for x time before spawning new mob.
-    getRandomPos();
-    chooseMob();
+    deathTime += deltaTime;
+
+    if (deathTime < 1.0) // skull will be visible for about one second
+    {
+        // set uniforms
+        skullShader.use();
+        skullShader.setMat4("view", cameraView);
+        skullShader.setMat4("projection", projection);
+        glm::mat4 model = glm::mat4(1.0f);
+        // here we add some rotations so that the skull faces the same direction as the face of the  mob
+        model = glm::translate(model, glm::vec3(currentPosition.x, currentPosition.y - 0.42f, currentPosition.z));
+        model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+        model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+        model = glm::rotate(model, time, glm::vec3(0.0f, 0.0f, 1.0f));
+        // and we make the skull smaller so that it fits in the mob block (as if the mob really has a skull inside)
+        model = glm::scale(model, glm::vec3(0.042f));
+        skullShader.setMat4("model", model);
+        // draw
+        skullModel.Draw(skullShader);
+    }
+    else
+    {
+        // reset variables, get new position and choose new mob
+        deathTime = 0; 
+        hasDied = false;
+        getRandomPos();
+        chooseMob();
+    }
 }
 
 glm::vec3 Mobs::getCurrentPos()
