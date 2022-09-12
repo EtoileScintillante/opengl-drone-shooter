@@ -23,13 +23,7 @@ int sign[3];
      * @param orig origin position of ray.
      * @param dir direction of ray.
      */
-    Ray(glm::vec3 orig, glm::vec3 dir) : orig(orig), dir(dir) 
-    { 
-        invdir = 1.0f / dir;
-        sign[0] = (invdir.x < 0); 
-        sign[1] = (invdir.y < 0); 
-        sign[2] = (invdir.z < 0); 
-    } 
+    Ray(glm::vec3 orig, glm::vec3 dir);
 }; 
 
 #endif /*__RAY__*/
