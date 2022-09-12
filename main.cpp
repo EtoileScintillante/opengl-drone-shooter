@@ -1,7 +1,7 @@
 /* Shoot zombie and creeper heads */
 
-// TODO: make it so that the skull appears for a split second at the position of the mob after killing it
-// (before a new mob spawns)
+// TODO: go through selfmade .h files and check if there are includes that can be removed.
+// (some have a lot of includes, maybe some of which are not even needed) 
 
 #include "camera.h"
 #include "model.h"
