@@ -1,7 +1,7 @@
 /* Shoot zombie and creeper heads */
 
-// TODO: go through selfmade .h files and check if there are includes that can be removed.
-// (some have a lot of includes, maybe some of which are not even needed) 
+// TODO: maybe look for another way to organize the objects
+// because all of the constructors need a lot of arguments
 
 #include "camera.h"
 #include "model.h"
