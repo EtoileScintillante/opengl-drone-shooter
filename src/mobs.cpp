@@ -68,7 +68,7 @@ void Mobs::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, flo
     }
 }
 
-void Mobs::died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time)
+void Mobs::died(Model &skullModel, Shader &skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time)
 {
     deathTime += deltaTime;
 

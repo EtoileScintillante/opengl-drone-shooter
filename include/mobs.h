@@ -87,7 +87,7 @@ public:
      * @param deltaTime time between 2 frames. Needed to control the time between a mob dying and another one spawning.
      * @param time current time/frame, to let skull rotate over time (y - axis rotation).
      */
-    void died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time);
+    void died(Model &skullModel, Shader &skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time);
 
     /// returns the current position of the mob.
     glm::vec3 getCurrentPos() const;
