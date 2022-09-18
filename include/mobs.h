@@ -90,7 +90,7 @@ public:
     void died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm::mat4 projection, float deltaTime, float time);
 
     /// returns the current position of the mob.
-    glm::vec3 getCurrentPos();
+    glm::vec3 getCurrentPos() const;
 
 private:
     unsigned int texture = 5;

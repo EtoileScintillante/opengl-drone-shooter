@@ -100,7 +100,7 @@ void Mobs::died(Model skullModel, Shader skullShader, glm::mat4 cameraView, glm:
     }
 }
 
-glm::vec3 Mobs::getCurrentPos()
+glm::vec3 Mobs::getCurrentPos() const
 {
     return currentPosition;
 }
