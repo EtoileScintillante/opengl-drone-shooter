@@ -2,7 +2,7 @@
 
 Tree::Tree(){};
 
-Tree::Tree(std::vector<Data> verticesTrunk, std::vector<Data> verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize)
+Tree::Tree(std::vector< Vertex > verticesTrunk, std::vector< Vertex > verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize)
 {
     this->verticesTrunk = verticesTrunk;
     this->verticesLeaves = verticesLeaves;
@@ -69,14 +69,14 @@ void Tree::configureTree()
     glBindVertexArray(VAOtrunk);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOtrunk);
-    glBufferData(GL_ARRAY_BUFFER, verticesTrunk.size() * sizeof(Data), &verticesTrunk[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesTrunk.size() * sizeof(Vertex), &verticesTrunk[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     // now do the same for the leaves
     glGenVertexArrays(1, &VAOleaves);
@@ -84,14 +84,14 @@ void Tree::configureTree()
     glBindVertexArray(VAOleaves);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOleaves);
-    glBufferData(GL_ARRAY_BUFFER, verticesLeaves.size() * sizeof(Data), &verticesLeaves[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesLeaves.size() * sizeof(Vertex), &verticesLeaves[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     loadTexture(pathTrunkTexture, textureTrunk, true);
     loadTexture(pathLeavesTexture, textureLeaves, true);

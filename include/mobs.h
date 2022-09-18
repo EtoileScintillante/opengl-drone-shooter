@@ -19,15 +19,14 @@
 #include <vector>
 
 #include "shader.h"
-#include "data.h"
 #include "texture_loading.h"
 #include "box.h"
 #include "model.h"
 
 class Mobs {
 public:
-    std::vector < Data > verticesZombie;
-    std::vector < Data > verticesCreeper;
+    std::vector < Vertex > verticesZombie;
+    std::vector < Vertex > verticesCreeper;
     std::vector < glm::vec3 > treePositions;
     std::string texturePath;
     unsigned int terrainSize;
@@ -55,7 +54,7 @@ public:
      * @param minHeight minimum y value for floating height of mob (measured from the ground).
      * @param maxheight maximum y value for floating height of mob (measured from the ground).
      */
-    Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight);
+    Mobs(std::vector < Vertex > verticesZombie, std::vector < Vertex > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight);
 
     /**
      * @brief draws a mob.

@@ -19,13 +19,13 @@
 #include <vector>
 
 #include "shader.h"
-#include "data.h"
 #include "texture_loading.h"
+#include "mesh.h"
 
 class Ground {
 public:
-    std::vector < Data > verticesDirt;
-    std::vector < Data > verticesStone;
+    std::vector < Vertex > verticesDirt;
+    std::vector < Vertex > verticesStone;
     std::string texturePathDirt;
     std::string texturePathStone;
     unsigned int terrainSize;
@@ -45,7 +45,7 @@ public:
      * (the terrain is shaped like a square), the input variable here should correspond to the amount of blocks that make up one side of the square).
     * @param groundLevel y level of the ground.
     */
-    Ground(std::vector < Data > verticesDirt, std::vector < Data > verticesStone, std::string texturePathDirt, std::string texturePathStone,  unsigned int terrainSize, float groundLevel);
+    Ground(std::vector < Vertex > verticesDirt, std::vector < Vertex > verticesStone, std::string texturePathDirt, std::string texturePathStone,  unsigned int terrainSize, float groundLevel);
 
     /**
      * @brief draw the ground. 

@@ -2,7 +2,7 @@
 
 GlowStone::GlowStone(){};
 
-GlowStone::GlowStone(std::vector<Data> verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height)
+GlowStone::GlowStone(std::vector< Vertex > verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height)
 {
     this->verticesGlowStone = verticesGlowStone;
     this->texturePathGlowStone = texturePathGlowStone;
@@ -43,14 +43,14 @@ void GlowStone::configureGlowStone()
     glBindVertexArray(VAO);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, verticesGlowStone.size() * sizeof(Data), &verticesGlowStone[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesGlowStone.size() * sizeof(Vertex), &verticesGlowStone[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     loadTexture(texturePathGlowStone, textureGlowStone, true);
     if (glowStonePositions.size() == 0) {createPositions();} // create positions for the glow stones if they are not already provided

@@ -8,7 +8,6 @@
 #define __WORLD_H__
 
 #include "tree.h"
-#include "data.h"
 #include "ground.h"
 #include "glowstone.h"
 #include "mobs.h"
@@ -48,13 +47,13 @@ public:
 
 private:
     // vertex data
-    std::vector<Data> trunkVertices;      // vertex data needed for rendering trunk blocks
-    std::vector<Data> leavesVertices;     // vertex data needed for rendering leaves blocks
-    std::vector<Data> dirtVertices;       // vertex data needed for rendering dirt blocks
-    std::vector<Data> glowStoneVertices;  // vertex data needed for rendering glow stone blocks
-    std::vector<Data> stoneVertices;      // vertex data needed for rendering stone blocks
-    std::vector<Data> creeperVertices;    // vertex data needed for rendering creeper head blocks
-    std::vector<Data> zombieVertices;     // vertex data needed for rendering zombie head blocks
+    std::vector< Vertex > trunkVertices;      // vertex data needed for rendering trunk blocks
+    std::vector< Vertex > leavesVertices;     // vertex data needed for rendering leaves blocks
+    std::vector< Vertex > dirtVertices;       // vertex data needed for rendering dirt blocks
+    std::vector< Vertex > glowStoneVertices;  // vertex data needed for rendering glow stone blocks
+    std::vector< Vertex > stoneVertices;      // vertex data needed for rendering stone blocks
+    std::vector< Vertex > creeperVertices;    // vertex data needed for rendering creeper head blocks
+    std::vector< Vertex > zombieVertices;     // vertex data needed for rendering zombie head blocks
     // textures
     std::string texturePath;      // path to where all the texture files are located
     std::string pathTrunkDirtTex; // filename of trunk and dirt blocks texture 

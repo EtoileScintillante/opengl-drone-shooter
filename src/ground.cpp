@@ -2,7 +2,7 @@
 
 Ground::Ground(){};
 
-Ground::Ground(std::vector<Data> verticesDirt, std::vector<Data> verticesStone, std::string texturePathDirt, std::string texturePathStone, unsigned int terrainSize, float groundLevel)
+Ground::Ground(std::vector< Vertex > verticesDirt, std::vector< Vertex > verticesStone, std::string texturePathDirt, std::string texturePathStone, unsigned int terrainSize, float groundLevel)
 {
     this->verticesDirt = verticesDirt;
     this->verticesStone = verticesStone;
@@ -63,14 +63,14 @@ void Ground::configureGround()
     glBindVertexArray(VAOdirt);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOdirt);
-    glBufferData(GL_ARRAY_BUFFER, verticesDirt.size() * sizeof(Data), &verticesDirt[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesDirt.size() * sizeof(Vertex), &verticesDirt[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     // now do the same for the stone
     glGenVertexArrays(1, &VAOstone);
@@ -78,14 +78,14 @@ void Ground::configureGround()
     glBindVertexArray(VAOstone);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, VBOstone);
-    glBufferData(GL_ARRAY_BUFFER, verticesStone.size() * sizeof(Data), &verticesStone[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesStone.size() * sizeof(Vertex), &verticesStone[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     loadTexture(texturePathDirt, textureDirt, true);
     loadTexture(texturePathStone, textureStone, true);

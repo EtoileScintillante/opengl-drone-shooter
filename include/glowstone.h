@@ -19,12 +19,12 @@
 #include <vector>
 
 #include "shader.h"
-#include "data.h"
 #include "texture_loading.h"
+#include "mesh.h"
 
 class GlowStone {
 public:
-    std::vector < Data > verticesGlowStone;
+    std::vector < Vertex > verticesGlowStone;
     std::string texturePathGlowStone;
     std::vector < glm::vec3 > treePositions;
     std::vector < glm::vec3 > glowStonePositions;
@@ -43,7 +43,7 @@ public:
     * @param numGlowStones number of glow stones.
     * @param height floating height of glow stone(s). Measured from the the bottom trunk block of a tree.
     */
-    GlowStone(std::vector < Data > verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height);
+    GlowStone(std::vector < Vertex > verticesGlowStone, std::string texturePathGlowStone, std::vector < glm::vec3 > treePositions, unsigned int numGlowStones, float height);
 
     /**
      * @brief draw the glow stone(s). 

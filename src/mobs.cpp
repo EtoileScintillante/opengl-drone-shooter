@@ -2,7 +2,7 @@
 
 Mobs::Mobs(){};
 
-Mobs::Mobs(std::vector < Data > verticesZombie, std::vector < Data > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight)
+Mobs::Mobs(std::vector < Vertex > verticesZombie, std::vector < Vertex > verticesCreeper, std::vector < glm::vec3 > treePositions, std::string texturePath, unsigned int terrainSize, float groundY, float blockSize, float minHeight, float maxHeight)
 {
     this->verticesZombie = verticesZombie;
     this->verticesCreeper = verticesCreeper;
@@ -113,14 +113,14 @@ void Mobs::configureMobs()
     glBindVertexArray(zombieVAO);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, zombieVBO);
-    glBufferData(GL_ARRAY_BUFFER, verticesZombie.size() * sizeof(Data), &verticesZombie[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesZombie.size() * sizeof(Vertex), &verticesZombie[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     // now do the same for the creeper block
     glGenVertexArrays(1, &creeperVAO);
@@ -128,14 +128,14 @@ void Mobs::configureMobs()
     glBindVertexArray(creeperVAO);
     // load vertex data into vertex buffers
     glBindBuffer(GL_ARRAY_BUFFER, creeperVBO);
-    glBufferData(GL_ARRAY_BUFFER, verticesCreeper.size() * sizeof(Data), &verticesCreeper[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, verticesCreeper.size() * sizeof(Vertex), &verticesCreeper[0], GL_STATIC_DRAW);
     // set the vertex attribute pointers
     // positions
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)0);
     // texture coords
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Data), (void *)offsetof(Data, TexCoords));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void *)offsetof(Vertex, TexCoords));
 
     loadTexture(texturePath, texture, true);
     getRandomPos();

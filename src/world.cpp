@@ -56,7 +56,7 @@ void World::setupData()
     int indexTex = 0;
     for (unsigned i = 0; i < getPositionData().size(); i++) // 36 lines of position data (all objects, except model(s) are just blocks)
     {
-        Data vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
+        Vertex vertexTrunk, vertexLeaves, vertexDirt, vertexCreeper, vertexZombie;
         // all blocks have the same positon data (leaves, glow stone and stone also have same texture coords data)
         vertexTrunk.Position = vertexLeaves.Position = vertexDirt.Position = vertexCreeper.Position = vertexZombie.Position = glm::vec3(positionData[indexPos], positionData[indexPos + 1], positionData[indexPos + 2]);
         // a line of texture coords data in textureCoords[] looks like: trunk.x, trunk.y, dirt.x, dirt.y, leaves.x, leaves.y (0, 1, 2, 3, 4, 5)

@@ -19,13 +19,13 @@
 #include <vector>
 
 #include "shader.h"
-#include "data.h"
 #include "texture_loading.h"
+#include "mesh.h"
 
 class Tree {
 public:
-    std::vector < Data > verticesTrunk;
-    std::vector < Data > verticesLeaves;
+    std::vector < Vertex > verticesTrunk;
+    std::vector < Vertex > verticesLeaves;
     std::vector < glm::vec3 > treePositions; 
     std::string pathTrunkTexture;
     std::string pathLeavesTexture;
@@ -52,7 +52,7 @@ public:
      * @param groundLevel y value of the ground's position
      * @param blockSize block size
      */
-    Tree(std::vector < Data > verticesTrunk, std::vector < Data > verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize);
+    Tree(std::vector < Vertex > verticesTrunk, std::vector < Vertex > verticesLeaves, std::string pathTrunkTexture, std::string pathLeavesTexture, unsigned int numTrees, unsigned int heightTree, unsigned int terrainSize, float groundLevel, float blockSize);
 
     /**
      * @brief draw the tree(s). The shaders do not have to be different.
