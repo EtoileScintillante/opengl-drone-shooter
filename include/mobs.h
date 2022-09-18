@@ -7,10 +7,6 @@
 #ifndef __MOBS_H__
 #define __MOBS_H__
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
-#include <stb_image.h>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 

@@ -19,7 +19,6 @@
 #include <vector>
 
 #include "shader.h"
-#include "data.h"
 #include "texture_loading.h"
 
 class SkyBox {
