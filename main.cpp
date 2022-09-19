@@ -86,6 +86,7 @@ int main()
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
     Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
     Shader skullShader("shaders/model_loading.vert", "shaders/model_loading.frag");
+    Shader treeShader("shaders/model_loading.vert", "shaders/model_loading.frag");
 
     // initialize world object (includes ground, trees, glow stones and mobs)
     World world;
@@ -97,8 +98,9 @@ int main()
     SkyBox skybox(skyboxVertices, filenames, dirName);
 
     // load handgun and skull model
-    Model handGun("resources/models/handgun/Handgun_obj.obj");
-    Model skull("resources/models/skull/skull.obj");
+    Model handGun("resources/models/handgun/Handgun_obj.obj", false);
+    Model skull("resources/models/skull/skull.obj", false);
+    Model treeModel("resources/models/trees/trees9.obj", true);
 
     // camera configuration
     camera.FPS = true;
@@ -171,6 +173,15 @@ int main()
         {
             world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime, currentFrame);
         }
+
+        treeShader.use();
+        treeShader.setMat4("projection", projection);
+        treeShader.setMat4("view", camera.GetViewMatrix());
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(1.0f, -1.4f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.4f));
+        treeShader.setMat4("model", model);
+        treeModel.drawSpecificMesh(treeShader, 1); // 3 2
 
         // render skybox
         glDepthFunc(GL_LEQUAL);
