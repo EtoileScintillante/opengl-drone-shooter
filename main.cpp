@@ -2,6 +2,7 @@
 
 // TODO: maybe look for another way to organize the objects
 // because all of the constructors need a lot of arguments
+// make environment more realistic to better match the skybox (maybe no more minecraft blocks?)
 
 #include "camera.h"
 #include "model.h"
