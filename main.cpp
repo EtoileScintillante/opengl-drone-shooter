@@ -1,15 +1,11 @@
 /* Shoot zombie and creeper heads */
 
-// TODO: maybe look for another way to organize the objects
-// because all of the constructors need a lot of arguments
-// make environment more realistic to better match the skybox, more precisely:
-// replace dirt and stone blocks with field.png for a more realistic ground
-// replace mob blocks with drone/aircraft models
-// replace all minecraft trees with tree models
-// what I'd like is for ground.h, tree.h, glowstone.h to be removed
-// and do all the terrain rendering from world.h instead of all
-// these separate terrain related objects. 
-// Also, I'd like to create an enemy object (like mobs.h, bur for drone model)
+// TODO:
+// fix problem with gun (it does not render now)
+// add enemy class (drones)
+// add bounding box to drone for collision detection
+// maybe: implement BPR (field.png, used for the ground, is part PBR texture)
+// maybe: merge camera and gun into one player class
 
 #include "camera.h"
 #include "model.h"
@@ -90,32 +86,21 @@ int main()
 
     // prepare game related objects
     // ----------------------------
-    // build and compile shaders for handgun and skybox
+    // build and compile shaders for handgun 
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
-    Shader skyboxShader("shaders/skybox.vert", "shaders/skybox.frag");
-    Shader skullShader("shaders/model_loading.vert", "shaders/model_loading.frag");
-    Shader treeShader("shaders/model_loading.vert", "shaders/model_loading.frag");
 
-    // initialize world object (includes ground, trees, glow stones and mobs)
-    World world;
-
-    // initialize skybox object
-    std::vector<float> skyboxVertices = getSkyboxPositionData();
-    std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
-    std::string dirName = "resources/skybox";
-    SkyBox skybox(skyboxVertices, filenames, dirName);
-
-    // load handgun and skull model
+    // load handgun model
     Model handGun("resources/models/handgun/Handgun_obj.obj", false);
-    Model skull("resources/models/skull/skull.obj", false);
-    Model treeModel("resources/models/trees/trees9.obj", true);
+
+    // initialize world object 
+    World world;
 
     // camera configuration
     camera.FPS = true;
-    camera.bottomLimitX = 0.0f;
-    camera.bottomLimitZ = 0.0f;
-    camera.upperLimitX = World::TERRAIN_SIZE;
-    camera.upperLimitZ = World::TERRAIN_SIZE;
+    camera.bottomLimitX = -World::TERRAIN_SIZE / 2;
+    camera.bottomLimitZ = -World::TERRAIN_SIZE / 2;
+    camera.upperLimitX = World::TERRAIN_SIZE / 2;
+    camera.upperLimitZ = World::TERRAIN_SIZE / 2;
 
     // set projection matrix (this does not change so we set it outside of the render loop)
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
@@ -140,21 +125,12 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // tree model rendering example (should eventually happen in world.h)
-        treeShader.use();
-        treeShader.setMat4("projection", projection);
-        treeShader.setMat4("view", camera.GetViewMatrix());
-        for (unsigned i = 0; i < World::N_TREES; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, world.treePos[i]);
-            model = glm::scale(model, glm::vec3(0.4f));
-            treeShader.setMat4("model", model);
-            treeModel.drawSpecificMesh(treeShader, 1);
-        }
+        // send matrices to world
+        world.projection = projection;
+        world.view = camera.GetViewMatrix();
 
-        // draw the world (ground + trees + glow stones + mobs)
-        world.Draw(camera.GetViewMatrix(), projection, currentFrame);
+        // draw terrain (ground, trees and skybox)
+        world.Draw();
 
         // view and model transformation for handgun
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), 0.6f, 95.0f); 
@@ -172,7 +148,7 @@ int main()
         {
             handGun.drawSpecificMesh(handGunShader, 5);
             startRecoil = true;
-            world.mobs.collisionDetection(camera.Position, camera.Front, world.TERRAIN_SIZE * 2);
+            //TODO: collision detection
         }
 
         // start the recoil animation
@@ -189,16 +165,8 @@ int main()
             drawhandGun(handGun, handGunShader); // render rotating handgun
         }
 
-        // render skull when a mob has been killed
-        if (world.mobs.hasDied)
-        {
-            world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime, currentFrame);
-        }
-
-        // render skybox
-        glDepthFunc(GL_LEQUAL);
-        skybox.Draw(skyboxShader, camera.GetViewMatrix(), projection);
-        glDepthFunc(GL_LESS);
+        // make drone explosed after it has been hit (use geometry shader!)
+        // TODO 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
