@@ -1,8 +1,8 @@
 /* Shoot zombie and creeper heads */
 
 // TODO:
-// fix problem with gun (it does not render now)
 // add enemy class (drones)
+// generate nice positions for the flowers
 // add bounding box to drone for collision detection
 // maybe: implement BPR (field.png, used for the ground, is part PBR texture)
 // maybe: merge camera and gun into one player class
@@ -86,10 +86,8 @@ int main()
 
     // prepare game related objects
     // ----------------------------
-    // build and compile shaders for handgun 
+    // create shaders for handgun and load handgun model
     Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
-
-    // load handgun model
     Model handGun("resources/models/handgun/Handgun_obj.obj", false);
 
     // initialize world object 
