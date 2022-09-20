@@ -1,5 +1,7 @@
 #include "model.h"
 
+Model::Model(){};
+
 Model::Model(std::string const &path, bool flipVertically, bool gamma) : gammaCorrection(gamma)
 {
     this->flipVertically = flipVertically;

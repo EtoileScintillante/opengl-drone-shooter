@@ -37,7 +37,10 @@ public:
     std::string directory;
     bool gammaCorrection;
     bool flipVertically;                    // flip image vertically on load? 
-
+    
+    /// default constructor
+    Model();
+    
     /// constructor, expects a filepath to a 3D model.
     Model(std::string const &path, bool flipVertically, bool gamma = false);
 
