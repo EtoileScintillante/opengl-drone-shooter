@@ -2,7 +2,14 @@
 
 // TODO: maybe look for another way to organize the objects
 // because all of the constructors need a lot of arguments
-// make environment more realistic to better match the skybox (maybe no more minecraft blocks?)
+// make environment more realistic to better match the skybox, more precisely:
+// replace dirt and stone blocks with field.png for a more realistic ground
+// replace mob blocks with drone/aircraft models
+// replace all minecraft trees with tree models
+// what I'd like is for ground.h, tree.h, glowstone.h to be removed
+// and do all the terrain rendering from world.h instead of all
+// these separate terrain related objects. 
+// Also, I'd like to create an enemy object (like mobs.h, bur for drone model)
 
 #include "camera.h"
 #include "model.h"
@@ -133,6 +140,19 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // tree model rendering example (should eventually happen in world.h)
+        treeShader.use();
+        treeShader.setMat4("projection", projection);
+        treeShader.setMat4("view", camera.GetViewMatrix());
+        for (unsigned i = 0; i < World::N_TREES; i++)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, world.treePos[i]);
+            model = glm::scale(model, glm::vec3(0.4f));
+            treeShader.setMat4("model", model);
+            treeModel.drawSpecificMesh(treeShader, 1);
+        }
+
         // draw the world (ground + trees + glow stones + mobs)
         world.Draw(camera.GetViewMatrix(), projection, currentFrame);
 
@@ -174,15 +194,6 @@ int main()
         {
             world.mobs.died(skull, skullShader, camera.GetViewMatrix(), projection, deltaTime, currentFrame);
         }
-
-        treeShader.use();
-        treeShader.setMat4("projection", projection);
-        treeShader.setMat4("view", camera.GetViewMatrix());
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(1.0f, -1.4f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.4f));
-        treeShader.setMat4("model", model);
-        treeModel.drawSpecificMesh(treeShader, 1); // 3 2
 
         // render skybox
         glDepthFunc(GL_LEQUAL);
