@@ -14,12 +14,13 @@ void World::Draw()
     drawTrees();
     drawGround();
     drawSkyBox();
+    drawFlowers();
 }
 
 void World::setupWorld()
 {
     // create shaders
-    shaderTree = Shader("shaders/model_loading.vert", "shaders/model_loading.frag");
+    shaderModel = Shader("shaders/model_loading.vert", "shaders/model_loading.frag");
     shaderGround = Shader("shaders/ground.vert", "shaders/ground.frag");
     shaderSkybox = Shader("shaders/skybox.vert", "shaders/skybox.frag");
 
@@ -47,26 +48,28 @@ void World::setupWorld()
     std::string dirName = "resources/skybox";
     skybox = SkyBox(skyboxVertices, filenames, dirName);
 
-    // load model
+    // load models
+    flowers = Model("resources/models/plant/anemone_hybrida.obj", true);
     tree = Model("resources/models/trees/trees9.obj", true);
 
-    // generate tree positions
+    // generate positions
     createTreePositions();
+    createFlowerPositions();
 }
 
 void World::drawTrees()
 {
     // set uniforms for tree shader and draw the trees
-    shaderTree.use();
-    shaderTree.setMat4("projection", projection);
-    shaderTree.setMat4("view", view);
+    shaderModel.use();
+    shaderModel.setMat4("projection", projection);
+    shaderModel.setMat4("view", view);
     for (unsigned i = 0; i < World::N_TREES; i++)
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, treePos[i]);
         model = glm::scale(model, glm::vec3(0.4f));
-        shaderTree.setMat4("model", model);
-        tree.drawSpecificMesh(shaderTree, 1);
+        shaderModel.setMat4("model", model);
+        tree.drawSpecificMesh(shaderModel, 1);
     }
 }
 
@@ -92,6 +95,22 @@ void World::drawSkyBox()
     glDepthFunc(GL_LEQUAL);
     skybox.Draw(shaderSkybox, view, projection);
     glDepthFunc(GL_LESS);
+}
+
+void World::drawFlowers()
+{
+    // set uniforms for tree shader and draw the trees
+    shaderModel.use();
+    shaderModel.setMat4("projection", projection);
+    shaderModel.setMat4("view", view);
+    for (unsigned int i = 0; i < flowerPos.size(); i++)
+    {
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, flowerPos[i]);
+        model = glm::scale(model, glm::vec3(2.5f));
+        shaderModel.setMat4("model", model);
+        flowers.Draw(shaderModel);
+    }
 }
 
 std::vector<float> World::getSkyboxVertexData()
@@ -173,5 +192,16 @@ void World::createTreePositions()
         float posZ = xzPlane(gen);
         glm::vec3 vec = {posX, GROUND_Y, posZ}; 
         treePos.push_back(vec);
+    }
+}
+
+void World::createFlowerPositions()
+{
+    for (unsigned int i = 0; i < N_TREES; i++)
+    {
+        glm::vec3 pos = glm::vec3(treePos[i].x + 1.2, treePos[i].y - 0.1, treePos[i].z);
+        glm::vec3 pos1 = glm::vec3(treePos[i].x - 0.5, treePos[i].y - 0.1, treePos[i].z);
+        flowerPos.push_back(pos);
+        flowerPos.push_back(pos1);
     }
 }
