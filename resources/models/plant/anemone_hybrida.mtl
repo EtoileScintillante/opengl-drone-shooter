@@ -1,0 +1,95 @@
+# Blender MTL File: 'None'
+# Material Count: 7
+
+newmtl Stamen_1
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.200000 0.200000 0.200000
+Ks 1.000000 1.000000 1.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_stamen_normals.jpg
+map_Kd maps/anemone_hybrida_stamen_a1.jpg
+map_d maps/anemone_hybrida_stamen_mask.jpg
+
+newmtl bud_1
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.200000 0.200000 0.200000
+Ks 0.160000 0.160000 0.160000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_bud_normals.jpg
+map_Kd maps/anemone_hybrida_bud.jpg
+refl maps/anemone_hybrida_bud_reflect.jpg
+
+newmtl flower_1
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.200000 0.200000 0.200000
+Ks 0.109886 0.109886 0.109886
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_petal_normals.jpg
+map_Kd maps/anemone_hybrida_petal_a1.jpg
+map_d maps/anemone_hybrida_petal_mask1.jpg
+refl maps/anemone_hybrida_petal_reflect.jpg
+
+newmtl flower_2
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.200000 0.200000 0.200000
+Ks 0.906250 0.906250 0.906250
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_petal_normals.jpg
+map_Kd maps/anemone_hybrida_petal_a1.jpg
+map_d maps/anemone_hybrida_petal_mask1.jpg
+refl maps/anemone_hybrida_petal_reflect.jpg
+
+newmtl leaf_1
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.250000 0.250000 0.250000
+Ks 0.069091 0.069091 0.069091
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_leaf_normals.jpg
+map_Kd maps/anemone_hybrida_leaf_a1.jpg
+map_d maps/anemone_hybrida_leaf_mask.jpg
+refl maps/anemone_hybrida_leaf_reflect.jpg
+
+newmtl leaf_2
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.250000 0.250000 0.250000
+Ks 0.025455 0.025455 0.025455
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump maps/anemone_hybrida_leaf_normals.jpg
+map_Kd maps/anemone_hybrida_leaf_a2.jpg
+map_d maps/anemone_hybrida_leaf_mask.jpg
+refl maps/anemone_hybrida_leaf_reflect.jpg
+
+newmtl stem_1
+Ns 179.999996
+Ka 1.000000 1.000000 1.000000
+Kd 0.150000 0.150000 0.150000
+Ks 0.044432 0.044432 0.044432
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Kd maps/anemone_hybrida_stem_a1.jpg
