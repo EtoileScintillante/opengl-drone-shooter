@@ -1,5 +1,7 @@
 #include "skybox.h"
 
+SkyBox::SkyBox(){};
+
 SkyBox::SkyBox(std::vector< float > skyboxVertices, std::vector< std::string > filenames, std::string dirName)
 {
     this->skyboxVertices = skyboxVertices;

@@ -27,6 +27,9 @@ public:
     std::vector< std::string > filenames;
     std::string dirName;
 
+    /// default constructor
+    SkyBox();
+
     /**
      * @brief constructs a new Sky Box object and configures it automatically.
      * 
