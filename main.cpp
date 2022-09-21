@@ -1,45 +1,29 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// fix gun error (gun not showing)
+// fix gun error (gun not rendering properly + recoil animation is not working correctly)
 // add enemy class (drones)
 // add bounding box to drone for collision detection
-// maybe: implement BPR (field.png, used for the ground, is part PBR texture)
-// maybe: merge camera and gun into one player class
 
-#include "camera.h"
 #include "model.h"
-#include "gun.h"
 #include "skybox.h"
 #include "box.h"
-#include "world.h"
+#include "player.h"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void mouse_callback(GLFWwindow *window, double xposIn, double yposIn);
 
-// settings screen
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-// camera
-Camera camera(glm::vec3(0.0f, 0.0f, 0.0f)); // starting position of camera (player)
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+// player
+Player player; 
+float lastX = Player::SCR_WIDTH / 2.0f;
+float lastY = Player::SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-bool isWalking;
 
 // timing
 float currentFrame;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-// handgun
-glm::vec3 gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // (base) position for gun
-bool shot = false;                                      // has player taken a shot? (pressed space)
-bool startRecoil;                                       // start recoil animation?
-bool goDown = false;                                    // needed for recoil animation --> gun needs to move down if true
-float angle = 0;                                        // needed for recoil animation, this angle will be updated every frame to make the gun rotate up and then down
 
 int main()
 {
@@ -56,7 +40,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow *window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "FPS", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(Player::SCR_WIDTH, Player::SCR_HEIGHT, "FPS", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -86,22 +70,8 @@ int main()
 
     // prepare game related objects
     // ----------------------------
-    // create shaders for handgun and load handgun model
-    Shader handGunShader("shaders/model.vert", "shaders/model.frag");
-    Model handGun("resources/models/handgun/Handgun_obj.obj", false);
-
-    // initialize world object 
+    player.setup();
     World world;
-
-    // camera configuration
-    camera.FPS = true;
-    camera.bottomLimitX = -World::TERRAIN_SIZE / 2;
-    camera.bottomLimitZ = -World::TERRAIN_SIZE / 2;
-    camera.upperLimitX = World::TERRAIN_SIZE / 2;
-    camera.upperLimitZ = World::TERRAIN_SIZE / 2;
-
-    // set projection matrix (this does not change so we set it outside of the render loop)
-    glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 
     // render loop
     // -----------
@@ -111,10 +81,10 @@ int main()
         currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        camera.currentFrame = currentFrame; // pass time to camera
+        player.currentFrame = currentFrame; // pass time to camera
 
         // camera movement when player is not moving (to make the player look more alive)
-        camera.passiveMotion(isWalking);
+        player.passiveMotion();
 
         // input
         processInput(window);
@@ -124,43 +94,38 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // view and projection for world objects 
-        world.projection = projection;
-        world.view = camera.GetViewMatrix();
+        world.projection = player.getProjectionMatrix();
+        world.view = player.GetViewMatrix();
 
-        // view and model transformation for handgun
-        glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), 0.6f, 95.0f); 
-        handGunShader.setMat4("view", camera.GetViewMatrix());
-        handGunShader.setMat4("model", gunModel);
-
-        // draw terrain (ground, trees and skybox)
+        // draw world objects (ground, trees and skybox)
         world.Draw();
-
+        
         // draw the handgun in base position
-        if (!shot)
+        if (!player.shot)
         {
-            drawhandGun(handGun, handGunShader);
+            player.drawGun();
         }
 
         // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
-        if (shot && !startRecoil)
+        if (player.shot && !player.startRecoil)
         {
-            handGun.drawSpecificMesh(handGunShader, 5);
-            startRecoil = true;
+            player.drawGunFire();
+            player.startRecoil = true;
             //TODO: collision detection
         }
 
         // start the recoil animation
-        if (startRecoil)
+        if (player.startRecoil)
         {
-            if (!goDown)
+            if (!player.goDown)
             {
-                startRecoilAnimation(handGunShader, gunModel, angle, goDown); // start moving up
+                player.startRecoilAnimation(); // start moving up
             }
             else
             {
-                goBackToBase(handGunShader, gunModel, angle, shot, goDown, startRecoil); // start moving down
+                player.endRecoilAnimation(); // start moving down
             }
-            drawhandGun(handGun, handGunShader); // render rotating handgun
+            player.drawGun(); // render rotating handgun
         }
 
         // make drone explosed after it has been hit (use geometry shader!)
@@ -185,40 +150,38 @@ void processInput(GLFWwindow *window)
     }
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        isWalking = true;
-        camera.ProcessKeyboard(Camera::FORWARD, deltaTime);
+        player.isWalking = true;
+        player.ProcessKeyboard(Player::FORWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
-        isWalking = true;
-        camera.ProcessKeyboard(Camera::BACKWARD, deltaTime);
+        player.isWalking = true;
+        player.ProcessKeyboard(Player::BACKWARD, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
-        isWalking = true;
-        camera.ProcessKeyboard(Camera::LEFT, deltaTime);
+        player.isWalking = true;
+        player.ProcessKeyboard(Player::LEFT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
-        isWalking = true;
-        camera.ProcessKeyboard(Camera::RIGHT, deltaTime);
+        player.isWalking = true;
+        player.ProcessKeyboard(Player::RIGHT, deltaTime);
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        shot = true;
+        player.shot = true;
     }
-    if (isWalking)
+    if (player.isWalking)
     {
-        walkingMotion(gunPosition.y, gunPosition.z, currentFrame);
+        player.walkingMotion();
     }
-    isWalking = false;
+    player.isWalking = false;
 }
 
 /// glfw: whenever the window size changed (by OS or user resize) this callback function executes.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
 }
 
@@ -240,5 +203,5 @@ void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    player.ProcessMouseMovement(xoffset, yoffset);
 }
