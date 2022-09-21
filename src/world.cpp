@@ -18,8 +18,8 @@ World::~World()
 
 void World::Draw()
 {
-    drawGround();
     drawSkyBox();
+    drawGround();
     drawFlowers();
     drawTrees();
 }
@@ -30,6 +30,24 @@ void World::setupWorld()
     shaderModel = Shader("shaders/instancing.vert", "shaders/model.frag");
     shaderGround = Shader("shaders/ground.vert", "shaders/ground.frag");
     shaderSkybox = Shader("shaders/skybox.vert", "shaders/skybox.frag");
+
+    // load models
+    flowers = Model("resources/models/plant/anemone_hybrida.obj", true);
+    tree = Model("resources/models/trees/trees9.obj", true);
+
+    // generate positions, model matrices and set up instanced array buffers for trees and flowers
+    createTreePositions();
+    createFlowerPositions();
+    createTreeModelMatrices();
+    createFlowerModelMatrices();
+    setupInstancedArrayTrees();
+    setupInstancedArrayFlowers();
+
+    // get skybox vertex data and initialize skybox object
+    skyboxVertices = getSkyboxVertexData();
+    std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
+    std::string dirName = "resources/skybox";
+    skybox = SkyBox(skyboxVertices, filenames, dirName);
 
     // get ground vertex data and set up the buffers
     groundVertices = getGroundVertexData();
@@ -48,28 +66,6 @@ void World::setupWorld()
 
     // load ground texture
     groundTexture = TextureFromFile("field.png", "resources/textures", false);
-
-    // get skybox vertex data and initialize skybox object
-    skyboxVertices = getSkyboxVertexData();
-    std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
-    std::string dirName = "resources/skybox";
-    skybox = SkyBox(skyboxVertices, filenames, dirName);
-
-    // load models
-    flowers = Model("resources/models/plant/anemone_hybrida.obj", true);
-    tree = Model("resources/models/trees/trees9.obj", true);
-
-    // generate positions
-    createTreePositions();
-    createFlowerPositions();
-
-    // generate model matrices
-    createTreeModelMatrices();
-    createFlowerModelMatrices();
-
-    // setup instanced array buffers
-    setupInstancedArrayTrees();
-    setupInstancedArrayFlowers();
 }
 
 void World::drawTrees()
