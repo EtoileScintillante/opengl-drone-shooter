@@ -1,8 +1,8 @@
-/* Shoot zombie and creeper heads */
+/// === Shoot drones! === ///
 
 // TODO:
+// fix gun error (gun not showing)
 // add enemy class (drones)
-// generate nice positions for the flowers
 // add bounding box to drone for collision detection
 // maybe: implement BPR (field.png, used for the ground, is part PBR texture)
 // maybe: merge camera and gun into one player class
@@ -23,7 +23,7 @@ const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 // camera
-Camera camera(glm::vec3(15.0f, 0.0f, 15.0f)); // starting position of camera (player)
+Camera camera(glm::vec3(0.0f, 0.0f, 0.0f)); // starting position of camera (player)
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -87,7 +87,7 @@ int main()
     // prepare game related objects
     // ----------------------------
     // create shaders for handgun and load handgun model
-    Shader handGunShader("shaders/model_loading.vert", "shaders/model_loading.frag");
+    Shader handGunShader("shaders/model.vert", "shaders/model.frag");
     Model handGun("resources/models/handgun/Handgun_obj.obj", false);
 
     // initialize world object 
@@ -123,17 +123,17 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // send matrices to world
+        // view and projection for world objects 
         world.projection = projection;
         world.view = camera.GetViewMatrix();
-
-        // draw terrain (ground, trees and skybox)
-        world.Draw();
 
         // view and model transformation for handgun
         glm::mat4 gunModel = getGunModelMatrix(gunPosition, camera.GetViewMatrix(), 0.6f, 95.0f); 
         handGunShader.setMat4("view", camera.GetViewMatrix());
         handGunShader.setMat4("model", gunModel);
+
+        // draw terrain (ground, trees and skybox)
+        world.Draw();
 
         // draw the handgun in base position
         if (!shot)
