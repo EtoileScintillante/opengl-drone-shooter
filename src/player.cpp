@@ -88,7 +88,7 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
     // also make sure player stays between the accepted x and z limits
     if (Position.x < BOTTOM_LIMIT_X)
     {
-        Position.x =BOTTOM_LIMIT_X;
+        Position.x = BOTTOM_LIMIT_X;
     }
     if (Position.x > UPPER_LIMIT_X - 1.0f)
     {
@@ -142,13 +142,13 @@ void Player::walkingMotion()
     /* Here we make sure that the gun position always stays within a certain range,
     otherwise the gun will slowly move out of view */
     float newPosZ = gunPosition.z + sin(currentFrame * 15) * 0.004f;
-    if (newPosZ > -1.52 && newPosZ < -1.48) 
+    if (newPosZ > -1.52 && newPosZ < -1.48)
     {
         gunPosition.z = newPosZ;
     }
-    
+
     float newPosY = gunPosition.y + sin(currentFrame * 15) * 0.004f;
-    if (newPosY > -0.52 && newPosY < -0.48) 
+    if (newPosY > -0.52 && newPosY < -0.48)
     {
         gunPosition.y = newPosY;
     }
@@ -182,10 +182,10 @@ void Player::setProjectionMatrix()
 
 void Player::setGunModelMatrix()
 {
-    gunModelMatrix = glm::mat4(1.0); 
-    gunModelMatrix = glm::translate(gunModelMatrix, gunPosition); // place gun in bottom right corner
+    gunModelMatrix = glm::mat4(1.0);
+    gunModelMatrix = glm::translate(gunModelMatrix, gunPosition);                                   // place gun in bottom right corner
     gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(95.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // rotate gun so it points inwards
-    gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.6f)); // make gun a bit smaller
+    gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.6f));                                   // make gun a bit smaller
     gunModelMatrix = glm::inverse(GetViewMatrix()) * gunModelMatrix;
 }
 
@@ -206,16 +206,17 @@ void Player::startRecoilAnimation()
         goDown = true;
     }
 
-    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f,  0.0f, 1.0f)); // rotate upwards
-    
+    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate upwards
+
     angle += 6.0; // increase angle with every frame
+    std::cout << angle << " angle in up movement" << std::endl;
 }
 
 void Player::endRecoilAnimation()
 {
     if (angle > 0) // rotate down as long as base position is not reached
     {
-        gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f,  0.0f, -1.0f)); // rotate downwards
+        gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f)); // rotate downwards
     }
 
     if (angle <= 0) // set all values back to what they were before player shot gun
@@ -227,6 +228,38 @@ void Player::endRecoilAnimation()
     }
 
     angle -= 6.0; // decrease angle with every frame
+    std::cout << angle << " angle in down movement" << std::endl;
+}
+
+void Player::controlGunMovements()
+{
+    // draw the handgun in base position
+    if (!shot)
+    {
+        drawGun();
+    }
+
+    // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
+    if (shot && !startRecoil)
+    {
+        drawGunFire();
+        startRecoil = true;
+        // TODO: collision detection
+    }
+
+    // start the recoil animation
+    if (startRecoil)
+    {
+        if (!goDown)
+        {
+            startRecoilAnimation(); // start moving up
+        }
+        else
+        {
+            endRecoilAnimation(); // start moving down
+        }
+        drawGun(); // render rotating handgun
+    }
 }
 
 void Player::updateCameraVectors()

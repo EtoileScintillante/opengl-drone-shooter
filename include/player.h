@@ -54,8 +54,6 @@ public:
     glm::vec3 gunPosition;    // (base) position for gun
     glm::mat4 gunModelMatrix; // model matrix for gun
     bool shot;                // has player taken a shot?
-    bool startRecoil;         // start recoil animation?
-    bool goDown;              // needed for recoil animation; gun needs to move down if true
     // time
     float currentFrame;
     // other
@@ -108,21 +106,26 @@ public:
     /// get gun model matrix.
     glm::mat4 getGunModelMatrix();
 
-    /// starts recoil animation for gun (gun starts moving down).
-    void startRecoilAnimation();
-
-    /// starts second part of recoil animation: gun moves back up to base position.
-    void endRecoilAnimation();
+    /// renders gun and controls the recoil movements.
+    void controlGunMovements();
 
 private:
     glm::mat4 projection; // projection matrix
-    float angle; // needed for recoil animation; this angle will be updated every frame to make the gun rotate up and then down
+    float angle;          // needed for recoil animation; this angle will be updated every frame to make the gun rotate up and then down
+    bool startRecoil;     // start recoil animation?
+    bool goDown;          // needed for recoil animation; gun needs to move down if true
 
     /// set projection matrix.
     void setProjectionMatrix();
 
     /// set gun model matrix.
     void setGunModelMatrix(); 
+
+    /// starts recoil animation for gun (gun starts moving down).
+    void startRecoilAnimation();
+
+    /// starts second part of recoil animation: gun moves back up to base position.
+    void endRecoilAnimation();
 
     /// calculates the front vector from the Camera's (updated) Euler Angles.
     void updateCameraVectors();
