@@ -4,6 +4,7 @@
 // fix walking motion of player (need new method, old one does not work)
 // fix bounding box of enemy (right now it is not fitting/it is way too small)
 // fix floating movement of enemy. Now it looks weird; as if the drone is bouncing
+// fix dying animation of enemy: it should not rely on current time! Need new method.
 
 #include "player.h"
 #include "enemy.h"
