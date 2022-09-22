@@ -100,33 +100,8 @@ int main()
         // draw world objects (ground, trees and skybox)
         world.Draw();
         
-        // draw the handgun in base position
-        if (!player.shot)
-        {
-            player.drawGun();
-        }
-
-        // draw the gunfire (only for one frame, otherwise the gunfire is visible for too long, which just looks weird)
-        if (player.shot && !player.startRecoil)
-        {
-            player.drawGunFire();
-            player.startRecoil = true;
-            //TODO: collision detection
-        }
-
-        // start the recoil animation
-        if (player.startRecoil)
-        {
-            if (!player.goDown)
-            {
-                player.startRecoilAnimation(); // start moving up
-            }
-            else
-            {
-                player.endRecoilAnimation(); // start moving down
-            }
-            player.drawGun(); // render rotating handgun
-        }
+        // draw gun and handle gun recoil movement
+        player.controlGunMovements();
 
         // make drone explosed after it has been hit (use geometry shader!)
         // TODO 
