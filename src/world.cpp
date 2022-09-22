@@ -24,6 +24,11 @@ void World::Draw()
     drawTrees();
 }
 
+std::vector<glm::vec3> World::getTreePositions() const
+{
+    return treePos;
+}
+
 void World::setupWorld()
 {
     // create shaders
