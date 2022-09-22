@@ -1,13 +1,12 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// fix walking motion (need new method, old one does not work)
-// add enemy class (drones) and important to add bounding box to drone for collision detection
+// fix walking motion of player (need new method, old one does not work)
+// fix bounding box of enemy (right now it is not fitting/it is way too small)
+// fix floating movement of enemy. Now it looks weird; as if the drone is bouncing
 
-#include "model.h"
-#include "skybox.h"
-#include "box.h"
 #include "player.h"
+#include "enemy.h"
 
 void processInput(GLFWwindow *window);
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -71,6 +70,7 @@ int main()
     // ----------------------------
     player.setup();
     World world;
+    Enemy drone(world.getTreePositions());
 
     // render loop
     // -----------
@@ -80,7 +80,9 @@ int main()
         currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
-        player.currentFrame = currentFrame; // pass time to camera
+        player.currentFrame = currentFrame; // pass time to player object
+        drone.currentFrame = currentFrame;  // also pass time variables to enemy object
+        drone.deltaTime = deltaTime; 
 
         // movement when player is not moving (to make the player look more alive)
         player.passiveMotion();
@@ -92,18 +94,32 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // view and projection for world objects 
+        // view and projection for world objects and enemy object
         world.projection = player.getProjectionMatrix();
         world.view = player.GetViewMatrix();
+        drone.projection = player.getProjectionMatrix();
+        drone.view = player.GetViewMatrix();
 
         // draw world objects (ground, trees and skybox)
         world.Draw();
-        
+
+        // draw enemy
+        drone.spawn();
+
         // draw gun and handle gun recoil movement
         player.controlGunRendering();
 
-        // make drone explosed after it has been hit (use geometry shader!)
-        // TODO 
+        // check for collisions
+        if (player.shot)
+        {
+            drone.collisionDetection(player.Position, player.Front, World::TERRAIN_SIZE * 2);
+        }
+
+        // if enemy got hit, make it explode
+        if (drone.isDead)
+        {
+            drone.dyingAnimation();
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
