@@ -1,9 +1,8 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// fix gun error (gun not rendering properly + recoil animation is not working correctly)
-// add enemy class (drones)
-// add bounding box to drone for collision detection
+// fix walking motion (need new method, old one does not work)
+// add enemy class (drones) and important to add bounding box to drone for collision detection
 
 #include "model.h"
 #include "skybox.h"
@@ -83,7 +82,7 @@ int main()
         lastFrame = currentFrame;
         player.currentFrame = currentFrame; // pass time to camera
 
-        // camera movement when player is not moving (to make the player look more alive)
+        // movement when player is not moving (to make the player look more alive)
         player.passiveMotion();
 
         // input
@@ -101,7 +100,7 @@ int main()
         world.Draw();
         
         // draw gun and handle gun recoil movement
-        player.controlGunMovements();
+        player.controlGunRendering();
 
         // make drone explosed after it has been hit (use geometry shader!)
         // TODO 
@@ -149,7 +148,7 @@ void processInput(GLFWwindow *window)
     }
     if (player.isWalking)
     {
-        player.walkingMotion();
+       // add walking motion (find new way to do this)
     }
     player.isWalking = false;
 }
