@@ -209,13 +209,13 @@ void Player::startRecoilAnimation()
     gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f, 0.0f, 1.0f)); // rotate upwards
 
     angle += 6.0; // increase angle with every frame
-    std::cout << angle << " angle in up movement" << std::endl;
 }
 
 void Player::endRecoilAnimation()
 {
     if (angle > 0) // rotate down as long as base position is not reached
     {
+        angle -= 6.0; // decrease angle with every frame
         gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(angle), glm::vec3(0.0f, 0.0f, -1.0f)); // rotate downwards
     }
 
@@ -226,12 +226,9 @@ void Player::endRecoilAnimation()
         goDown = false;
         startRecoil = false;
     }
-
-    angle -= 6.0; // decrease angle with every frame
-    std::cout << angle << " angle in down movement" << std::endl;
 }
 
-void Player::controlGunMovements()
+void Player::controlGunRendering()
 {
     // draw the handgun in base position
     if (!shot)

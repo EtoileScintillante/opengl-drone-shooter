@@ -107,7 +107,7 @@ public:
     glm::mat4 getGunModelMatrix();
 
     /// renders gun and controls the recoil movements.
-    void controlGunMovements();
+    void controlGunRendering();
 
 private:
     glm::mat4 projection; // projection matrix
