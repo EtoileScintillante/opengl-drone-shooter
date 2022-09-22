@@ -91,9 +91,6 @@ public:
     /// when player is not moving create slow up and down movement to make player seem alive.
     void passiveMotion();
 
-    /// when player is moving create up and down movement for gun.
-    void walkingMotion();
-
     /// render gun.
     void drawGun();
 
@@ -110,10 +107,11 @@ public:
     void controlGunRendering();
 
 private:
-    glm::mat4 projection; // projection matrix
-    float angle;          // needed for recoil animation; this angle will be updated every frame to make the gun rotate up and then down
-    bool startRecoil;     // start recoil animation?
-    bool goDown;          // needed for recoil animation; gun needs to move down if true
+    float angle;               // recoil animation: this angle will be updated every frame to make the gun rotate up or down
+    bool startRecoil;          // start recoil animation?
+    bool goDown;               // recoil animation: gun needs to move down if true
+    glm::mat4 projection;      // projection matrix
+    glm::mat4 viewLocalMat;	   // view matrix with positional information removed (needed for rendering the gun)
 
     /// set projection matrix.
     void setProjectionMatrix();
