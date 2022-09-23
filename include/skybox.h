@@ -1,7 +1,7 @@
 /*                                  
  * skybox.h
  *
- * Created by: EtoileScintillante
+ * Created by EtoileScintillante.
  */
 
 #ifndef __SKYBOX_H__
@@ -27,7 +27,7 @@ public:
     std::vector< std::string > filenames;
     std::string dirName;
 
-    /// default constructor
+    /// default constructor.
     SkyBox();
 
     /**

@@ -1,7 +1,7 @@
 /**
  * box.h
  * 
- * Created by: EtoileScintillante
+ * Created by EtoileScintillante.
  * Resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
  */
 

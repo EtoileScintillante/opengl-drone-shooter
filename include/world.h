@@ -17,13 +17,13 @@ public:
     // terrain settings
     static const unsigned int N_TREES;   // number of trees
     static const unsigned int N_FLOWERS; // number of flowers
-    static const float TERRAIN_SIZE;     // terrain size (it's a square with (x, z) = (0, 0) as center)
+    static const float TERRAIN_SIZE;     // terrain size; it's a square with (x, z) = (0, 0) as center
     static const float GROUND_Y;         // y level of ground
     // shader related
     glm::mat4 view;       // camera view matrix
     glm::mat4 projection; // projection matrix
 
-    /// constructs a new world object.
+    /// default constructor; constructs a new world object.
     World();
 
     /// destructor (frees allocated memory).
@@ -32,7 +32,7 @@ public:
     /// renders the terrain.
     void Draw();
 
-    /// returns the tree positions
+    /// returns the tree positions.
     std::vector<glm::vec3> getTreePositions() const;
 
 private:
@@ -96,4 +96,4 @@ private:
     void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);
 };
 
-#endif
+#endif /*__WORLD__*/

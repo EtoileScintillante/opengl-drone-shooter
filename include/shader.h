@@ -2,7 +2,7 @@
  * shader.h
  *
  * Original author: Joey de Vries (from learnopengl)
- * Modified by: EtoileScintillante
+ * Modified by EtoileScintillante.
  */
 
 #ifndef __SHADER_H__
@@ -21,10 +21,10 @@ class Shader
 public:
     unsigned int ID;
 
-    /// default constructor
+    /// default constructor.
     Shader();
 
-    /// constructor (it generates the shader on the fly)
+    /// constructor (it generates the shader on the fly).
     Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr);
 
     /// activates the shader
@@ -136,4 +136,4 @@ private:
     /// utility function for checking shader compilation/linking errors.
     void checkCompileErrors(GLuint shader, std::string type);
 };
-#endif /*__SHADER_H__*/
+#endif /*__SHADER__*/

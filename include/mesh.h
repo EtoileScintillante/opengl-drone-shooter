@@ -2,7 +2,7 @@
  * mesh.h
  *
  * Original author: Joey de Vries (from learnopengl)
- * Modified by: EtoileScintillante
+ * Modified by EtoileScintillante.
  */
 
 #ifndef __MESH_H__
@@ -20,7 +20,7 @@
 
 #define MAX_BONE_INFLUENCE 4
 
-// we store each of the required vertex attributes in a struct called Vertex.
+// store each of the required vertex attributes in a struct called Vertex.
 struct Vertex { 
     // position
     glm::vec3 Position;
@@ -38,7 +38,7 @@ struct Vertex {
 	float m_Weights[MAX_BONE_INFLUENCE];
 };
 
-// we store texture data in a texture struct
+// store texture data in a texture struct.
 struct Texture {
     unsigned int id;
     std::string type; // diffuse? specular? 
@@ -53,17 +53,18 @@ public:
     std::vector<Texture>      textures;
     unsigned int VAO;
 
-    /// constructor (here we give the mesh all the necessary data)
+    /// constructor (here we give the mesh all the necessary data).
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    /// render the mesh (here we give a shader to the Draw function; by passing the shader to the mesh we can set several uniforms before drawing (like linking samplers to texture units))
+    /// render the mesh (here we give a shader to the Draw function; by passing the shader to the mesh 
+    /// we can set several uniforms before drawing (like linking samplers to texture units)).
     void Draw(Shader &shader);
 
-private:
-    // render data 
+private: 
+    // render data
     unsigned int VBO, EBO;
 
-    /// initializes all the buffer objects/arrays
+    /// initializes all the buffer objects/arrays.
     void setupMesh();
 };
-#endif
+#endif /*__MESH__*/

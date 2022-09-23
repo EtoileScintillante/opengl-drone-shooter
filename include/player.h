@@ -132,4 +132,4 @@ private:
     void updateCameraVectors();
 };
 
-#endif
+#endif /*__PLAYER__*/

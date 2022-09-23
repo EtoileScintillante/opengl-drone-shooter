@@ -1,9 +1,9 @@
 /**
  * texture_loading.h
  * 
- * Created by: EtoileScintillante
- * This file was created to avoid copying the same functions for loading a texture
- * in multiple files that need them. All functions are originally from https://www.learnopengl.com.
+ * Created by EtoileScintillante.
+ * All functions are originally from https://www.learnopengl.com.
+ * loadTexture and TextureFromFile have been modified.
  */
 
 #ifndef __TEXTURE_LOADING__
@@ -27,7 +27,7 @@
  * -Z (back)
  * 
  * @param faces paths to the 6 sides (faces) of the cubemap. Paths must be ordered as stated in function description.
- * @param ID unsigned int texture ID
+ * @param ID unsigned int texture ID.
  */
 void loadCubemap(std::vector<std::string> faces, unsigned int ID);
 
@@ -43,7 +43,7 @@ void loadTexture(std::string path, unsigned int ID, bool flipVertically);
 /**
  * @brief loads a texture from a file (used in model.h).
  * 
- * @param path filename
+ * @param path filename.
  * @param directory directory where filename is located.
  * @param flipVertically flip texture vertically on load or not?
  * @param gamma gamma correction? default is false.
