@@ -1,10 +1,7 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// fix walking motion of player (need new method, old one does not work)
 // fix bounding box of enemy (right now it is not fitting/it is way too small)
-// fix floating movement of enemy. Now it looks weird; as if the drone is bouncing
-// fix dying animation of enemy: it should not rely on current time! Need new method.
 
 #include "player.h"
 #include "enemy.h"
@@ -39,7 +36,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow *window = glfwCreateWindow(Player::SCR_WIDTH, Player::SCR_HEIGHT, "FPS", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(Player::SCR_WIDTH, Player::SCR_HEIGHT, "Drone shooter", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -71,7 +68,7 @@ int main()
     // ----------------------------
     player.setup();
     World world;
-    Enemy drone(world.getTreePositions());
+    Enemy drone;
 
     // render loop
     // -----------
@@ -104,23 +101,11 @@ int main()
         // draw world objects (ground, trees and skybox)
         world.Draw();
 
-        // draw enemy
-        drone.spawn();
-
         // draw gun and handle gun recoil movement
         player.controlGunRendering();
-
-        // check for collisions
-        if (player.shot)
-        {
-            drone.collisionDetection(player.Position, player.Front, World::TERRAIN_SIZE * 2);
-        }
-
-        // if enemy got hit, make it explode
-        if (drone.isDead)
-        {
-            drone.dyingAnimation();
-        }
+        
+        // control life of drone (spawning and dying)
+        drone.controlEnemyLife(player.shot, player.Position, player.Front, World::TERRAIN_SIZE * 2);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
@@ -165,7 +150,7 @@ void processInput(GLFWwindow *window)
     }
     if (player.isWalking)
     {
-       // add walking motion (find new way to do this)
+        player.walkingMotion();
     }
     player.isWalking = false;
 }
