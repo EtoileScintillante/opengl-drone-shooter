@@ -8,14 +8,13 @@ in VS_OUT {
 
 out vec2 TexCoords; 
 
-uniform float time;
+uniform float magnitude;
 uniform bool isDead;
 
 // this returns a new vector that translates the position vector along the direction of the normal vector
 vec4 explode(vec4 position, vec3 normal)
 {
-    float magnitude = 30.0;
-    vec3 direction = normal * (sin(time) + 1.0) * magnitude; 
+    vec3 direction = normal * magnitude; 
     return position + vec4(direction, 0.0);
 }
 
@@ -43,7 +42,7 @@ void main() {
         EmitVertex();
         EndPrimitive();
     }
-    else // draw without modifications
+    else // draw enemy without modifications
     {
         gl_Position = gl_in[0].gl_Position; 
         TexCoords = gs_in[0].texCoords;
