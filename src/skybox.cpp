@@ -2,9 +2,8 @@
 
 SkyBox::SkyBox(){};
 
-SkyBox::SkyBox(std::vector< float > skyboxVertices, std::vector< std::string > filenames, std::string dirName)
+SkyBox::SkyBox(std::vector< std::string > filenames, std::string dirName)
 {
-    this->skyboxVertices = skyboxVertices;
     this->filenames = filenames;
     this->dirName = dirName;
 
@@ -29,6 +28,8 @@ void SkyBox::Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection)
 
 void SkyBox::configureSkybox()
 {
+    skyboxVertices = getSkyboxVertexData();
+
     // configure buffer/array
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
@@ -48,4 +49,54 @@ void SkyBox::configureSkybox()
         faces.push_back(s);
     }
     loadCubemap(faces, skyboxTexture);
+}
+
+std::vector<float> SkyBox::getSkyboxVertexData()
+{
+    std::vector<float> v = {
+        // positions
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, -1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f,
+        -1.0f, -1.0f, 1.0f,
+
+        -1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, -1.0f,
+        1.0f, 1.0f, 1.0f,
+        1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, 1.0f,
+        -1.0f, 1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f, 1.0f,
+        1.0f, -1.0f, 1.0f
+        };
+
+    return v;
 }
