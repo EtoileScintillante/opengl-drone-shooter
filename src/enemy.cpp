@@ -19,24 +19,6 @@ Enemy::Enemy()
     generatePosition();
 }
 
-Enemy::Enemy(std::vector<glm::vec3> treePos)
-{
-    this->treePositions = treePos;
-
-    // load model and shader
-    drone = Model("resources/models/aircraft/E 45 Aircraft_obj.obj", false);
-    shader = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
-
-    // set default values
-    isDead = false;
-    deathTime = 0;
-    magnitude = 0;
-    rotation = static_cast<float>((rand() % 360)); 
-
-    // generate random spawning position
-    generatePosition();
-}
-
 void Enemy::spawn()
 {
     // generate model matrix
@@ -100,10 +82,7 @@ void Enemy::generatePosition()
     std::uniform_int_distribution<> xzPlane(-World::TERRAIN_SIZE + 2, World::TERRAIN_SIZE - 2);  // define the range for x and z axis
     std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT); // define the range for y axis
 
-    glm::vec3 newPos = glm::vec3(xzPlane(gen), yPlane(gen), xzPlane(gen));
-
-    if (!spawnsInTree(newPos)) {position = newPos;} // make sure the mob does not spawn inside a tree
-    else {generatePosition();}
+    position = glm::vec3(xzPlane(gen), yPlane(gen), xzPlane(gen));
 }
 
 void Enemy::generateModelMatrix()
@@ -120,17 +99,4 @@ void Enemy::generateModelMatrix()
     modelMatrix = glm::translate(modelMatrix, position);
     modelMatrix = glm::rotate(modelMatrix, rotation, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.6f));
-}
-
-bool Enemy::spawnsInTree(glm::vec3 position)
-{
-    for (unsigned int i = 0; i < treePositions.size(); i++)
-    {
-        if (treePositions[i].x == position.x && treePositions[i].z == position.z) // is there an overlap?
-        {
-            return true;
-        }
-    }
-
-    return false; // no overlap
 }

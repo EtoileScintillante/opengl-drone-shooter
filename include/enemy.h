@@ -16,7 +16,6 @@ class Enemy
 public:
     static const float MAX_FLOAT_HEIGHT;  // maximum floating height of enemy, measured from y = 0
     static const float MIN_FLOAT_HEIGHT;  // minimum floating height of enemy, measured from y = 0
-    std::vector<glm::vec3> treePositions; // tree positions (needed to check if enemy spawns inside a tree)
     bool isDead;                          // is enemy dead?
     Model drone;                          // enemy model (in this program it's a drone)
     Shader shader;                        // enemy shader (must include geometry shader for explosion effect)
@@ -27,10 +26,6 @@ public:
 
     /// default constructor.
     Enemy();
-
-    /// @brief creates Enemy object.
-    /// @param treePos vector containing tree positions (World attribute).
-    Enemy(std::vector<glm::vec3> treePos);
     
     /// spawns the enemy.
     void spawn();
@@ -60,9 +55,6 @@ private:
 
     /// generate nodel matrix for enemy.
     void generateModelMatrix();
-
-    /// checks whether a given position is also a position of a tree.
-    bool spawnsInTree(glm::vec3 position);
 };
 
 #endif /*__ENEMY__*/
