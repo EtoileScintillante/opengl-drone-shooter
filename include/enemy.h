@@ -52,6 +52,8 @@ private:
     glm::vec3 position;    // position of enemy
     glm::mat4 modelMatrix; // model matrix for enemy
     float deathTime;       // used to control the duration of the dying animation
+    float magnitude;       // used to control the explosion (dying animation)
+    float rotation;        // used in the creation the model matrix for enemy
 
     /// generates random position for enemy.
     void generatePosition();
