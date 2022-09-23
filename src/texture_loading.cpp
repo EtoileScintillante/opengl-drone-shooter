@@ -68,10 +68,10 @@ void loadTexture(std::string path, unsigned int ID, bool flipVertically)
     }
 }
 
-unsigned int TextureFromFile(const char *path, const std::string &directory, bool flipVertically, bool gamma)
+unsigned int TextureFromFile(const char *filename, const std::string &directory, bool flipVertically, bool gamma)
 {
-    std::string filename = std::string(path);
-    filename = directory + '/' + filename;
+    std::string fileName = std::string(filename);
+    fileName = directory + '/' + fileName;
 
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -79,7 +79,7 @@ unsigned int TextureFromFile(const char *path, const std::string &directory, boo
     if (flipVertically) {stbi_set_flip_vertically_on_load(true);}
 
     int width, height, nrComponents;
-    unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrComponents, 0);
+    unsigned char *data = stbi_load(fileName.c_str(), &width, &height, &nrComponents, 0);
     if (data)
     {
         GLenum internalFormat;
@@ -112,7 +112,7 @@ unsigned int TextureFromFile(const char *path, const std::string &directory, boo
     }
     else
     {
-        std::cout << "Texture failed to load at path: " << path << std::endl;
+        std::cout << "Texture failed to load at path: " << fileName << std::endl;
         stbi_image_free(data);
     }
 
