@@ -13,7 +13,7 @@ Enemy::Enemy()
     isDead = false;
     deathTime = 0;
     magnitude = 0;
-    rotation = static_cast<float>((rand() % 360)); 
+    rotation = static_cast<float>((rand() % 360));
 
     // generate random spawning position
     generatePosition();
@@ -34,6 +34,24 @@ void Enemy::spawn()
 
     // draw
     drone.Draw(shader);
+}
+
+void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
+{
+    // draw enemy
+    spawn();
+
+    // check for collisions
+    if (shot)
+    {
+        collisionDetection(bulletStartPos, bulletDir, bulletRange);
+    }
+
+    // if enemy got hit, make it explode
+    if (isDead)
+    {
+        dyingAnimation();
+    }
 }
 
 void Enemy::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
@@ -69,7 +87,7 @@ void Enemy::dyingAnimation()
         isDead = false;
         deathTime = 0;
         magnitude = 0;
-        rotation = static_cast<float>((rand() % 360)); 
+        rotation = static_cast<float>((rand() % 360));
         generatePosition();
     }
 }
@@ -79,8 +97,8 @@ void Enemy::generatePosition()
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
 
-    std::uniform_int_distribution<> xzPlane(-World::TERRAIN_SIZE + 2, World::TERRAIN_SIZE - 2);  // define the range for x and z axis
-    std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT); // define the range for y axis
+    std::uniform_int_distribution<> xzPlane(-World::TERRAIN_SIZE + 2, World::TERRAIN_SIZE - 2); // define the range for x and z axis
+    std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT);                 // define the range for y axis
 
     position = glm::vec3(xzPlane(gen), yPlane(gen), xzPlane(gen));
 }
@@ -89,7 +107,7 @@ void Enemy::generateModelMatrix()
 {
     // create up and down motion so that the enemy is not standing still
     float newPosY = position.y + sin(currentFrame) * 0.05f;
-    if (newPosY > (World::GROUND_Y + 1.0f) && newPosY < (position.y + 2.0f)) 
+    if (newPosY > (World::GROUND_Y + 1.0f) && newPosY < (position.y + 2.0f))
     {
         position.y = newPosY;
     }
