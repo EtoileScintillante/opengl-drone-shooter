@@ -74,7 +74,7 @@ void World::setupWorld()
 
 void World::drawTrees()
 {
-    // set uniforms for tree shader and draw the trees
+    // set uniforms and draw the trees
     shaderModel.use();
     shaderModel.setMat4("projection", projection);
     shaderModel.setMat4("view", view);
@@ -88,7 +88,7 @@ void World::drawTrees()
 
 void World::drawGround()
 {
-    // set uniforms for ground shader and draw the ground
+    // set uniforms and draw the ground
     shaderGround.use();
     shaderGround.setMat4("projection", projection);
     shaderGround.setMat4("view", view);
@@ -112,41 +112,25 @@ void World::drawSkyBox()
 
 void World::drawFlowers()
 {
-    // set uniforms for tree shader and draw the trees
+    // set uniforms 
     shaderModel.use();
     shaderModel.setMat4("projection", projection);
     shaderModel.setMat4("view", view);
     shaderModel.setInt("texture_diffuse1", 0);
 
-    /* note: this is not a very elegant way of rendering the models,
-    but I can not use a texture array since the textures are not of the same size,
-    so for now this will do the trick but I want look for a better option later */
-
-    // render stem (one mesh)
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[0].id);
-    glBindVertexArray(flowers.meshes[0].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[0].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    // render leaves on stem (two meshes)
-    glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[1].id);
-    glBindVertexArray(flowers.meshes[1].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[1].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[3].id);
-    glBindVertexArray(flowers.meshes[2].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[2].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    // render flowers (three meshes)
-    glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[6].id);
-    glBindVertexArray(flowers.meshes[4].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[4].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    glBindVertexArray(flowers.meshes[5].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[5].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[8].id);
-    glBindVertexArray(flowers.meshes[6].VAO);
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[6].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
-    
-    // set back to default
-    glBindVertexArray(0);
-    glActiveTexture(GL_TEXTURE0);
+    // note that not all textures and meshes are used to render the model
+    int textureIDs[] = {0, 1, 3, 6, 6, 8};
+    int meshIDs[] = {0, 1, 2, 4, 5, 6}; 
+    for (unsigned int i = 0; i < 6; i++)
+    {
+        // draw flowers
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[textureIDs[i]].id);
+        glBindVertexArray(flowers.meshes[meshIDs[i]].VAO);
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[meshIDs[i]].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
+        glBindVertexArray(0);
+        glActiveTexture(GL_TEXTURE0);
+    }
 }
 
 std::vector<float> World::getGroundVertexData()
