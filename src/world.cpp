@@ -45,8 +45,8 @@ void World::setupWorld()
     createFlowerPositions();
     createTreeModelMatrices();
     createFlowerModelMatrices();
-    setupInstancedArrayTrees();
-    setupInstancedArrayFlowers();
+    setupInstancedArray(tree, treeBuffer, treeModelMatrices, N_TREES);
+    setupInstancedArray(flowers, flowerBuffer, flowerModelMatrices, N_FLOWERS);
 
     // initialize skybox object
     std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
@@ -221,48 +221,17 @@ void World::createFlowerModelMatrices()
     }
 }
 
-void World::setupInstancedArrayTrees()
+void World::setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount)
 {
     // configure instanced array
-    glGenBuffers(1, &treeBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, treeBuffer);
-    glBufferData(GL_ARRAY_BUFFER, N_TREES * sizeof(glm::mat4), &treeModelMatrices[0], GL_STATIC_DRAW);
+    glGenBuffers(1, &buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
     // set transformation matrices as an instance vertex attribute 
-    for (unsigned int i = 0; i < tree.meshes.size(); i++)
+    for (unsigned int i = 0; i < model.meshes.size(); i++)
     {
-        unsigned int VAO = tree.meshes[i].VAO;
-        glBindVertexArray(VAO);
-        // set attribute pointers for matrix (4 times vec4)
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-        glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
-
-        glVertexAttribDivisor(3, 1);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
-
-        glBindVertexArray(0);
-    }
-}
-
-void World::setupInstancedArrayFlowers()
-{
-    // configure instanced array
-    glGenBuffers(1, &flowerBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, flowerBuffer);
-    glBufferData(GL_ARRAY_BUFFER, N_FLOWERS * sizeof(glm::mat4), &flowerModelMatrices[0], GL_STATIC_DRAW);
-
-    // set transformation matrices as an instance vertex attribute 
-    for (unsigned int i = 0; i < flowers.meshes.size(); i++)
-    {
-        unsigned int VAO = flowers.meshes[i].VAO;
+        unsigned int VAO = model.meshes[i].VAO;
         glBindVertexArray(VAO);
         // set attribute pointers for matrix (4 times vec4)
         glEnableVertexAttribArray(3);

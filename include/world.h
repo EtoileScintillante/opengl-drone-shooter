@@ -85,11 +85,15 @@ private:
     /// create model matrices for the flowers.
     void createFlowerModelMatrices();
 
-    /// setup instanced array for the trees.
-    void setupInstancedArrayTrees();
-
-    /// setup instanced array for the flowers.
-    void setupInstancedArrayFlowers();
+    /**
+     * @brief setup instanced array for a model.
+     * 
+     * @param[out] model model.
+     * @param buffer instanced array buffer.
+     * @param modelMatrices pointer to an array containing the model matrices for the instances of the model.
+     * @param amount number of instances.
+     */
+    void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);
 };
 
 #endif
