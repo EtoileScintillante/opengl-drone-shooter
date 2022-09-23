@@ -32,7 +32,7 @@ public:
     static const float SPEED;
     static const float SENSITIVITY;
     static const float ZOOM;
-    // screen dimensions
+    // screen dimensions (used to set the projection matrix)
     static const int SCR_HEIGHT; 
     static const int SCR_WIDTH; 
     // camera Attributes
@@ -90,6 +90,9 @@ public:
 
     /// when player is not moving create slow up and down movement to make player seem alive.
     void passiveMotion();
+
+    /// when player is walking, make gun move up and down.
+    void walkingMotion();
 
     /// render gun.
     void drawGun();

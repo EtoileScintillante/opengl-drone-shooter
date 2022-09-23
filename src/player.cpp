@@ -7,7 +7,7 @@ const int Player::SCR_WIDTH = 800;
 // default camera values
 const float Player::YAW = -90.0f;
 const float Player::PITCH = 0.0f;
-const float Player::SPEED = 4.0f;
+const float Player::SPEED = 5.0f;
 const float Player::SENSITIVITY = 0.1f;
 const float Player::ZOOM = 45.0f;
 
@@ -137,8 +137,24 @@ void Player::passiveMotion()
     }
 }
 
+void Player::walkingMotion()
+{
+    float newPosZ = gunPosition.z + sin(currentFrame * 15) * 0.004f;
+    if (newPosZ > -1.52 && newPosZ < -1.48)
+    {
+        gunPosition.z = newPosZ;
+    }
+    float newPosY = gunPosition.y + sin(currentFrame * 15) * 0.004f;
+    if (newPosY > -0.52 && newPosY < -0.48)
+    {
+        gunPosition.y = newPosY;
+    }
+    gunModelMatrix[3] = glm::vec4(gunPosition, 1.0);
+}
+
 void Player::drawGun()
 {
+    // set uniforms and draw gun
     shader.use();
     shader.setMat4("view", viewLocalMat);
     shader.setMat4("projection", projection);
@@ -166,22 +182,22 @@ void Player::setProjectionMatrix()
 void Player::setGunModelMatrix()
 {
     gunModelMatrix = glm::mat4(1.0);
-    
-	// orient the gun in the same direction as where the player is looking at
-	gunModelMatrix[0] = glm::vec4(Right, 0.0);
-	gunModelMatrix[1] = glm::vec4(Up, 0.0);
-	gunModelMatrix[2] = glm::vec4(Front, 0.0);
-	gunModelMatrix[3] = glm::vec4(gunPosition, 1.0); // place gun in bottom right corner
-	gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.6f)); // make gun a bit smaller
+
+    // orient the gun in the same direction as where the player is looking at
+    gunModelMatrix[0] = glm::vec4(Right, 0.0);
+    gunModelMatrix[1] = glm::vec4(Up, 0.0);
+    gunModelMatrix[2] = glm::vec4(Front, 0.0);
+    gunModelMatrix[3] = glm::vec4(gunPosition, 1.0); // place gun in bottom right corner
+    gunModelMatrix = glm::scale(gunModelMatrix, glm::vec3(0.6f)); // make gun a bit smaller
     /* here two rotations are applied; one to make the gun barrel face the same direction as the player,
     so that it doesn't point towards the player's face and another rotation to make the gun
     point slightly inwards so that it matches the bullet direction (which is just the camera lookAt matrix) */
-	gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
-    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f)); 
+    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-	// position the gun relative to the player
-	viewLocalMat = GetViewMatrix();
-	viewLocalMat[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
+    // position the gun relative to the player
+    viewLocalMat = GetViewMatrix();
+    viewLocalMat[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
 }
 
 glm::mat4 Player::getProjectionMatrix()
@@ -236,7 +252,6 @@ void Player::controlGunRendering()
     {
         drawGunFire();
         startRecoil = true;
-        // TODO: collision detection
     }
 
     // start the recoil animation
