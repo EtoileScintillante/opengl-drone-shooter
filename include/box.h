@@ -32,12 +32,11 @@ public:
     /**
      * @brief checks whether a ray hits the bounding box.
      * 
-     * @param r ray.
-     * @param t length of ray.
-     * @return true if hit.
-     * @return false if no hit.
+     * @param ray ray.
+     * @param length length of ray.
+     * @return true if intersect, else false.
      */
-    bool intersect(Ray r, float t);
+    bool intersect(Ray ray, float length);
 }; 
 
 #endif /*__BOX__*/

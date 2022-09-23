@@ -38,14 +38,14 @@ void AABBox::fix()
     }
 }
 
-bool AABBox::intersect(Ray r, float t)
+bool AABBox::intersect(Ray ray, float length)
 {
     float tmin, tmax, tymin, tymax, tzmin, tzmax;
 
-    tmin = (bounds[r.sign[0]].x - r.orig.x) * r.invdir.x;
-    tmax = (bounds[1 - r.sign[0]].x - r.orig.x) * r.invdir.x;
-    tymin = (bounds[r.sign[1]].y - r.orig.y) * r.invdir.y;
-    tymax = (bounds[1 - r.sign[1]].y - r.orig.y) * r.invdir.y;
+    tmin = (bounds[ray.sign[0]].x - ray.orig.x) * ray.invdir.x;
+    tmax = (bounds[1 - ray.sign[0]].x - ray.orig.x) * ray.invdir.x;
+    tymin = (bounds[ray.sign[1]].y - ray.orig.y) * ray.invdir.y;
+    tymax = (bounds[1 - ray.sign[1]].y - ray.orig.y) * ray.invdir.y;
 
     if ((tmin > tymax) || (tymin > tmax))
         return false;
@@ -55,8 +55,8 @@ bool AABBox::intersect(Ray r, float t)
     if (tymax < tmax)
         tmax = tymax;
 
-    tzmin = (bounds[r.sign[2]].z - r.orig.z) * r.invdir.z;
-    tzmax = (bounds[1 - r.sign[2]].z - r.orig.z) * r.invdir.z;
+    tzmin = (bounds[ray.sign[2]].z - ray.orig.z) * ray.invdir.z;
+    tzmax = (bounds[1 - ray.sign[2]].z - ray.orig.z) * ray.invdir.z;
 
     if ((tmin > tzmax) || (tzmin > tmax))
         return false;
@@ -66,12 +66,12 @@ bool AABBox::intersect(Ray r, float t)
     if (tzmax < tmax)
         tmax = tzmax;
 
-    t = tmin;
+    length = tmin;
 
-    if (t < 0)
+    if (length < 0)
     {
-        t = tmax;
-        if (t < 0)
+        length = tmax;
+        if (length < 0)
             return false;
     }
 
