@@ -48,11 +48,10 @@ void World::setupWorld()
     setupInstancedArrayTrees();
     setupInstancedArrayFlowers();
 
-    // get skybox vertex data and initialize skybox object
-    skyboxVertices = getSkyboxVertexData();
+    // initialize skybox object
     std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
     std::string dirName = "resources/skybox";
-    skybox = SkyBox(skyboxVertices, filenames, dirName);
+    skybox = SkyBox(filenames, dirName);
 
     // get ground vertex data and set up the buffers
     groundVertices = getGroundVertexData();
@@ -148,56 +147,6 @@ void World::drawFlowers()
     // set back to default
     glBindVertexArray(0);
     glActiveTexture(GL_TEXTURE0);
-}
-
-std::vector<float> World::getSkyboxVertexData()
-{
-    std::vector<float> v = {
-        // positions
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, -1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
-
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f,
-        -1.0f, -1.0f, 1.0f,
-
-        -1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, -1.0f,
-        1.0f, 1.0f, 1.0f,
-        1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, 1.0f,
-        -1.0f, 1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f, 1.0f,
-        1.0f, -1.0f, 1.0f
-        };
-
-    return v;
 }
 
 std::vector<float> World::getGroundVertexData()

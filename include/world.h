@@ -44,14 +44,13 @@ private:
     Model flowers;       // flower model
     SkyBox skybox;       // skybox
     // object related
-    std::vector<glm::vec3> treePos;       // tree positions
-    std::vector<glm::vec3> flowerPos;     // flower positions
-    std::vector<float> skyboxVertices;    // skybox vertex data
-    std::vector<float> groundVertices;    // ground vertex data
-    unsigned int groundTexture;           // ground texture
-    unsigned int groundVAO, groundVBO;    // buffers for ground data
-    unsigned int treeBuffer;              // buffer for tree models
-    unsigned int flowerBuffer;            // buffer for flower models
+    std::vector<glm::vec3> treePos;    // tree positions
+    std::vector<glm::vec3> flowerPos;  // flower positions
+    std::vector<float> groundVertices; // ground vertex data
+    unsigned int groundTexture;        // ground texture
+    unsigned int groundVAO, groundVBO; // buffers for ground data
+    unsigned int treeBuffer;           // buffer for tree models
+    unsigned int flowerBuffer;         // buffer for flower models
     // matrix data (used for instancing)
     glm::mat4 *treeModelMatrices = new glm::mat4[N_TREES];     // tree model matrices
     glm::mat4 *flowerModelMatrices = new glm::mat4[N_FLOWERS]; // flower model matrices
@@ -70,9 +69,6 @@ private:
 
     /// renders flowers.
     void drawFlowers();
-
-    /// returns the skybox vertex data.
-    std::vector<float> getSkyboxVertexData();
 
     /// returns vertex data for ground. Data includes positions and texture coords.
     std::vector<float> getGroundVertexData();
