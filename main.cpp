@@ -2,9 +2,10 @@
 
 // TODO:
 // fix bounding box of enemy (right now it is not fitting/it is way too small)
-// see if glfw keyboard input handler can be a method in the Player class (just like the mouse input)
-// now keyboard input is part handled with a function from window.h
-// this is not a real problem, but it may be better organized if both the mouse and keyboard input handlers
+// check gun walking movement: sometimes it does not look very smooth
+// see if glfw keyboard input handler can be a method in the Player class (just like the mouse input),
+// now keyboard input is handled with a function from window.h,
+// though this is not a real problem, it may be better organized if both the mouse and keyboard input handlers
 // are part of the player class so that window.h is only about initializing glfw setting up the window.
 
 #include "player.h"
@@ -66,8 +67,8 @@ int main()
         player.passiveMotion();
 
         // input
-        glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
         processInput(window, player, deltaTime);
+        glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
         player.ProcessMouseMovement();
 
         // render
