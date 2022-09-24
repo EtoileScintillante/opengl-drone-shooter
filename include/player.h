@@ -75,12 +75,21 @@ public:
     glm::mat4 GetViewMatrix();
 
     /**
-     * @brief Processes keyboard input.
-     *
-     * @param direction player movement direction (ENUM).
-     * @param deltaTime delta time (time passed between two frames).
+     * @brief processes keyboard input
+     * 
+     * @param direction player movement direction (enum).
+     * @param deltaTime time passed between two frames.
      */
     void ProcessKeyboard(Player_Movement direction, float deltaTime);
+
+    /**
+     * @brief processes window input; controls attributes shot and isWalking and forwards the input
+     * towards ProcessKeyboard method to process it further.
+     * 
+     * @param window glfw window.
+     * @param deltaTime time passed between two frames.
+     */
+    void processInput(GLFWwindow *window, float deltaTime);
 
     /**
      * @brief Processes input received from a mouse input system.

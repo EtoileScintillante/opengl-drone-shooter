@@ -112,6 +112,44 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
     }
 }
 
+void Player::processInput(GLFWwindow *window, float deltaTime)
+{
+
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(FORWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(BACKWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(LEFT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(RIGHT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+        shot = true;
+    }
+    if (isWalking)
+    {
+        walkingMotion();
+    }
+    isWalking = false;
+}
+
 void Player::ProcessMouseMovement(GLboolean constrainPitch)
 {
     float xpos = static_cast<float>(xPosIn);
