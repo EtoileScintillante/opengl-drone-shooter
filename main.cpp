@@ -2,19 +2,17 @@
 
 // TODO:
 // fix bounding box of enemy (right now it is not fitting/it is way too small)
+// see if glfw keyboard input handler can be a method in the Player class (just like the mouse input)
+// now keyboard input is part handled with a function from window.h
+// this is not a real problem, but it may be better organized if both the mouse and keyboard input handlers
+// are part of the player class so that window.h is only about initializing glfw setting up the window.
 
 #include "player.h"
 #include "enemy.h"
-
-void processInput(GLFWwindow *window);
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void mouse_callback(GLFWwindow *window, double xposIn, double yposIn);
+#include "window.h"
 
 // player
 Player player; 
-float lastX = Player::SCR_WIDTH / 2.0f;
-float lastY = Player::SCR_HEIGHT / 2.0f;
-bool firstMouse = true;
 
 // timing
 float currentFrame;
@@ -23,31 +21,13 @@ float lastFrame = 0.0f;
 
 int main()
 {
-    // glfw: initialize and configure
-    // ------------------------------
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-#ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
-
-    // glfw window creation
-    // --------------------
-    GLFWwindow *window = glfwCreateWindow(Player::SCR_WIDTH, Player::SCR_HEIGHT, "Drone shooter", NULL, NULL);
-    if (window == NULL)
-    {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+    // initialize and configure glwf and create window
+    // -----------------------------------------------
+    GLFWwindow *window = setup();
 
     // set callback functions
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
 
     // tell GLFW to capture our mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -86,7 +66,9 @@ int main()
         player.passiveMotion();
 
         // input
-        processInput(window);
+        glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
+        processInput(window, player, deltaTime);
+        player.ProcessMouseMovement();
 
         // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -115,69 +97,4 @@ int main()
     // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
     return 0;
-}
-
-/// processes all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly.
-void processInput(GLFWwindow *window)
-{
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::FORWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::BACKWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::LEFT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::RIGHT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        player.shot = true;
-    }
-    if (player.isWalking)
-    {
-        player.walkingMotion();
-    }
-    player.isWalking = false;
-}
-
-/// glfw: whenever the window size changed (by OS or user resize) this callback function executes.
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-
-/// glfw: whenever the mouse moves, this callback is called
-void mouse_callback(GLFWwindow *window, double xposIn, double yposIn)
-{
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-    if (firstMouse)
-    {
-        lastX = xpos;
-        lastY = ypos;
-        firstMouse = false;
-    }
-
-    float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top.
-
-    lastX = xpos;
-    lastY = ypos;
-
-    player.ProcessMouseMovement(xoffset, yoffset);
 }
