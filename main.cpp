@@ -2,36 +2,16 @@
 
 // TODO:
 // fix bounding box of enemy (right now it is not fitting/it is way too small)
-// check gun walking movement: sometimes it does not look very smooth
-// see if glfw keyboard input handler can be a method in the Player class (just like the mouse input),
-// now keyboard input is handled with a function from window.h,
-// though this is not a real problem, it may be better organized if both the mouse and keyboard input handlers
-// are part of the player class so that window.h is only about initializing glfw setting up the window.
 
 #include "player.h"
 #include "enemy.h"
 #include "window.h"
 
-// player
-Player player; 
-
-// timing
-float currentFrame;
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 int main()
 {
     // initialize and configure glwf and create window
     // -----------------------------------------------
-    GLFWwindow *window = setup();
-
-    // set callback functions
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-    // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    GLFWwindow *window = setup("Drone shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -47,9 +27,16 @@ int main()
 
     // prepare game related objects
     // ----------------------------
+    Player player; 
     player.setup();
     World world;
     Enemy drone;
+
+    // timing
+    // ------
+    float currentFrame;
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
 
     // render loop
     // -----------
@@ -67,7 +54,7 @@ int main()
         player.passiveMotion();
 
         // input
-        processInput(window, player, deltaTime);
+        player.processInput(window, deltaTime);
         glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
         player.ProcessMouseMovement();
 
