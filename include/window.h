@@ -3,7 +3,6 @@
  * 
  * Created by EtoileScintillante.
  * This header was created so that the window related functions don't have to be implemented in main.cpp.
- * Based on code made by Joey de Vries (from learnopengl).
  */
 
 #ifndef __WINDOW_H__
@@ -11,15 +10,15 @@
 
 #include "player.h"
 
-/// @brief Initializes and configures glwf and creates a window.
-/// @return GLFW window object pointer
-GLFWwindow* setup();
-
-/// @brief processes all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly.
-/// @param window pointer to glfw window object.
-/// @param[out] player player object.
-/// @param deltaTime time passed between two frames.
-void processInput(GLFWwindow *window, Player &player, float deltaTime);
+/**
+ * @brief Initializes and configures glwf and creates a window.
+ * 
+ * @param title window title.
+ * @param height window height.
+ * @param width window width.
+ * @return GLFWwindow* pointer to window object.
+ */
+GLFWwindow* setup(const char* title, int height, int width);
 
 /// glfw: whenever the window size changed (by OS or user resize) this callback function executes.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);

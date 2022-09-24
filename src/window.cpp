@@ -1,6 +1,6 @@
 #include "window.h"
 
-GLFWwindow* setup()
+GLFWwindow* setup(const char* title, int height, int width)
 {
     // glfw: initialize and configure
     glfwInit();
@@ -13,12 +13,19 @@ GLFWwindow* setup()
 #endif
 
     // glfw window creation
-    GLFWwindow *window = glfwCreateWindow(Player::SCR_WIDTH, Player::SCR_HEIGHT, "Drone shooter", NULL, NULL);
+    GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
     }
+
+    // set callback functions
+    glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+    // tell GLFW to capture our mouse
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     return window;
 }
@@ -26,42 +33,4 @@ GLFWwindow* setup()
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
-}
-
-void processInput(GLFWwindow *window, Player &player, float deltaTime)
-{
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    {
-        glfwSetWindowShouldClose(window, true);
-    }
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::FORWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::BACKWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::LEFT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        player.isWalking = true;
-        player.ProcessKeyboard(Player::RIGHT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-        player.shot = true;
-    }
-    if (player.isWalking)
-    {
-        player.walkingMotion();
-    }
-    player.isWalking = false;
 }
