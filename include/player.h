@@ -58,6 +58,9 @@ public:
     float currentFrame;
     // other
     bool isWalking;       // is player walking?
+    bool firstMouse;      // first time moving mouse? Used to control mouse input
+    double xPosIn;        // mouse x position input
+    double yPosIn;        // mouse y position input
 
     /// constructor with vectors.
     Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
@@ -82,11 +85,9 @@ public:
     /**
      * @brief Processes input received from a mouse input system.
      *
-     * @param xoffset offset x position of mouse.
-     * @param yoffset offset y position of mouse.
      * @param constrainPitch limit pitch to a maximum of 90 degrees (up an down)?
      */
-    void ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch = true);
+    void ProcessMouseMovement(GLboolean constrainPitch = true);
 
     /// when player is not moving create slow up and down movement to make player seem alive.
     void passiveMotion();
@@ -113,6 +114,8 @@ private:
     float angle;               // recoil animation: this angle will be updated every frame to make the gun rotate up or down
     bool startRecoil;          // start recoil animation?
     bool goDown;               // recoil animation: gun needs to move down if true
+    double lastX;         // last x position of mouse
+    double lastY;         // last y position of mouse
     glm::mat4 projection;      // projection matrix
     glm::mat4 viewLocalMat;	   // view matrix with positional information removed (needed for rendering the gun)
 

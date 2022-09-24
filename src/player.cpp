@@ -19,6 +19,10 @@ const float Player::UPPER_LIMIT_Z = World::TERRAIN_SIZE / 2;
 
 Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
+    // default mouse related values
+    lastX = SCR_WIDTH / 2.0f;
+    lastY = SCR_HEIGHT / 2.0f;
+    firstMouse = true;
     // set camera values
     Position = position;
     WorldUp = up;
@@ -29,6 +33,10 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
 
 Player::Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
 {
+    // default mouse related values
+    lastX = SCR_WIDTH / 2.0f;
+    lastY = SCR_HEIGHT / 2.0f;
+    firstMouse = true;
     // set camera values
     Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
@@ -104,8 +112,23 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
     }
 }
 
-void Player::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
+void Player::ProcessMouseMovement(GLboolean constrainPitch)
 {
+    float xpos = static_cast<float>(xPosIn);
+    float ypos = static_cast<float>(yPosIn);
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed since y-coordinates go from bottom to top.
+
+    lastX = xpos;
+    lastY = ypos;
+
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
 
