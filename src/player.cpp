@@ -45,7 +45,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     updateCameraVectors();
 }
 
-glm::mat4 Player::GetViewMatrix()
+glm::mat4 Player::GetViewMatrix() const
 {
     return glm::lookAt(Position, Position + Front, Up);
 }
@@ -261,12 +261,12 @@ void Player::setGunModelMatrix()
     viewLocalMat[3] = glm::vec4(0.0, 0.0, 0.0, 1.0);
 }
 
-glm::mat4 Player::getProjectionMatrix()
+glm::mat4 Player::getProjectionMatrix() const
 {
     return projection;
 }
 
-glm::mat4 Player::getGunModelMatrix()
+glm::mat4 Player::getGunModelMatrix() const
 {
     return gunModelMatrix;
 }

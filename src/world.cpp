@@ -37,7 +37,7 @@ void World::setupWorld()
     shaderSkybox = Shader("shaders/skybox.vert", "shaders/skybox.frag");
 
     // load models
-    flowers = Model("resources/models/plant/anemone_hybrida.obj", true);
+    flowers = Model("resources/models/flowers/anemone_hybrida.obj", true);
     tree = Model("resources/models/trees/trees9.obj", true);
 
     // generate positions, model matrices and set up instanced array buffers for trees and flowers
@@ -133,7 +133,7 @@ void World::drawFlowers()
     }
 }
 
-std::vector<float> World::getGroundVertexData()
+std::vector<float> World::getGroundVertexData() const
 {
     std::vector<float> v = {
         // positions                                     // texcoords
