@@ -7,6 +7,8 @@ SkyBox::SkyBox(std::vector< std::string > filenames, std::string dirName)
     this->filenames = filenames;
     this->dirName = dirName;
 
+    skyboxTexture = 8; // skybox texture ID
+
     configureSkybox();
 }
 
