@@ -27,11 +27,11 @@ public:
     std::vector< std::string > filenames;
     std::string dirName;
 
-    /// default constructor.
+    /// Default constructor.
     SkyBox();
 
     /**
-     * @brief constructs a new Sky Box object and configures it automatically.
+     * @brief Constructs a new Sky Box object and configures it automatically.
      * 
      * @param filenames vector containing the filenames of the 6 faces of the skybox. 
      * Filenames must be in this order: +X (right), -X (left), +Y (top), -Y (bottom), +Z (front), -Z (back).
@@ -40,7 +40,7 @@ public:
     SkyBox(std::vector< std::string > filenames, std::string dirName);
 
     /**
-     * @brief draws the skybox.
+     * @brief Draws the skybox.
      * 
      * @param shader shader for skybox.
      * @param cameraView camera view matrix.
@@ -49,13 +49,13 @@ public:
     void Draw(Shader &shader, glm::mat4 cameraView, glm::mat4 projection);
 
 private:
-    unsigned int skyboxTexture = 8;
+    unsigned int skyboxTexture;
     unsigned int VBO, VAO;
 
-    /// sets up buffers.
+    /// Sets up buffers.
     void configureSkybox();
 
-    /// get skybox vertices.
+    /// Get skybox vertices.
     std::vector<float> getSkyboxVertexData();
 };
 

@@ -18,7 +18,7 @@
 #include <string>
 
 /**
- * @brief loads a cubemap texture from 6 individual texture faces in the following order:
+ * @brief Loads a cubemap texture from 6 individual texture faces in the following order:
  * +X (right)
  * -X (left)
  * +Y (top)
@@ -32,7 +32,7 @@
 void loadCubemap(std::vector<std::string> faces, unsigned int ID);
 
 /**
- * @brief loads a texture.
+ * @brief Loads a texture.
  * 
  * @param path path to texture.
  * @param ID texture ID.
@@ -41,12 +41,12 @@ void loadCubemap(std::vector<std::string> faces, unsigned int ID);
 void loadTexture(std::string path, unsigned int ID, bool flipVertically);
 
 /**
- * @brief loads a texture from a file (used in model.h).
+ * @brief Loads a texture (used in model.h).
  * 
  * @param filename filename.
  * @param directory directory where filename is located.
  * @param flipVertically flip texture vertically on load or not?
- * @param gamma gamma correction? default is false.
+ * @param gamma gamma correction? Default is false.
  * @return unsigned int texture ID.
  */
 unsigned int TextureFromFile(const char *filename, const std::string &directory, bool flipVertically, bool gamma = false);

@@ -56,26 +56,26 @@ public:
     bool shot;                // has player taken a shot?
     // time
     float currentFrame;
-    // other
+    // player movement control (mouse input)
     bool isWalking;       // is player walking?
-    bool firstMouse;      // first time moving mouse? Used to control mouse input
+    bool firstMouse;      // first time moving mouse? 
     double xPosIn;        // mouse x position input
     double yPosIn;        // mouse y position input
 
-    /// constructor with vectors.
+    /// Constructor with vectors.
     Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
-    /// constructor with scalar values.
+    /// Constructor with scalar values.
     Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
-    /// setup related objects (like the gun).
+    /// Sets up related objects (like the gun).
     void setup();
 
-    /// returns the view matrix calculated using Euler Angles and the LookAt Matrix.
-    glm::mat4 GetViewMatrix();
+    /// Returns the view matrix calculated using Euler Angles and the LookAt Matrix.
+    glm::mat4 GetViewMatrix() const;
 
     /**
-     * @brief processes keyboard input
+     * @brief Processes keyboard input.
      * 
      * @param direction player movement direction (enum).
      * @param deltaTime time passed between two frames.
@@ -83,7 +83,7 @@ public:
     void ProcessKeyboard(Player_Movement direction, float deltaTime);
 
     /**
-     * @brief processes window input; controls attributes shot and isWalking and forwards the input
+     * @brief Processes window input; controls attributes shot and isWalking and forwards the input
      * towards ProcessKeyboard method to process it further.
      * 
      * @param window glfw window.
@@ -98,49 +98,49 @@ public:
      */
     void ProcessMouseMovement(GLboolean constrainPitch = true);
 
-    /// when player is not moving create slow up and down movement to make player seem alive.
+    /// When player is not moving create slow up and down movement to make player seem alive.
     void passiveMotion();
 
-    /// when player is walking, make gun move up and down.
+    /// When player is walking, make gun move up and down.
     void walkingMotion();
 
-    /// render gun.
+    /// Renders gun.
     void drawGun();
 
-    /// render gunfire.
+    /// Renders gunfire.
     void drawGunFire();
 
-    /// get projection matrix.
-    glm::mat4 getProjectionMatrix();
+    /// Get projection matrix.
+    glm::mat4 getProjectionMatrix() const;
 
-    /// get gun model matrix.
-    glm::mat4 getGunModelMatrix();
+    /// Get gun model matrix.
+    glm::mat4 getGunModelMatrix() const;
 
-    /// renders gun and controls the recoil movements.
+    /// Renders gun and controls the recoil movements.
     void controlGunRendering();
 
 private:
     float angle;               // recoil animation: this angle will be updated every frame to make the gun rotate up or down
     bool startRecoil;          // start recoil animation?
     bool goDown;               // recoil animation: gun needs to move down if true
-    double lastX;         // last x position of mouse
-    double lastY;         // last y position of mouse
+    double lastX;              // last x position of mouse
+    double lastY;              // last y position of mouse
     glm::mat4 projection;      // projection matrix
     glm::mat4 viewLocalMat;	   // view matrix with positional information removed (needed for rendering the gun)
 
-    /// set projection matrix.
+    /// Sets projection matrix.
     void setProjectionMatrix();
 
-    /// set gun model matrix.
+    /// Sets gun model matrix.
     void setGunModelMatrix(); 
 
-    /// starts recoil animation for gun (gun starts moving down).
+    /// Starts recoil animation for gun (gun starts rotating up).
     void startRecoilAnimation();
 
-    /// starts second part of recoil animation: gun moves back up to base position.
+    /// Starts second part of recoil animation: gun rotates down to base position.
     void endRecoilAnimation();
 
-    /// calculates the front vector from the Camera's (updated) Euler Angles.
+    /// Calculates the front vector from the Camera's (updated) Euler Angles.
     void updateCameraVectors();
 };
 

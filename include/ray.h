@@ -14,11 +14,12 @@
 class Ray 
 { 
 public: 
-glm::vec3 orig, dir;      
-glm::vec3 invdir; 
-int sign[3]; 
+    glm::vec3 orig, dir; // origin, direction vector
+    glm::vec3 invdir;    // inverse direction vector
+    int sign[3];         // holds 3 vectors: one for each plane (x, y, z)
+
     /**
-     * @brief Construct a new Ray object.
+     * @brief Constructs a new Ray object.
      * 
      * @param orig origin position of ray.
      * @param dir direction of ray.

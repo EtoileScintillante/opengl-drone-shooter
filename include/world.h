@@ -23,16 +23,16 @@ public:
     glm::mat4 view;       // camera view matrix
     glm::mat4 projection; // projection matrix
 
-    /// default constructor; constructs a new world object.
+    /// Default constructor; constructs a new world object.
     World();
 
-    /// destructor (frees allocated memory).
+    /// Destructor (frees allocated memory).
     ~World();
 
-    /// renders the terrain.
+    /// Renders the terrain.
     void Draw();
 
-    /// returns the tree positions.
+    /// Returns the tree positions.
     std::vector<glm::vec3> getTreePositions() const;
 
 private:
@@ -55,42 +55,42 @@ private:
     glm::mat4 *treeModelMatrices = new glm::mat4[N_TREES];     // tree model matrices
     glm::mat4 *flowerModelMatrices = new glm::mat4[N_FLOWERS]; // flower model matrices
 
-    /// sets up all the objects so that they can be rendered.
+    /// Sets up all the objects so that they can be rendered.
     void setupWorld();
 
-    /// renders trees.
+    /// Renders trees.
     void drawTrees();
 
-    /// renders ground.
+    /// Renders ground.
     void drawGround();
 
-    /// renders skybox.
+    /// Renders skybox.
     void drawSkyBox();
 
-    /// renders flowers.
+    /// Renders flowers.
     void drawFlowers();
 
-    /// returns vertex data for ground. Data includes positions and texture coords.
-    std::vector<float> getGroundVertexData();
+    /// Returns vertex data for ground. Data includes positions and texture coords.
+    std::vector<float> getGroundVertexData() const;
 
-    /// creates N_TREES random positions.
+    /// Creates N_TREES random positions.
     void createTreePositions();
 
-    /// creates flower positions (half of trees will be surrounded by four flower models).
+    /// Creates flower positions (half of trees will be surrounded by four flower models).
     void createFlowerPositions();
 
-    /// create model matrices for the trees.
+    /// Creates model matrices for the trees.
     void createTreeModelMatrices();
 
-    /// create model matrices for the flowers.
+    /// Creates model matrices for the flowers.
     void createFlowerModelMatrices();
 
     /**
-     * @brief setup instanced array for a model.
+     * @brief Sets up instanced array for a model.
      * 
-     * @param[out] model model.
+     * @param[out] model model object.
      * @param buffer instanced array buffer.
-     * @param modelMatrices pointer to an array containing the model matrices for the instances of the model.
+     * @param modelMatrices pointer to an array containing the model matrices.
      * @param amount number of instances.
      */
     void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);

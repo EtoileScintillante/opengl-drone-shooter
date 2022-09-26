@@ -15,24 +15,24 @@ class AABBox
 public: 
     glm::vec3 bounds[2]; 
     /**
-     * @brief Construct a new AABBox object.
+     * @brief Constructs a new AABBox object.
      * 
      * @param vmim mimimum bound of box.
      * @param vmax maximum bound of box.
      */
     AABBox(glm::vec3 vmin, glm::vec3 vmax);
 
-    /// @brief checks whether the min values are acually smaller than max values.
+    /// @brief Checks whether the min values are acually smaller than max values.
     /// @return true if valid, else false.
     bool isValid();
 
-    /// @brief swaps values when necessary (when they are not valid).
+    /// Swaps values when necessary (when they are not valid).
     void fix();
 
     /**
-     * @brief checks whether a ray hits the bounding box.
+     * @brief Checks whether a ray hits the bounding box.
      * 
-     * @param ray ray.
+     * @param ray ray object.
      * @param length length of ray.
      * @return true if intersect, else false.
      */

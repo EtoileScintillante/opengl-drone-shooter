@@ -31,41 +31,44 @@
 class Model 
 {
 public:
-    // model data 
-    std::vector<Texture> textures_loaded; // stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    // model data
+    std::vector<Texture> textures_loaded; // stores all the textures loaded so far, to make sure textures aren't loaded more than once
     std::vector<Mesh>    meshes;
-    std::string directory;
-    bool gammaCorrection;
+    std::string directory;                // model directory
+    bool gammaCorrection;                 // apply gamma correction?
     bool flipVertically;                  // flip image vertically on load? 
     
-    /// default constructor.
+    /// Default constructor.
     Model();
     
-    /// constructor, expects a filepath to a 3D model.
+    /**
+     * @brief Constructs a new Model object.
+     * 
+     * @param path filepath to the model.
+     * @param flipVertically flip the textures vertically on load or not?
+     * @param gamma apply gamma correction? Default is false.
+     */
     Model(std::string const &path, bool flipVertically, bool gamma = false);
 
-    /// draws the model, and thus all its meshes.
+    /// Draws the model, and thus all its meshes.
     void Draw(Shader &shader);
 
-    /// only draws mesh at given index.
+    /// Only draws mesh at given index.
     void drawSpecificMesh(Shader &shader, int index);
     
 private:
-    /// loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
+    /// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(std::string const &path);
 
-    /// processes a node in a recursive fashion. 
-    /// Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+    /// Processes a node in a recursive fashion: 
+    /// processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     void processNode(aiNode *node, const aiScene *scene);
 
-    /// processes the data of a mesh.
+    /// Processes the data of a mesh.
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 
-    /// checks all material textures of a given type and loads the textures if they're not loaded yet. 
-    /// The required info is returned as a Texture struct.
-
     /**
-     * @brief checks all material textures of a given type and loads the textures if they're not loaded yet. 
+     * @brief Checks all material textures of a given type and loads the textures if they're not loaded yet. 
      * The required info is returned as a Texture struct.
      * 
      * @param mat materials.
