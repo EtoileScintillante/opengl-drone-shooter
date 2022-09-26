@@ -1,4 +1,4 @@
-#include "window.h"
+#include "glfw_setup.h"
 
 GLFWwindow* setup(const char* title, int height, int width)
 {

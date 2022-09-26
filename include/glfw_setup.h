@@ -1,14 +1,16 @@
 /**
- * setup.h
+ * glfw_setup.h
  * 
  * Created by EtoileScintillante.
- * This header was created so that the window related functions don't have to be implemented in main.cpp.
+ * This file was created so that the glfw setup and window related functions don't have to be in main.cpp.
  */
 
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#ifndef __GLFW_SETUP_H__
+#define __GLFW_SETUP_H__
 
-#include "player.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <iostream>
 
 /**
  * @brief Initializes and configures glwf and creates a window.
@@ -23,4 +25,4 @@ GLFWwindow* setup(const char* title, int height, int width);
 /// glfw: whenever the window size changed (by OS or user resize) this callback function executes.
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
-#endif /*__WINDOW__*/
+#endif /*__GLFW_SETUP__*/
