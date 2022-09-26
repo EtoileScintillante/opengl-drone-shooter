@@ -1,11 +1,15 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// fix bounding box of enemy (right now it is not fitting/it is way too small)
+// Fix bounding box of enemy; right now it does not fit well
+// Make the drones dangerous; they should be able to kill the player in some way (maybe they can shoot bullets too?)
+// Add sound effects
+// Add scoring system
+// Maybe add small random offset to the bullet direction when player shoots gun
 
 #include "player.h"
 #include "enemy.h"
-#include "window.h"
+#include "glfw_setup.h"
 
 int main()
 {
@@ -68,7 +72,7 @@ int main()
         drone.projection = player.getProjectionMatrix();
         drone.view = player.GetViewMatrix();
 
-        // draw world objects (ground, trees and skybox)
+        // draw world objects (ground, trees, flowers and skybox)
         world.Draw();
 
         // draw gun and handle gun recoil movement
