@@ -1,7 +1,6 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// Fix bounding box of enemy; right now it does not fit well
 // Make the drones dangerous; they should be able to kill the player in some way (maybe they can shoot bullets too?)
 // Add sound effects
 // Add scoring system
