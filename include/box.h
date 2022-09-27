@@ -14,6 +14,10 @@ class AABBox
 { 
 public: 
     glm::vec3 bounds[2]; 
+
+    /// Default constructor.
+    AABBox();
+    
     /**
      * @brief Constructs a new AABBox object.
      * 

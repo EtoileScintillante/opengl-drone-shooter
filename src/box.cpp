@@ -1,5 +1,7 @@
 #include "box.h"
 
+AABBox::AABBox(){};
+
 AABBox::AABBox(glm::vec3 vmin, glm::vec3 vmax)
 {
     this->bounds[0] = vmin;
