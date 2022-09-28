@@ -6,7 +6,7 @@ const float Enemy::MAX_FLOAT_HEIGHT = 7.0f;
 Enemy::Enemy()
 {
     // load model and shader
-    drone = Model("resources/models/aircraft/E 45 Aircraft_obj.obj", false);
+    drone = Model("resources/models/drone/E 45 Aircraft_obj.obj", false);
     shader = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
 
     // set default values
@@ -136,10 +136,12 @@ X and Y are the initial coordinates and newX and newY are the rotated coordinate
 
 Formula from https://math.stackexchange.com/a/814981.
 
-Important to note is that in this program the bounding box is shaped like a rectangle;
-the z sides are bigger than the x sides since the model of the enemy is longer than it is wide.
-Also, we don't do anything with the y coordinate, since the height of the box does not change 
-when rotating it around the y - axis. 
+Important note: in this program the bounding box is shaped like a rectangle,
+the z sides are bigger than the x sides since the model of the enemy is longer than it is wide. 
+The bounding box does not contain the whole model, but this is not a problem because the model is quite big anyway, 
+so it is not too difficult to hit it. Also, the y coordinate remains untouched because the height of the box does 
+not change when rotating it around the y - axis. Lastly, the current implementation of calculateBoundingBox 
+is based on the drone model scaled by factor 0.6. See /doc/bounding_box for a visualization.
 */
 
 void Enemy::calculateBoundingBox()
