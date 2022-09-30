@@ -9,6 +9,7 @@
 #define __PLAYER_H__
 
 #include "world.h"
+#include "miniaudio.h"
 
 class Player
 {
@@ -33,8 +34,8 @@ public:
     static const float SENSITIVITY;
     static const float ZOOM;
     // screen dimensions (used to set the projection matrix)
-    static const int SCR_HEIGHT; 
-    static const int SCR_WIDTH; 
+    static const int SCR_HEIGHT;
+    static const int SCR_WIDTH;
     // camera Attributes
     glm::vec3 Position;
     glm::vec3 Front;
@@ -57,18 +58,23 @@ public:
     // time
     float currentFrame;
     // player movement control (mouse input)
-    bool isWalking;       // is player walking?
-    bool firstMouse;      // first time moving mouse? 
-    double xPosIn;        // mouse x position input
-    double yPosIn;        // mouse y position input
+    bool isWalking;  // is player walking?
+    bool firstMouse; // first time moving mouse?
+    double xPosIn;   // mouse x position input
+    double yPosIn;   // mouse y position input
+    // audio
+    ma_result result;      // needed to check of the engine could be initialized
+    ma_engine engine;      // miniaudio engine
+    int soundCount;        // needed to make sure that the gunshot will only be played once every shot
+    std::string soundPath; // path to gunshot wav file
 
-    /// Constructor with vectors.
+    /// Constructor with vectors
     Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
-    /// Constructor with scalar values.
+    /// Constructor with scalar value
     Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch);
 
-    /// Sets up related objects (like the gun).
+    /// Sets up player related objects (like the gun and audio engine).
     void setup();
 
     /// Returns the view matrix calculated using Euler Angles and the LookAt Matrix.
@@ -76,7 +82,7 @@ public:
 
     /**
      * @brief Processes keyboard input.
-     * 
+     *
      * @param direction player movement direction (enum).
      * @param deltaTime time passed between two frames.
      */
@@ -85,7 +91,7 @@ public:
     /**
      * @brief Processes window input; controls attributes shot and isWalking and forwards the input
      * towards ProcessKeyboard method to process it further.
-     * 
+     *
      * @param window glfw window.
      * @param deltaTime time passed between two frames.
      */
@@ -120,19 +126,19 @@ public:
     void controlGunRendering();
 
 private:
-    float angle;               // recoil animation: this angle will be updated every frame to make the gun rotate up or down
-    bool startRecoil;          // start recoil animation?
-    bool goDown;               // recoil animation: gun needs to move down if true
-    double lastX;              // last x position of mouse
-    double lastY;              // last y position of mouse
-    glm::mat4 projection;      // projection matrix
-    glm::mat4 viewLocalMat;	   // view matrix with positional information removed (needed for rendering the gun)
+    float angle;            // recoil animation: this angle will be updated every frame to make the gun rotate up or down
+    bool startRecoil;       // start recoil animation?
+    bool goDown;            // recoil animation: gun needs to move down if true
+    double lastX;           // last x position of mouse
+    double lastY;           // last y position of mouse
+    glm::mat4 projection;   // projection matrix
+    glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
 
     /// Sets projection matrix.
     void setProjectionMatrix();
 
     /// Sets gun model matrix.
-    void setGunModelMatrix(); 
+    void setGunModelMatrix();
 
     /// Starts recoil animation for gun (gun starts rotating up).
     void startRecoilAnimation();

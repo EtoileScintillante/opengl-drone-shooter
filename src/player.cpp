@@ -68,6 +68,14 @@ void Player::setup()
     // load model and compile shaders
     gun = Model("resources/models/handgun/Handgun_obj.obj", false);
     shader = Shader("shaders/model.vert", "shaders/model.frag");
+
+    // miniaudio engine setup
+    result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
+    }
+    soundCount = 0;
+    soundPath = "resources/audio/gun-gunshot-02.wav";
 }
 
 void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
@@ -141,6 +149,11 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     }
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
+        if (soundCount == 0)
+        {
+            soundCount++;
+            ma_engine_play_sound(&engine, soundPath.c_str(), NULL); // play gunshot sound
+        }
         shot = true;
     }
     if (isWalking)
@@ -228,6 +241,7 @@ void Player::drawGun()
 
 void Player::drawGunFire()
 {
+    // set uniforms and draw gun fire
     shader.use();
     shader.setMat4("view", viewLocalMat);
     shader.setMat4("projection", projection);
@@ -294,6 +308,7 @@ void Player::endRecoilAnimation()
     if (angle <= 0) // set all values back to what they were before player shot gun
     {
         angle = 0;
+        soundCount = 0;
         shot = false;
         goDown = false;
         startRecoil = false;
