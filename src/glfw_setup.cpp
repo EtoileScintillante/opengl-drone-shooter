@@ -16,7 +16,7 @@ GLFWwindow* setup(const char* title, int height, int width)
     GLFWwindow *window = glfwCreateWindow(width, height, title, NULL, NULL);
     if (window == NULL)
     {
-        std::cout << "Failed to create GLFW window" << std::endl;
+        std::cout << "ERROR: Failed to create GLFW window" << std::endl;
         glfwTerminate();
     }
 
@@ -24,8 +24,15 @@ GLFWwindow* setup(const char* title, int height, int width)
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // tell GLFW to capture our mouse
+    // tell GLFW to capture the mouse
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // glad: load all OpenGL function pointers
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "ERROR: Failed to initialize GLAD" << std::endl;
+        glfwTerminate();
+    }
 
     return window;
 }

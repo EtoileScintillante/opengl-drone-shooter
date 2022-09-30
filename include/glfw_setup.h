@@ -13,7 +13,10 @@
 #include <iostream>
 
 /**
- * @brief Initializes and configures glwf and creates a window.
+ * @brief Initializes and configures glwf and creates a window. 
+ * Also loads OpenGL function pointers. If window creation fails
+ * or the function pointers can't be loaded, a message indicating the 
+ * problem will be printed to the console and glfwTerminate() will be called.
  * 
  * @param title window title.
  * @param height window height.
