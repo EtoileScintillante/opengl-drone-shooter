@@ -12,37 +12,24 @@
 
 int main()
 {
-    // initialize and configure glwf and create window
-    // -----------------------------------------------
+    // initialize and configure glwf, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
     // configure global opengl state
-    // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
     // prepare game related objects
-    // ----------------------------
     Player player; 
     player.setup();
     World world;
     Enemy drone;
 
     // timing
-    // ------
     float currentFrame;
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
     // render loop
-    // -----------
     while (!glfwWindowShouldClose(window))
     {
         // per-frame time logic
