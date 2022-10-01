@@ -12,6 +12,7 @@
 #include "world.h"
 #include "ray.h"
 #include "box.h"
+#include "miniaudio.h"
 
 class Enemy
 {
@@ -24,6 +25,13 @@ public:
     glm::mat4 view;                       // camera view matrix
     float currentFrame;                   // current frame/time
     float deltaTime;                      // time passed between two frames
+    glm::vec3 playerPosition;             // position of player
+    ma_result result;                     // needed to check of the engine could be initialized
+    ma_engine engineHover;                // miniaudio engine for hovering sound
+    ma_engine engineExplosion;            // miniaudio engine for explosion sound
+    std::string soundExplosionPath;       // path to explosion wav file
+    std::string soundHoverPath;           // path to helicopter hovering wav file
+    float soundCount;                     // needed to make sure that the explosion can only be heard once per enemy death
 
     /// Initializes new enemy object.
     Enemy();
@@ -70,6 +78,9 @@ private:
 
     /// Calculates bounding box for enemy using the enemy's current position.
     void calculateBoundingBox();
+
+    /// Returns the distance between the enemy position and player position on the x z plane.
+    float distanceToPLayer();
 };
 
 #endif /*__ENEMY__*/

@@ -13,10 +13,23 @@ Enemy::Enemy()
     isDead = false;
     deathTime = 0;
     magnitude = 0;
+    soundCount = 0;
     rotation = static_cast<float>((rand() % 360));
 
     // generate random spawning position
     generatePosition();
+
+    // miniaudio engines setup
+    result = ma_engine_init(NULL, &engineHover);
+    if (result != MA_SUCCESS) {
+        std::cout << "ERROR: failed to initialize hover audio engine." << std::endl;
+    }
+    result = ma_engine_init(NULL, &engineExplosion);
+    if (result != MA_SUCCESS) {
+        std::cout << "ERROR: failed to initialize explosion audio engine." << std::endl;
+    }
+    soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
+    soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
 }
 
 void Enemy::spawn()
@@ -41,6 +54,14 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
     // draw enemy
     spawn();
 
+    // play hovering sound when player is close enough to enemy
+    float d = distanceToPLayer();
+    
+    if (d < 25)
+    {
+        //ma_engine_play_sound(&engineHover, soundHoverPath.c_str(), NULL);
+    }
+
     // check for collisions
     if (shot)
     {
@@ -50,6 +71,11 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
     // if enemy got hit, make it explode
     if (isDead)
     {
+        if (d < 30 && soundCount == 0)
+        {
+            soundCount++;
+            ma_engine_play_sound(&engineExplosion, soundExplosionPath.c_str(), NULL);
+        }
         dyingAnimation();
     }
 }
@@ -81,11 +107,12 @@ void Enemy::dyingAnimation()
         magnitude += 1.0f; // increase with every frame
         spawn();
     }
-    else
+    else // set values back to default and choose random rotation and position
     {
         isDead = false;
         deathTime = 0;
         magnitude = 0;
+        soundCount = 0;
         rotation = static_cast<float>((rand() % 360));
         generatePosition();
     }
@@ -169,4 +196,11 @@ void Enemy::calculateBoundingBox()
     glm::vec3 vmin = glm::vec3(newMinX, position.y, newMinZ);
     glm::vec3 vmax = glm::vec3(newMaxX, position.y + 0.7f, newMaxZ);
     boundingBox = AABBox(vmin, vmax);
+}
+
+float Enemy::distanceToPLayer()
+{
+    float dx = pow((position.x - playerPosition.x), 2);
+    float dz = pow((position.z - playerPosition.z), 2);
+    return sqrt(dx + dz);
 }
