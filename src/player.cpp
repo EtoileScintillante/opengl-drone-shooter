@@ -317,6 +317,12 @@ void Player::endRecoilAnimation()
 
 void Player::controlGunRendering()
 {
+    // add passive player motion
+    if (!isWalking)
+    {
+        passiveMotion();
+    }
+
     // draw the handgun in base position
     if (!shot)
     {
