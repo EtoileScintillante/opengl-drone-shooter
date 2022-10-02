@@ -20,7 +20,7 @@ Enemy::Enemy()
     generatePosition();
 
     // miniaudio engines setup
-    result = ma_engine_init(NULL, &engineHover);
+    ma_result result = ma_engine_init(NULL, &engineHover);
     if (result != MA_SUCCESS) {
         std::cout << "ERROR: failed to initialize hover audio engine." << std::endl;
     }
@@ -54,13 +54,16 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
     // draw enemy
     spawn();
 
-    // play hovering sound when player is close enough to enemy
+    // distance to player
     float d = distanceToPLayer();
     
-    if (d < 25)
+    /*
+    if (isDead == false && d <= 30)
     {
-        //ma_engine_play_sound(&engineHover, soundHoverPath.c_str(), NULL);
+        // TODO: fix this sound! 
+        ma_engine_play_sound(&engineHover, soundHoverPath.c_str(), NULL);
     }
+    */
 
     // check for collisions
     if (shot)
@@ -70,10 +73,15 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
 
     // if enemy got hit, make it explode
     if (isDead)
-    {
-        if (d < 30 && soundCount == 0)
+    {   
+        if (soundCount == 0 && d <= 50)
         {
             soundCount++;
+            /* Here the distance in range 0 - 50 is mapped to the volume in range 
+            0.01 - 1.5. The volume is then subtracted from 1.51 to make sure that
+            a lower distance results in a higher volume and not the other way around */
+            float volume = 1.51 - ((d / 50) * (1.5 - 0.01) + 0.1);
+            ma_engine_set_volume(&engineExplosion, volume);
             ma_engine_play_sound(&engineExplosion, soundExplosionPath.c_str(), NULL);
         }
         dyingAnimation();
