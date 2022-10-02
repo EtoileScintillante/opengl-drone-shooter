@@ -29,6 +29,42 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     Yaw = yaw;
     Pitch = pitch;
     updateCameraVectors();
+
+    // set base position of gun
+    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
+
+    // set default values
+    angle = 0;
+    soundCount = 0;
+    shot = false;
+    startRecoil = false;
+    goDown = false;
+
+    // set matrices
+    setProjectionMatrix(); // this matrix does not change while running the program
+    setGunModelMatrix();
+
+    // load model and compile shaders
+    gun = Model("resources/models/handgun/Handgun_obj.obj", false);
+    shader = Shader("shaders/model.vert", "shaders/model.frag");
+
+    // wav file paths
+    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
+    walkSoundPath = "resources/audio/footsteps.wav";
+
+    // miniaudio engines setup
+    ma_result result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
+    }
+    
+    // load walking sound
+    result = ma_sound_init_from_file(&engine, walkSoundPath.c_str(), 0, NULL, NULL, &walkingSound);
+    if (result != MA_SUCCESS) 
+    {
+        std::cout << "ERROR: failed to load walking sound." << std::endl;
+    }
+    ma_sound_set_looping(&walkingSound, true);
 }
 
 Player::Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -43,20 +79,13 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     Yaw = yaw;
     Pitch = pitch;
     updateCameraVectors();
-}
 
-glm::mat4 Player::GetViewMatrix() const
-{
-    return glm::lookAt(Position, Position + Front, Up);
-}
-
-void Player::setup()
-{
     // set base position of gun
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
 
-    // set angle and bools (recoil related)
+    // set default values
     angle = 0;
+    soundCount = 0;
     shot = false;
     startRecoil = false;
     goDown = false;
@@ -69,13 +98,35 @@ void Player::setup()
     gun = Model("resources/models/handgun/Handgun_obj.obj", false);
     shader = Shader("shaders/model.vert", "shaders/model.frag");
 
-    // miniaudio engine setup
-    result = ma_engine_init(NULL, &engine);
+    // wav file paths
+    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
+    walkSoundPath = "resources/audio/footsteps.wav";
+
+    // miniaudio engines setup
+    ma_result result = ma_engine_init(NULL, &engine);
     if (result != MA_SUCCESS) {
         std::cout << "ERROR: failed to initialize audio engine." << std::endl;
     }
-    soundCount = 0;
-    soundPath = "resources/audio/gun-gunshot-02.wav";
+    
+    // load walking sound
+    result = ma_sound_init_from_file(&engine, walkSoundPath.c_str(), 0, NULL, NULL, &walkingSound);
+    if (result != MA_SUCCESS) 
+    {
+        std::cout << "ERROR: failed to load walking sound." << std::endl;
+    }
+    ma_sound_set_volume(&walkingSound, 1.0);
+    ma_sound_set_looping(&walkingSound, true);
+}
+
+Player::~Player()
+{
+    ma_sound_uninit(&walkingSound);
+    ma_engine_uninit(&engine);
+}
+
+glm::mat4 Player::GetViewMatrix() const
+{
+    return glm::lookAt(Position, Position + Front, Up);
 }
 
 void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
@@ -123,10 +174,13 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
 
+    // close window
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
+
+    // player moves
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         isWalking = true;
@@ -147,20 +201,31 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         isWalking = true;
         ProcessKeyboard(RIGHT, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+
+    // player shoots gun
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
     {
         if (soundCount == 0)
         {
             soundCount++;
-            ma_engine_play_sound(&engine, soundPath.c_str(), NULL); // play gunshot sound
+            ma_engine_set_volume(&engine, 1.3);
+            ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
         }
         shot = true;
     }
+
+    // add walking motion and sound if player moves
     if (isWalking)
     {
+        ma_sound_start(&walkingSound);
         walkingMotion();
     }
-    isWalking = false;
+    else // stop playing sound if player stops walking
+    {
+        ma_sound_stop(&walkingSound);
+    }
+
+    isWalking = false; // set back to false again
 }
 
 void Player::ProcessMouseMovement(GLboolean constrainPitch)
@@ -193,9 +258,9 @@ void Player::ProcessMouseMovement(GLboolean constrainPitch)
         {
             Pitch = 89.0f;
         }
-        if (Pitch < -89.0f)
+        if (Pitch < -44.0f)
         {
-            Pitch = -89.0f;
+            Pitch = -44.0f;
         }
     }
 
