@@ -70,8 +70,8 @@ public:
     std::string walkSoundPath;    // path to walking wav file
 
     /**
-     * @brief Construct a new Player object with vectors. Also initialisez player related objects
-     * like the gun and audio related objects.
+     * @brief Construct a new Player object with vectors. Also initializes player related objects
+     * like the gun and audio objects.
      * 
      * @param position player position vector.
      * @param up player up vector.
@@ -81,8 +81,8 @@ public:
     Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
     /**
-     * @brief Construct a new Player object with scalar values. Also initialisez player related objects
-     * like the gun and audio related objects.
+     * @brief Construct a new Player object with scalar values. Also initializes player related objects
+     * like the gun and audio objects.
      * 
      * @param posX x value of position vector.
      * @param posY y value of position vector.
