@@ -23,18 +23,14 @@ Enemy::Enemy()
     soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
     soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
 
-    // miniaudio engines setup
-    ma_result result = ma_engine_init(NULL, &engineHover);
+    // miniaudio engine setup
+    ma_result result = ma_engine_init(NULL, &engine);
     if (result != MA_SUCCESS) {
-        std::cout << "ERROR: failed to initialize hover audio engine." << std::endl;
-    }
-    result = ma_engine_init(NULL, &engineExplosion);
-    if (result != MA_SUCCESS) {
-        std::cout << "ERROR: failed to initialize explosion audio engine." << std::endl;
+        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
     }
 
     // load hover sound
-    result = ma_sound_init_from_file(&engineHover, soundHoverPath.c_str(), 0, NULL, NULL, &hoverSound);
+    result = ma_sound_init_from_file(&engine, soundHoverPath.c_str(), 0, NULL, NULL, &hoverSound);
     if (result != MA_SUCCESS) 
     {
         std::cout << "ERROR: failed to load hover sound." << std::endl;
@@ -44,8 +40,7 @@ Enemy::Enemy()
 Enemy::~Enemy()
 {
     ma_sound_uninit(&hoverSound);
-    ma_engine_uninit(&engineExplosion);
-    ma_engine_uninit(&engineHover);
+    ma_engine_uninit(&engine);
 }
 
 void Enemy::spawn()
@@ -101,8 +96,8 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
             soundCount++;
             // same as above, but with distance in range 0 - 50
             float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
-            ma_engine_set_volume(&engineExplosion, volume);
-            ma_engine_play_sound(&engineExplosion, soundExplosionPath.c_str(), NULL);
+            ma_engine_set_volume(&engine, volume);
+            ma_engine_play_sound(&engine, soundExplosionPath.c_str(), NULL);
         }
 
         dyingAnimation();
