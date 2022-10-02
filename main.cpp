@@ -2,8 +2,6 @@
 
 // TODO:
 // Make the drones dangerous; they should be able to kill the player in some way (maybe they can shoot bullets too?)
-// Improve sound effect of drone (the closer the player is to the drone, the louder the hovering and explosion sound)
-// Add walking sound for player
 // Add scoring system
 // Maybe add small random offset to the bullet direction when player shoots gun
 
@@ -21,7 +19,6 @@ int main()
 
     // prepare game related objects
     Player player; 
-    player.setup();
     World world;
     Enemy drone;
 
