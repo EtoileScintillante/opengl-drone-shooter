@@ -5,7 +5,7 @@ const float Enemy::MAX_FLOAT_HEIGHT = 7.0f;
 
 Enemy::Enemy()
 {
-    // load model and shader
+    // load model and shaders
     drone = Model("resources/models/drone/E 45 Aircraft_obj.obj", false);
     shader = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
 
@@ -19,6 +19,10 @@ Enemy::Enemy()
     // generate random spawning position
     generatePosition();
 
+    // wav file paths
+    soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
+    soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
+
     // miniaudio engines setup
     ma_result result = ma_engine_init(NULL, &engineHover);
     if (result != MA_SUCCESS) {
@@ -28,8 +32,20 @@ Enemy::Enemy()
     if (result != MA_SUCCESS) {
         std::cout << "ERROR: failed to initialize explosion audio engine." << std::endl;
     }
-    soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
-    soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
+
+    // load hover sound
+    result = ma_sound_init_from_file(&engineHover, soundHoverPath.c_str(), 0, NULL, NULL, &hoverSound);
+    if (result != MA_SUCCESS) 
+    {
+        std::cout << "ERROR: failed to load hover sound." << std::endl;
+    }
+}
+
+Enemy::~Enemy()
+{
+    ma_sound_uninit(&hoverSound);
+    ma_engine_uninit(&engineExplosion);
+    ma_engine_uninit(&engineHover);
 }
 
 void Enemy::spawn()
@@ -54,16 +70,20 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
     // draw enemy
     spawn();
 
-    // distance to player
+    // compute distance to player
     float d = distanceToPLayer();
     
-    /*
+    // play hovering sound while enemy is alive
     if (isDead == false && d <= 30)
     {
-        // TODO: fix this sound! 
-        ma_engine_play_sound(&engineHover, soundHoverPath.c_str(), NULL);
+        /* Here the distance in range 0 - 30 is mapped to the volume in range 
+        0.01 - 1.5. The volume is then subtracted from 1.5 to make sure that
+        a lower distance results in a higher volume and not the other way around */
+        float volume = 1.5 - ((d / 30) * (1.5 - 0.01) + 0.1);
+        ma_sound_set_volume(&hoverSound, volume);
+        ma_sound_set_looping(&hoverSound, true);
+        ma_sound_start(&hoverSound);
     }
-    */
 
     // check for collisions
     if (shot)
@@ -71,19 +91,20 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
         collisionDetection(bulletStartPos, bulletDir, bulletRange);
     }
 
-    // if enemy got hit, make it explode
+    // if enemy died: stop hover sound, play explosion sound and make enemy explode
     if (isDead)
     {   
+        ma_sound_stop(&hoverSound);
+
         if (soundCount == 0 && d <= 50)
         {
             soundCount++;
-            /* Here the distance in range 0 - 50 is mapped to the volume in range 
-            0.01 - 1.5. The volume is then subtracted from 1.51 to make sure that
-            a lower distance results in a higher volume and not the other way around */
-            float volume = 1.51 - ((d / 50) * (1.5 - 0.01) + 0.1);
+            // same as above, but with distance in range 0 - 50
+            float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
             ma_engine_set_volume(&engineExplosion, volume);
             ma_engine_play_sound(&engineExplosion, soundExplosionPath.c_str(), NULL);
         }
+
         dyingAnimation();
     }
 }
