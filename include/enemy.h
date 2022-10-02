@@ -28,12 +28,16 @@ public:
     glm::vec3 playerPosition;             // position of player
     ma_engine engineHover;                // miniaudio engine for hovering sound
     ma_engine engineExplosion;            // miniaudio engine for explosion sound
+    ma_sound hoverSound;                  // miniaudio sound object for hover sound (to control looping of sound)
     std::string soundExplosionPath;       // path to explosion wav file
     std::string soundHoverPath;           // path to helicopter hovering wav file
     float soundCount;                     // needed to make sure that the explosion can only be heard once per enemy death
 
     /// Initializes new enemy object.
     Enemy();
+
+    /// Destructor.
+    ~Enemy();
 
     /**
      * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
