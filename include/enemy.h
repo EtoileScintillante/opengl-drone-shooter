@@ -26,7 +26,6 @@ public:
     float currentFrame;                   // current frame/time
     float deltaTime;                      // time passed between two frames
     glm::vec3 playerPosition;             // position of player
-    ma_result result;                     // needed to check of the engine could be initialized
     ma_engine engineHover;                // miniaudio engine for hovering sound
     ma_engine engineExplosion;            // miniaudio engine for explosion sound
     std::string soundExplosionPath;       // path to explosion wav file
