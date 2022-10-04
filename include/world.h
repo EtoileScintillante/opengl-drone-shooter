@@ -7,6 +7,8 @@
 #ifndef __WORLD_H__
 #define __WORLD_H__
 
+#include <random>
+
 #include "shader.h"
 #include "model.h"
 #include "skybox.h"
