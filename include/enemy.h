@@ -2,7 +2,6 @@
  * enemy.h
  *
  * Created by EtoileScintillante.
- * Ray-box intersection resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection.
  */
 
 #ifndef __ENEMY_H__
@@ -19,6 +18,7 @@ class Enemy
 public:
     static const float MAX_FLOAT_HEIGHT;  // maximum floating height of enemy, measured from y = 0
     static const float MIN_FLOAT_HEIGHT;  // minimum floating height of enemy, measured from y = 0
+    static const float SPEED;             // movement speed of enemy
     Model drone;                          // enemy model (in this program it's a drone)
     Shader shader;                        // enemy shader (must include geometry shader for explosion effect)
     glm::mat4 projection;                 // projection matrix
@@ -32,7 +32,7 @@ public:
     std::string soundHoverPath;           // path to helicopter hovering wav file
     float soundCount;                     // needed to make sure that the explosion can only be heard once per enemy death
 
-    /// Initializes new enemy object.
+    /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
     Enemy();
 
     /// Destructor.
@@ -53,9 +53,9 @@ private:
     glm::mat4 modelMatrix; // model matrix for enemy
     AABBox boundingBox;    // enemy bounding box 
     bool isDead;           // is enemy dead?
+    float rotation;        // rotation angle of enemy in radians
     float deathTime;       // used to control the duration of the dying animation
     float magnitude;       // used to control the explosion (dying animation)
-    float rotation;        // degrees (used in the creation the model matrix for enemy)
 
     /// Spawns the enemy.
     void spawn();
@@ -83,6 +83,9 @@ private:
 
     /// Returns the distance between the enemy position and player position on the x z plane.
     float distanceToPLayer();
+
+    /// Updates the position vector of the enemy so that it moves towards the player.
+    void MoveToPlayer();
 };
 
 #endif /*__ENEMY__*/

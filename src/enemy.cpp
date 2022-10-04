@@ -1,7 +1,8 @@
 #include "enemy.h"
 
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
-const float Enemy::MAX_FLOAT_HEIGHT = 7.0f;
+const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
+const float Enemy::SPEED = 0.02f;
 
 Enemy::Enemy()
 {
@@ -14,7 +15,6 @@ Enemy::Enemy()
     deathTime = 0;
     magnitude = 0;
     soundCount = 0;
-    rotation = static_cast<float>((rand() % 360));
 
     // generate random spawning position
     generatePosition();
@@ -45,6 +45,9 @@ Enemy::~Enemy()
 
 void Enemy::spawn()
 {
+    // update position
+    MoveToPlayer();
+
     // generate model matrix
     generateModelMatrix();
 
@@ -155,17 +158,16 @@ void Enemy::generatePosition()
 
 void Enemy::generateModelMatrix()
 {
-    // create up and down motion so that the enemy is not standing still
-    float newPosY = position.y + sin(currentFrame) * 0.05f;
-    if (newPosY > (World::GROUND_Y + 1.0f) && newPosY < (position.y + 2.0f))
-    {
-        position.y = newPosY;
-    }
-
+    // calculate rotation angle so that the enemy points towards the player's position
+    float x = playerPosition.x - position.x;
+    float z = playerPosition.z - position.z;
+    rotation = atan2(z, x); 
+    rotation += glm::radians(90.0f);
+    
     // create model matrix
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
-    modelMatrix = glm::rotate(modelMatrix, rotation, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation (counter clockwise)
+    modelMatrix = glm::rotate(modelMatrix, rotation, glm::vec3(0.0f, -1.0f, 0.0f)); 
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.6f));
 }
 
@@ -207,14 +209,11 @@ void Enemy::calculateBoundingBox()
     float initialMaxX = Cx + 0.3f; // x of max bound
     float initialMaxZ = Cz + 1.0f; // z of max bound
 
-    // convert degrees to radians (sin and cos functions expect radians)
-    float radians = (rotation * 3.14159265) / 180;
-
     // calculate new points/bounds (note that the y from the formula is replaced by z)
-    float newMinX = (cos(radians) * (initialMinX - Cx)) - (sin(radians) * (initialMinZ - Cz)) + Cx;
-    float newMinZ = (sin(radians) * (initialMinX - Cx)) + (cos(radians) * (initialMinZ - Cz)) + Cz;
-    float newMaxX = (cos(radians) * (initialMaxX - Cx)) - (sin(radians) * (initialMaxZ - Cz)) + Cx;
-    float newMaxZ = (sin(radians) * (initialMaxX - Cx)) + (cos(radians) * (initialMaxZ - Cz)) + Cz;
+    float newMinX = (cos(rotation) * (initialMinX - Cx)) - (sin(rotation) * (initialMinZ - Cz)) + Cx;
+    float newMinZ = (sin(rotation) * (initialMinX - Cx)) + (cos(rotation) * (initialMinZ - Cz)) + Cz;
+    float newMaxX = (cos(rotation) * (initialMaxX - Cx)) - (sin(rotation) * (initialMaxZ - Cz)) + Cx;
+    float newMaxZ = (sin(rotation) * (initialMaxX - Cx)) + (cos(rotation) * (initialMaxZ - Cz)) + Cz;
 
     // create bounding box with the new coordinates
     glm::vec3 vmin = glm::vec3(newMinX, position.y, newMinZ);
@@ -227,4 +226,23 @@ float Enemy::distanceToPLayer()
     float dx = pow((position.x - playerPosition.x), 2);
     float dz = pow((position.z - playerPosition.z), 2);
     return sqrt(dx + dz);
+}
+
+void Enemy::MoveToPlayer()
+{
+    // create direction vector
+    glm::vec3 direction;
+    direction.x = playerPosition.x - position.x;
+    direction.y = position.y; // y level of enemy does not change
+    direction.z = playerPosition.z - position.z;
+
+    // normalize vector
+    float magnitude = distanceToPLayer();
+    if (magnitude < 1) { magnitude = 1;}
+    direction.x /= magnitude;
+    direction.z /= magnitude;
+
+    // update position
+    position.x += direction.x * SPEED;
+    position.z += direction.z * SPEED;
 }
