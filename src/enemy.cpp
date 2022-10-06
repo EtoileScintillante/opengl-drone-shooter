@@ -2,6 +2,7 @@
 
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
 const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
+const float Enemy::INTERVAL = 3.0f;
 const float Enemy::SPEED = 0.02f;
 
 Enemy::Enemy()
@@ -12,9 +13,10 @@ Enemy::Enemy()
 
     // set default values
     isDead = false;
-    deathTime = 0;
+    explodeTime = 0;
     magnitude = 0;
     soundCount = 0;
+    spawnInterval = 0;
 
     // generate random spawning position
     generatePosition();
@@ -66,7 +68,10 @@ void Enemy::spawn()
 void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
 {
     // draw enemy
-    spawn();
+    if (!isDead)
+    {
+        spawn();
+    }
 
     // compute distance to player
     float d = distanceToPLayer();
@@ -126,22 +131,27 @@ void Enemy::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, fl
 
 void Enemy::dyingAnimation()
 {
-    deathTime += deltaTime;
+    explodeTime += deltaTime;
 
     // duration of explosion is about a second
-    if (deathTime <= 0.25)
+    if (explodeTime <= 0.25)
     {
         magnitude += 1.0f; // increase with every frame
         spawn();
     }
-    else // set values back to default and choose random rotation and position
+    // spawn enemy again in new position after time interval has passed
+    else 
     {
-        isDead = false;
-        deathTime = 0;
-        magnitude = 0;
-        soundCount = 0;
-        rotation = static_cast<float>((rand() % 360));
-        generatePosition();
+        spawnInterval += deltaTime;
+        if (spawnInterval >= INTERVAL)
+        {
+            isDead = false;
+            explodeTime = 0;
+            magnitude = 0;
+            soundCount = 0;
+            spawnInterval = 0;
+            generatePosition();
+        }
     }
 }
 

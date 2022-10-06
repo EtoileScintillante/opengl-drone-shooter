@@ -18,6 +18,7 @@ class Enemy
 public:
     static const float MAX_FLOAT_HEIGHT;  // maximum floating height of enemy, measured from y = 0
     static const float MIN_FLOAT_HEIGHT;  // minimum floating height of enemy, measured from y = 0
+    static const float INTERVAL;          // time in seconds between enemy dying and spawning again
     static const float SPEED;             // movement speed of enemy
     Model drone;                          // enemy model (in this program it's a drone)
     Shader shader;                        // enemy shader (must include geometry shader for explosion effect)
@@ -53,8 +54,9 @@ private:
     glm::mat4 modelMatrix; // model matrix for enemy
     AABBox boundingBox;    // enemy bounding box 
     bool isDead;           // is enemy dead?
+    float spawnInterval;   // used to control the time interval between enemy dying and spawning again
     float rotation;        // rotation angle of enemy in radians
-    float deathTime;       // used to control the duration of the dying animation
+    float explodeTime;     // used to control the duration of the dying animation (enemy explodes)
     float magnitude;       // used to control the explosion (dying animation)
 
     /// Spawns the enemy.
