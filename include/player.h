@@ -14,7 +14,7 @@
 class Player
 {
 public:
-    // Defines several possible options for player movement
+    // defines several possible options for player movement
     enum Player_Movement
     {
         FORWARD,
@@ -27,16 +27,16 @@ public:
     static const float UPPER_LIMIT_X;  // upper limit x plane
     static const float BOTTOM_LIMIT_Z; // bottom limit z ppane
     static const float UPPER_LIMIT_Z;  // upper limit z plane
-    // default camera values
-    static const float YAW;
-    static const float PITCH;
-    static const float SPEED;
-    static const float SENSITIVITY;
-    static const float ZOOM;
+    // default player values
+    static const float YAW;         // eluer angle related
+    static const float PITCH;       // euler angle related
+    static const float SPEED;       // movement speed
+    static const float SENSITIVITY; // mouse sensitivity
+    static const float ZOOM;        // needed to set projection matrix
     // screen dimensions (used to set the projection matrix)
     static const int SCR_HEIGHT;
     static const int SCR_WIDTH;
-    // camera Attributes
+    // other player attributes
     glm::vec3 Position;
     glm::vec3 Front;
     glm::vec3 Up;
@@ -45,10 +45,9 @@ public:
     // euler Angles
     float Yaw;
     float Pitch;
-    // camera options
-    float MovementSpeed;
-    float MouseSensitivity;
-    float Zoom;
+    // player options
+    float MovementSpeed;   
+    float MouseSensitivity; 
     // gun related
     Model gun;                // gun model
     Shader shader;            // gun shader
@@ -167,8 +166,8 @@ private:
     /// Starts second part of recoil animation: gun rotates down to base position.
     void endRecoilAnimation();
 
-    /// Calculates the front vector from the Camera's (updated) Euler Angles.
-    void updateCameraVectors();
+    /// Calculates the front vector from the Player's (updated) Euler Angles.
+    void updatePlayerVectors();
 };
 
 #endif /*__PLAYER__*/

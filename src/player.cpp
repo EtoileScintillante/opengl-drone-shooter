@@ -4,7 +4,7 @@
 const int Player::SCR_HEIGHT = 600;
 const int Player::SCR_WIDTH = 800;
 
-// default camera values
+// default player values
 const float Player::YAW = -90.0f;
 const float Player::PITCH = 0.0f;
 const float Player::SPEED = 5.0f;
@@ -17,18 +17,18 @@ const float Player::UPPER_LIMIT_X = World::TERRAIN_SIZE / 2;
 const float Player::BOTTOM_LIMIT_Z = -World::TERRAIN_SIZE / 2;
 const float Player::UPPER_LIMIT_Z = World::TERRAIN_SIZE / 2;
 
-Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
 {
     // default mouse related values
     lastX = SCR_WIDTH / 2.0f;
     lastY = SCR_HEIGHT / 2.0f;
     firstMouse = true;
-    // set camera values
+    // set player values
     Position = position;
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
-    updateCameraVectors();
+    updatePlayerVectors();
 
     // set base position of gun
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
@@ -67,18 +67,18 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     ma_sound_set_looping(&walkingSound, true);
 }
 
-Player::Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Player::Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
 {
     // default mouse related values
     lastX = SCR_WIDTH / 2.0f;
     lastY = SCR_HEIGHT / 2.0f;
     firstMouse = true;
-    // set camera values
+    // set player values
     Position = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
-    updateCameraVectors();
+    updatePlayerVectors();
 
     // set base position of gun
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
@@ -264,8 +264,8 @@ void Player::ProcessMouseMovement(GLboolean constrainPitch)
         }
     }
 
-    // update Front, Right and Up Vectors using the updated Euler angles
-    updateCameraVectors();
+    // update Front, Right and Up vectors using the updated Euler angles
+    updatePlayerVectors();
 }
 
 void Player::passiveMotion()
@@ -316,7 +316,7 @@ void Player::drawGunFire()
 
 void Player::setProjectionMatrix()
 {
-    projection = glm::perspective(glm::radians(Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+    projection = glm::perspective(glm::radians(ZOOM), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 }
 
 void Player::setGunModelMatrix()
@@ -416,7 +416,7 @@ void Player::controlGunRendering()
     }
 }
 
-void Player::updateCameraVectors()
+void Player::updatePlayerVectors()
 {
     // calculate the new Front vector
     glm::vec3 front;
