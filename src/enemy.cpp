@@ -168,7 +168,22 @@ void Enemy::generatePosition()
     std::uniform_int_distribution<> xzPlane(-World::TERRAIN_SIZE + 2, World::TERRAIN_SIZE - 2); // define the range for x and z axis
     std::uniform_int_distribution<> yPlane(MIN_FLOAT_HEIGHT, MAX_FLOAT_HEIGHT);                 // define the range for y axis
 
-    position = glm::vec3(xzPlane(gen), yPlane(gen), xzPlane(gen));
+    float posX = xzPlane(gen); // generate x position
+    float posZ = xzPlane(gen); // generate z position
+
+    // add limitation: enemy can not spawn in the inner square of the terrain square
+    if (posX > -World::TERRAIN_SIZE/2 && posX < World::TERRAIN_SIZE/2)
+    {
+        if (posX < 0) {posX = -World::TERRAIN_SIZE/2;}
+        else {posX = World::TERRAIN_SIZE/2;}
+    }
+    if (posZ > -World::TERRAIN_SIZE/2 && posZ < World::TERRAIN_SIZE/2)
+    {
+        if (posZ < 0) {posZ = -World::TERRAIN_SIZE/2;}
+        else {posZ = World::TERRAIN_SIZE/2;}
+    }
+
+    position = glm::vec3(posX, yPlane(gen), posZ);
 }
 
 void Enemy::generateModelMatrix()
@@ -204,12 +219,11 @@ X and Y are the initial coordinates and newX and newY are the rotated coordinate
 
 Formula from https://math.stackexchange.com/a/814981.
 
-Important note: in this program the bounding box is shaped like a rectangle,
-the z sides are bigger than the x sides since the model of the enemy is longer than it is wide. 
-The bounding box does not contain the whole model, but this is not a problem because the model is quite big anyway, 
-so it is not too difficult to hit it. Also, the y coordinate remains untouched because the height of the box does 
-not change when rotating it around the y - axis. Lastly, the current implementation of calculateBoundingBox 
-is based on the drone model scaled by factor 0.6. See /doc/bounding_box for a visualization.
+Important note: in this program the y coordinate remains untouched because the height of the box does 
+not change when rotating it around the y - axis. Also, the current implementation of calculateBoundingBox 
+is based on the drone model scaled by factor 0.6. The bounding box does not contain the whole model, 
+but this is not a problem because the model is quite big, so it is not too difficult to hit it.
+See /doc/bounding_box for a visualization.
 */
 
 void Enemy::calculateBoundingBox()
