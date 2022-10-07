@@ -65,8 +65,8 @@ private:
     /**
      * @brief Detects whether the enemy has been hit by a bullet (using ray-box intersection).
      *
-     * @param bulletStartPos starting position of the bullet (in this program that is the camera position).
-     * @param bulletDir direction of the bullet (in this program that is the front vector of the camera).
+     * @param bulletStartPos starting position of the bullet (in this program that is the player's position).
+     * @param bulletDir direction of the bullet (in this program that is the front vector of the player).
      * @param bulletRange range of bullet (maximum distance the bullet can travel).
      */
     void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
