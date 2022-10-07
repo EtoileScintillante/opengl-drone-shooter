@@ -21,6 +21,7 @@ int main()
     Player player; 
     World world;
     Enemy drone;
+    Enemy drone1;
 
     // timing
     float currentFrame;
@@ -35,13 +36,12 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // pass time variables to player and enemy
+        // pass time variables to player and enemies
         player.currentFrame = currentFrame; 
         drone.currentFrame = currentFrame; 
         drone.deltaTime = deltaTime;
-
-        // pass player position to enemy, needed to control enemy soundeffects
-        drone.playerPosition = player.Position; 
+        drone1.currentFrame = currentFrame; 
+        drone1.deltaTime = deltaTime;
 
         // input
         player.processInput(window, deltaTime);
@@ -52,20 +52,17 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // view and projection for world objects and enemy
-        world.projection = player.getProjectionMatrix();
-        world.view = player.GetViewMatrix();
-        drone.projection = player.getProjectionMatrix();
-        drone.view = player.GetViewMatrix();
-
         // draw world objects (ground, trees, flowers and skybox)
+        world.view = player.GetViewMatrix();
+        world.projection = player.getProjectionMatrix();
         world.Draw();
 
         // draw gun and handle gun recoil movement
         player.controlGunRendering();
         
-        // control life of enemy (spawning and dying)
-        drone.controlEnemyLife(player.shot, player.Position, player.Front, World::TERRAIN_SIZE * 2);
+        // control life of enemies (spawning and dying)
+        drone.controlEnemyLife(player, World::TERRAIN_SIZE * 2);
+        drone1.controlEnemyLife(player, World::TERRAIN_SIZE * 2);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
