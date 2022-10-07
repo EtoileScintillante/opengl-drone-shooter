@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include "world.h"
+#include "player.h"
 #include "ray.h"
 #include "box.h"
 #include "miniaudio.h"
@@ -42,12 +43,10 @@ public:
     /**
      * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
      *
-     * @param shot has player taken a shot?
-     * @param bulletStartPos starting position of the bullet (in this program that is the camera position).
-     * @param bulletDir direction of the bullet (in this program that is the front vector of the camera).
+     * @param player player object.
      * @param bulletRange range of bullet (maximum distance the bullet can travel).
      */
-    void controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
+    void controlEnemyLife(Player &player, float bulletRange);
 
 private:
     glm::vec3 position;    // position of enemy

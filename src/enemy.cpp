@@ -65,7 +65,7 @@ void Enemy::spawn()
     drone.Draw(shader);
 }
 
-void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
+void Enemy::controlEnemyLife(Player &player, float bulletRange)
 {
     // draw enemy
     if (!isDead)
@@ -89,9 +89,9 @@ void Enemy::controlEnemyLife(bool shot, glm::vec3 bulletStartPos, glm::vec3 bull
     }
 
     // check for collisions
-    if (shot)
+    if (player.shot)
     {
-        collisionDetection(bulletStartPos, bulletDir, bulletRange);
+        collisionDetection(player.Position, player.Front, bulletRange);
     }
 
     // if enemy died: stop hover sound, play explosion sound and make enemy explode
