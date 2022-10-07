@@ -67,6 +67,11 @@ void Enemy::spawn()
 
 void Enemy::controlEnemyLife(Player &player, float bulletRange)
 {
+    // set variables
+    playerPosition = player.Position;
+    projection = player.getProjectionMatrix();
+    view = player.GetViewMatrix();
+    
     // draw enemy
     if (!isDead)
     {
