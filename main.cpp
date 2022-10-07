@@ -8,6 +8,7 @@
 #include "player.h"
 #include "enemy.h"
 #include "glfw_setup.h"
+#include "enemy_manager.h"
 
 int main()
 {
@@ -20,8 +21,7 @@ int main()
     // prepare game related objects
     Player player; 
     World world;
-    Enemy drone;
-    Enemy drone1;
+    EnemyManager manager;
 
     // timing
     float currentFrame;
@@ -36,12 +36,10 @@ int main()
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // pass time variables to player and enemies
+        // pass time variables to player and enemy manager
         player.currentFrame = currentFrame; 
-        drone.currentFrame = currentFrame; 
-        drone.deltaTime = deltaTime;
-        drone1.currentFrame = currentFrame; 
-        drone1.deltaTime = deltaTime;
+        manager.currentTime = currentFrame;
+        manager.deltaTime = deltaTime;
 
         // input
         player.processInput(window, deltaTime);
@@ -60,9 +58,8 @@ int main()
         // draw gun and handle gun recoil movement
         player.controlGunRendering();
         
-        // control life of enemies (spawning and dying)
-        drone.controlEnemyLife(player, World::TERRAIN_SIZE * 2);
-        drone1.controlEnemyLife(player, World::TERRAIN_SIZE * 2);
+        // manage enemy objects
+        manager.manage(player, World::TERRAIN_SIZE * 2);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
