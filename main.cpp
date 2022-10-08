@@ -9,6 +9,7 @@
 #include "enemy.h"
 #include "glfw_setup.h"
 #include "enemy_manager.h"
+#include "text_renderer.h"
 
 int main()
 {
@@ -22,6 +23,7 @@ int main()
     Player player; 
     World world;
     EnemyManager manager;
+    TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
 
     // timing
     float currentFrame;
@@ -60,6 +62,9 @@ int main()
         
         // manage enemy objects
         manager.manage(player, World::TERRAIN_SIZE * 2);
+        
+        // render text
+        text.RenderText("Drone Shooter", 25.0f, 25.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
