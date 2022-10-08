@@ -45,33 +45,21 @@ public:
     // euler Angles
     float Yaw;
     float Pitch;
-    // player options
-    float MovementSpeed;   
-    float MouseSensitivity; 
+    // player movement options
+    float MovementSpeed;
+    float MouseSensitivity;
+    // mouse
+    double xPosIn; // mouse x position input
+    double yPosIn; // mouse y position input
     // gun related
-    Model gun;                // gun model
-    Shader shader;            // gun shader
-    glm::vec3 gunPosition;    // (base) position for gun
-    glm::mat4 gunModelMatrix; // model matrix for gun
-    bool shot;                // has player taken a shot?
+    bool shot; // has player taken a shot?
     // time
     float currentFrame;
-    // player movement control (mouse input)
-    bool isWalking;  // is player walking?
-    bool firstMouse; // first time moving mouse?
-    double xPosIn;   // mouse x position input
-    double yPosIn;   // mouse y position input
-    // audio
-    ma_engine engine;             // miniaudio engine 
-    ma_sound walkingSound;        // sound object for walking soundeffect (needed to control looping of sound)
-    int soundCount;               // needed to make sure that the gunshot will only be played once every shot
-    std::string gunshotSoundPath; // path to gunshot wav file
-    std::string walkSoundPath;    // path to walking wav file
 
     /**
      * @brief Construct a new Player object with vectors. Also initializes player related objects
      * like the gun and audio objects.
-     * 
+     *
      * @param position player position vector.
      * @param up player up vector.
      * @param yaw yaw value.
@@ -82,7 +70,7 @@ public:
     /**
      * @brief Construct a new Player object with scalar values. Also initializes player related objects
      * like the gun and audio objects.
-     * 
+     *
      * @param posX x value of position vector.
      * @param posY y value of position vector.
      * @param posZ z value of position vector.
@@ -146,11 +134,26 @@ public:
     void controlGunRendering();
 
 private:
-    float angle;            // recoil animation: this angle will be updated every frame to make the gun rotate up or down
-    bool startRecoil;       // start recoil animation?
-    bool goDown;            // recoil animation: gun needs to move down if true
-    double lastX;           // last x position of mouse
-    double lastY;           // last y position of mouse
+    // gun related
+    Model gun;                // gun model
+    Shader shader;            // gun shader
+    glm::vec3 gunPosition;    // (base) position for gun
+    glm::mat4 gunModelMatrix; // model matrix for gun
+    float angle;              // recoil animation: this angle will be updated every frame to make the gun rotate up or down
+    bool startRecoil;         // start recoil animation?
+    bool goDown;              // recoil animation: gun needs to move down if true
+    // player movement control (mouse input)
+    bool isWalking;  // is player walking?
+    bool firstMouse; // first time moving mouse?
+    double lastX;    // last x position of mouse
+    double lastY;    // last y position of mouse
+    // audio
+    ma_engine engine;             // miniaudio engine
+    ma_sound walkingSound;        // sound object for walking soundeffect (needed to control looping of sound)
+    int soundCount;               // needed to make sure that the gunshot will only be played once every shot
+    std::string gunshotSoundPath; // path to gunshot wav file
+    std::string walkSoundPath;    // path to walking wav file
+    // matrices
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
 

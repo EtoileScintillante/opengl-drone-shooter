@@ -17,22 +17,14 @@
 class Enemy
 {
 public:
-    static const float MAX_FLOAT_HEIGHT;  // maximum floating height of enemy, measured from y = 0
-    static const float MIN_FLOAT_HEIGHT;  // minimum floating height of enemy, measured from y = 0
-    static const float INTERVAL;          // time in seconds between enemy dying and spawning again
-    static const float SPEED;             // movement speed of enemy
-    Model drone;                          // enemy model (in this program it's a drone)
-    Shader shader;                        // enemy shader (must include geometry shader for explosion effect)
-    glm::mat4 projection;                 // projection matrix
-    glm::mat4 view;                       // camera view matrix
-    float currentFrame;                   // current frame/time
-    float deltaTime;                      // time passed between two frames
-    glm::vec3 playerPosition;             // position of player
-    ma_engine engine;                     // miniaudio engine 
-    ma_sound hoverSound;                  // miniaudio sound object for hover sound (to control looping of sound)
-    std::string soundExplosionPath;       // path to explosion wav file
-    std::string soundHoverPath;           // path to helicopter hovering wav file
-    float soundCount;                     // needed to make sure that the explosion can only be heard once per enemy death
+    static const float MAX_FLOAT_HEIGHT; // maximum floating height of enemy, measured from y = 0
+    static const float MIN_FLOAT_HEIGHT; // minimum floating height of enemy, measured from y = 0
+    static const float INTERVAL;         // time in seconds between enemy dying and spawning again
+    static const float SPEED;            // movement speed of enemy
+    glm::mat4 projection;                // projection matrix
+    glm::mat4 view;                      // camera view matrix
+    float currentFrame;                  // current frame/time
+    float deltaTime;                     // time passed between two frames
 
     /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
     Enemy();
@@ -49,14 +41,22 @@ public:
     void controlEnemyLife(Player &player, float bulletRange);
 
 private:
-    glm::vec3 position;    // position of enemy
-    glm::mat4 modelMatrix; // model matrix for enemy
-    AABBox boundingBox;    // enemy bounding box 
-    bool isDead;           // is enemy dead?
-    float spawnInterval;   // used to control the time interval between enemy dying and spawning again
-    float rotation;        // rotation angle of enemy in radians
-    float explodeTime;     // used to control the duration of the dying animation (enemy explodes)
-    float magnitude;       // used to control the explosion (dying animation)
+    Model drone;                    // enemy model (in this program it's a drone)
+    Shader shader;                  // enemy shader (must include geometry shader for explosion effect)
+    glm::vec3 playerPosition;       // position of player
+    ma_engine engine;               // miniaudio engine
+    ma_sound hoverSound;            // miniaudio sound object for hover sound (to control looping of sound)
+    std::string soundExplosionPath; // path to explosion wav file
+    std::string soundHoverPath;     // path to helicopter hovering wav file
+    float soundCount;               // needed to make sure that the explosion can only be heard once per enemy death
+    glm::vec3 position;             // position of enemy
+    glm::mat4 modelMatrix;          // model matrix for enemy
+    AABBox boundingBox;             // enemy bounding box
+    bool isDead;                    // is enemy dead?
+    float spawnInterval;            // used to control the time interval between enemy dying and spawning again
+    float rotation;                 // rotation angle of enemy in radians
+    float explodeTime;              // used to control the duration of the dying animation (enemy explodes)
+    float magnitude;                // used to control the explosion (dying animation)
 
     /// Spawns the enemy.
     void spawn();
