@@ -39,6 +39,9 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     shot = false;
     startRecoil = false;
     goDown = false;
+    kills = 0;
+    isAlive = true;
+    health = 100;
 
     // set matrices
     setProjectionMatrix(); // this matrix does not change while running the program
@@ -345,9 +348,24 @@ glm::mat4 Player::getProjectionMatrix() const
     return projection;
 }
 
+glm::mat4 Player::getOrthoProjectionMatrix() const
+{
+    return glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
+}
+
 glm::mat4 Player::getGunModelMatrix() const
 {
     return gunModelMatrix;
+}
+
+std::string Player::getKillsString() const
+{
+    return "Kills: " + std::to_string(kills);
+}
+
+std::string Player::getHealthString() const
+{   
+    return "Health: " + std::to_string(health);
 }
 
 void Player::startRecoilAnimation()

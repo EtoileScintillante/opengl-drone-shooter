@@ -55,6 +55,10 @@ public:
     bool shot; // has player taken a shot?
     // time
     float currentFrame;
+    // game
+    int health;
+    bool isAlive;
+    int kills;
 
     /**
      * @brief Construct a new Player object with vectors. Also initializes player related objects
@@ -127,8 +131,17 @@ public:
     /// Get projection matrix.
     glm::mat4 getProjectionMatrix() const;
 
+    /// Get ortho projection matrix (part of HUD)
+    glm::mat4 getOrthoProjectionMatrix() const;
+
     /// Get gun model matrix.
     glm::mat4 getGunModelMatrix() const;
+
+    /// Get player's kill count as string (part of HUD).
+    std::string getKillsString() const;
+
+    /// Get player's health as string (part of HUD).
+    std::string getHealthString() const;
 
     /// Renders gun and controls the recoil movements.
     void controlGunRendering();
