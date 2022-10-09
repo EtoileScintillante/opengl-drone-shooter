@@ -35,8 +35,10 @@ struct Character
 class TextRenderer
 {
 public:
+    glm::mat4 projection; // projection matrix 
+
     /// Constructs new TextRenderer object.
-    /// Also initializes FreeType library, loads font, compiles shaders and sets projection matrix.
+    /// Also initializes FreeType library, loads font and compiles shaders.
     TextRenderer(std::string pathToFont, std::string pathVertexShader, std::string pathFragmentShader);
 
     /**
@@ -52,7 +54,6 @@ public:
 
 private:
     std::string font;          // path to font
-    glm::mat4 orthoProjection; // ortho projection matrix (no need for perspective when rendering text)
     FT_Library ft;             // FreeType Library
     FT_Face face;              // needed to load font as a face
     Character characters[95];  // covers ASCII values from 32 to 127
