@@ -1,8 +1,10 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// Make the drones dangerous; they should be able to kill the player in some way (maybe they can shoot bullets too?)
-// Add scoring system
+// Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
+// and when player gets hit, decrease player's health. Is health 0? Player is killed --> show ending screen 
+// Add starting screen ("press [key] to start")
+// Add ending screen ("You died. Press [key] to play again or ESC to quit")
 // Maybe add small random offset to the bullet direction when player shoots gun
 
 #include "player.h"
@@ -64,7 +66,9 @@ int main()
         manager.manage(player, World::TERRAIN_SIZE * 2);
         
         // render text
-        text.RenderText("Drone Shooter", 25.0f, 25.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+        text.projection = player.getOrthoProjectionMatrix();
+        text.RenderText(player.getHealthString(), 25.0f, 25.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+        text.RenderText(player.getKillsString(), 25.0f, 50.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
