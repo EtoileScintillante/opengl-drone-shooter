@@ -57,6 +57,7 @@ private:
     float rotation;                 // rotation angle of enemy in radians
     float explodeTime;              // used to control the duration of the dying animation (enemy explodes)
     float magnitude;                // used to control the explosion (dying animation)
+    bool canIncreaseScore;          // used to ensure that the player's kill count only increases by 1 point every enemy death
 
     /// Spawns the enemy.
     void spawn();

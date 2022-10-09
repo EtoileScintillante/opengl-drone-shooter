@@ -17,6 +17,7 @@ Enemy::Enemy()
     magnitude = 0;
     soundCount = 0;
     spawnInterval = 0;
+    canIncreaseScore = true;
 
     // generate random spawning position
     generatePosition();
@@ -102,8 +103,17 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
     // if enemy died: stop hover sound, play explosion sound and make enemy explode
     if (isDead)
     {   
+        // increase player's kill count
+        if (canIncreaseScore)
+        {
+            player.kills++;
+            canIncreaseScore = false;
+        }
+        
+        // stop hover sound
         ma_sound_stop(&hoverSound);
 
+        // explosion sound
         if (soundCount == 0 && d <= 50)
         {
             soundCount++;
@@ -113,6 +123,7 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
             ma_engine_play_sound(&engine, soundExplosionPath.c_str(), NULL);
         }
 
+        // enemy explosion
         dyingAnimation();
     }
 }
@@ -155,6 +166,7 @@ void Enemy::dyingAnimation()
             magnitude = 0;
             soundCount = 0;
             spawnInterval = 0;
+            canIncreaseScore = true;
             generatePosition();
         }
     }
