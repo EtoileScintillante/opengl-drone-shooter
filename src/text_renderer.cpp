@@ -4,15 +4,8 @@ TextRenderer::TextRenderer(std::string pathToFont, std::string pathVertexShader,
 {
     this->font = pathToFont;
 
-    // projection matrix
-    orthoProjection = glm::ortho(0.0f, static_cast<float>(Player::SCR_WIDTH), 0.0f, static_cast<float>(Player::SCR_HEIGHT));
-
-    // compile shaders
+    // compile shader
     shader = Shader(pathVertexShader.c_str(), pathFragmentShader.c_str());
-
-    // set projection matrix (does not change, so it's done here instead of in each frame)
-    shader.use();
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(orthoProjection));
 
     // All functions return a value different than 0 whenever an error occurred
     if (FT_Init_FreeType(&ft))
@@ -41,6 +34,7 @@ void TextRenderer::RenderText(std::string_view text, float x, float y, float sca
 
     // activate corresponding render state
     shader.use();
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
     glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
