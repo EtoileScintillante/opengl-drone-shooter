@@ -10,17 +10,10 @@ void startingScreen(TextRenderer &tr, Player &player, World &world)
     // set projection matrix
     tr.projection = player.getOrthoProjectionMatrix();
 
-    // render game title
-    tr.RenderText("Drone Shooter", 350.0f, 550.0f, 1.0f, glm::vec3(0.0f, 0.0f, 0.0f));
-
-    // render instructions
-    tr.RenderText("Press [SPACE] to start", 350.0f, 450.0f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("How to play:", 350.0f, 400.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("[W] = forward", 350.0f, 375.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("[S] = backward", 350.0f, 350.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("[D] = right", 350.0f, 325.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("[A] = left", 350.0f, 300.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
-    tr.RenderText("[SPACE] = shoot", 350.0f, 275.0f, 0.4f, glm::vec3(0.0f, 0.0f, 0.0f));
+    // render title screen (scales and positions based on theboldfont.ttf)
+    tr.RenderText("Drone  Shooter", 75.0f, 400.0f, 1.8f, glm::vec3(0.0f, 0.0f, 0.0f));
+    tr.RenderText("Press  ENTER  to  start", 240.0f, 303.0f, 0.55f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("by  Esma", 350.0f, 30.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void inGameScreen(TextRenderer &tr, Player &player)
