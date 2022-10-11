@@ -9,6 +9,7 @@
 
 #include "player.h"
 #include "enemy.h"
+#include "hud.h"
 #include "glfw_setup.h"
 #include "enemy_manager.h"
 #include "text_renderer.h"
@@ -35,40 +36,54 @@ int main()
     // render loop
     while (!glfwWindowShouldClose(window))
     {
-        // per-frame time logic
-        currentFrame = static_cast<float>(glfwGetTime());
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        // pass time variables to player and enemy manager
-        player.currentFrame = currentFrame; 
-        manager.currentTime = currentFrame;
-        manager.deltaTime = deltaTime;
-
-        // input
-        player.processInput(window, deltaTime);
-        glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
-        player.ProcessMouseMovement();
-
-        // render
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // draw world objects (ground, trees, flowers and skybox)
-        world.view = player.GetViewMatrix();
-        world.projection = player.getProjectionMatrix();
-        world.Draw();
+        // pre-game screen
+        if (!player.hasStarted)
+        {
+            // load starting screen (with the skybox as background)
+            startingScreen(text, player, world);
 
-        // draw gun and handle gun recoil movement
-        player.controlGunRendering();
-        
-        // manage enemy objects
-        manager.manage(player, World::TERRAIN_SIZE * 2);
-        
-        // render text
-        text.projection = player.getOrthoProjectionMatrix();
-        text.RenderText(player.getHealthString(), 25.0f, 25.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
-        text.RenderText(player.getKillsString(), 25.0f, 50.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
+            // wait till player presses space to start game
+            player.processInput(window, deltaTime); 
+        }
+    
+        // game started
+        if (player.hasStarted)
+        {
+            // per-frame time logic
+            currentFrame = static_cast<float>(glfwGetTime());
+            deltaTime = currentFrame - lastFrame;
+            lastFrame = currentFrame;
+
+            // pass time variables to player and enemy manager
+            player.currentFrame = currentFrame; 
+            manager.currentTime = currentFrame;
+            manager.deltaTime = deltaTime;
+
+            // keyboard and mouse input
+            player.processInput(window, deltaTime);
+            glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
+            player.ProcessMouseMovement();
+
+            // draw world objects (ground, trees, flowers and skybox)
+            world.view = player.GetViewMatrix();
+            world.projection = player.getProjectionMatrix();
+            world.Draw();
+
+            // draw gun and handle gun recoil movement
+            player.controlGunRendering();
+            
+            // manage enemy objects
+            manager.manage(player, World::TERRAIN_SIZE * 2);
+
+            // HUD
+            inGameScreen(text, player);
+        }
+
+        // ending screen
+        // TODO
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
