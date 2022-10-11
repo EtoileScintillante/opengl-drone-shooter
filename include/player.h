@@ -58,6 +58,7 @@ public:
     // game
     int health;
     bool isAlive;
+    bool hasStarted;
     int kills;
 
     /**
@@ -145,6 +146,9 @@ public:
 
     /// Renders gun and controls the recoil movements.
     void controlGunRendering();
+
+    /// Reset player's values.
+    void resetValues();
 
 private:
     // gun related

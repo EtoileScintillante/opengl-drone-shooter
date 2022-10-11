@@ -41,6 +41,7 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     goDown = false;
     kills = 0;
     isAlive = true;
+    hasStarted = false;
     health = 100;
 
     // set matrices
@@ -92,6 +93,9 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     shot = false;
     startRecoil = false;
     goDown = false;
+    kills = 0;
+    isAlive = true;
+    health = 100;
 
     // set matrices
     setProjectionMatrix(); // this matrix does not change while running the program
@@ -183,52 +187,64 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         glfwSetWindowShouldClose(window, true);
     }
 
-    // player moves
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    // player has not started game yet
+    if (!hasStarted)
     {
-        isWalking = true;
-        ProcessKeyboard(FORWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-        isWalking = true;
-        ProcessKeyboard(BACKWARD, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-        isWalking = true;
-        ProcessKeyboard(LEFT, deltaTime);
-    }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-        isWalking = true;
-        ProcessKeyboard(RIGHT, deltaTime);
-    }
-
-    // player shoots gun
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
-    {
-        if (soundCount == 0)
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
         {
-            soundCount++;
-            ma_engine_set_volume(&engine, 1.3);
-            ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
+            hasStarted = true;
         }
-        shot = true;
     }
 
-    // add walking motion and sound if player moves
-    if (isWalking)
+    // in game (player can move and shoot)
+    if (hasStarted)
     {
-        ma_sound_start(&walkingSound);
-        walkingMotion();
-    }
-    else // stop playing sound if player stops walking
-    {
-        ma_sound_stop(&walkingSound);
-    }
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        {
+            isWalking = true;
+            ProcessKeyboard(FORWARD, deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        {
+            isWalking = true;
+            ProcessKeyboard(BACKWARD, deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        {
+            isWalking = true;
+            ProcessKeyboard(LEFT, deltaTime);
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        {
+            isWalking = true;
+            ProcessKeyboard(RIGHT, deltaTime);
+        }
 
-    isWalking = false; // set back to false again
+        // player shoots gun
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
+        {
+            if (soundCount == 0)
+            {
+                soundCount++;
+                ma_engine_set_volume(&engine, 1.3);
+                ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
+            }
+            shot = true;
+        }
+
+        // add walking motion and sound if player moves
+        if (isWalking)
+        {
+            ma_sound_start(&walkingSound);
+            walkingMotion();
+        }
+        else // stop playing sound if player stops walking
+        {
+            ma_sound_stop(&walkingSound);
+        }
+
+        isWalking = false; // set back to false again
+    }
 }
 
 void Player::ProcessMouseMovement(GLboolean constrainPitch)
@@ -432,6 +448,19 @@ void Player::controlGunRendering()
         }
         drawGun(); // render rotating handgun
     }
+}
+
+void Player::resetValues()
+{
+    angle = 0;
+    soundCount = 0;
+    shot = false;
+    startRecoil = false;
+    goDown = false;
+    kills = 0;
+    isAlive = true;
+    health = 100;
+    hasStarted = true;
 }
 
 void Player::updatePlayerVectors()
