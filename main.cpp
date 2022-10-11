@@ -3,9 +3,7 @@
 // TODO:
 // Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
 // and when player gets hit, decrease player's health. Is health 0? Player is killed --> show ending screen 
-// Add starting screen ("press [key] to start")
 // Add ending screen ("You died. Press [key] to play again or ESC to quit")
-// Maybe add small random offset to the bullet direction when player shoots gun
 
 #include "player.h"
 #include "enemy.h"
@@ -39,13 +37,11 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // pre-game screen
+        // title/start screen
         if (!player.hasStarted)
         {
-            // load starting screen (with the skybox as background)
+            // load starting and wait for keyboard input (enter = start game)
             startingScreen(text, player, world);
-
-            // wait till player presses space to start game
             player.processInput(window, deltaTime); 
         }
     
