@@ -147,8 +147,8 @@ public:
     /// Renders gun and controls the recoil movements.
     void controlGunRendering();
 
-    /// Reset player's values.
-    void resetValues();
+    /// Set default player values.
+    void setDefaultValues();
 
 private:
     // gun related

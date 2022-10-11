@@ -33,17 +33,6 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     // set base position of gun
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
 
-    // set default values
-    angle = 0;
-    soundCount = 0;
-    shot = false;
-    startRecoil = false;
-    goDown = false;
-    kills = 0;
-    isAlive = true;
-    hasStarted = false;
-    health = 100;
-
     // set matrices
     setProjectionMatrix(); // this matrix does not change while running the program
     setGunModelMatrix();
@@ -86,16 +75,6 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
 
     // set base position of gun
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f); // bottom right corner of screen
-
-    // set default values
-    angle = 0;
-    soundCount = 0;
-    shot = false;
-    startRecoil = false;
-    goDown = false;
-    kills = 0;
-    isAlive = true;
-    health = 100;
 
     // set matrices
     setProjectionMatrix(); // this matrix does not change while running the program
@@ -187,15 +166,6 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         glfwSetWindowShouldClose(window, true);
     }
 
-    // player has not started game yet
-    if (!hasStarted)
-    {
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
-        {
-            hasStarted = true;
-        }
-    }
-
     // in game (player can move and shoot)
     if (hasStarted)
     {
@@ -244,6 +214,16 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         }
 
         isWalking = false; // set back to false again
+    }
+
+    // player has not started game yet
+    if (!hasStarted)
+    {
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
+        {
+            hasStarted = true;
+            setDefaultValues();
+        }
     }
 }
 
@@ -450,7 +430,7 @@ void Player::controlGunRendering()
     }
 }
 
-void Player::resetValues()
+void Player::setDefaultValues()
 {
     angle = 0;
     soundCount = 0;
@@ -461,6 +441,7 @@ void Player::resetValues()
     isAlive = true;
     health = 100;
     hasStarted = true;
+    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
 }
 
 void Player::updatePlayerVectors()
