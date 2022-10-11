@@ -8,6 +8,25 @@
 #ifndef __HUD_H__
 #define __HUD_H__
 
+#include "text_renderer.h"
+#include "player.h"
+#include "world.h"
+
+/// @brief Renders simple starting screen (with instruction on how to move).
+/// @param tr TextRenderer object.
+/// @param player player object.
+void startingScreen(TextRenderer &tr, Player &player, World &world);
+
+/// @brief Renders text that should be visible while playing: player's kills and health.
+/// @param tr TextRenderer object.
+/// @param player player object.
+void inGameScreen(TextRenderer &tr, Player &player);
+
+/// @brief Rneders simple ending screen (with option to play again).
+/// @param tr TextRenderer object.
+/// @param player player object.
+void endingScreen(TextRenderer &tr, Player &player, World &world);
+
 /*
 TODO:
 - starting HUD (black text in middle of screen, render only skybox)
