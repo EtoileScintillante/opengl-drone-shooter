@@ -34,6 +34,9 @@ public:
     /// Renders the terrain.
     void Draw();
 
+    /// Renders skybox.
+    void drawSkyBox();
+
     /// Returns the tree positions.
     std::vector<glm::vec3> getTreePositions() const;
 
@@ -65,9 +68,6 @@ private:
 
     /// Renders ground.
     void drawGround();
-
-    /// Renders skybox.
-    void drawSkyBox();
 
     /// Renders flowers.
     void drawFlowers();
