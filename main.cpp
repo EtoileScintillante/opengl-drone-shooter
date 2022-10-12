@@ -15,7 +15,7 @@
 int main()
 {
     // initialize and configure glwf, load OpenGL function pointers and create window
-    GLFWwindow *window = setup("Drone shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
+    GLFWwindow *window = setup("Drone Shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // prepare game related objects
     Player player; 
@@ -39,7 +39,7 @@ int main()
         {
             // load starting and wait for keyboard input (enter = start game)
             startingScreen(text, player, world);
-            player.processInput(window, deltaTime); 
+            player.processKeyboardMouse(window, deltaTime);
         }
     
         // game started
@@ -56,9 +56,7 @@ int main()
             manager.deltaTime = deltaTime;
 
             // keyboard and mouse input
-            player.processInput(window, deltaTime);
-            glfwGetCursorPos(window, &player.xPosIn, &player.yPosIn);
-            player.ProcessMouseMovement();
+            player.processKeyboardMouse(window, deltaTime);
 
             // draw world objects (ground, trees, flowers and skybox)
             world.view = player.GetViewMatrix();
