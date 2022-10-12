@@ -23,7 +23,17 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     lastX = SCR_WIDTH / 2.0f;
     lastY = SCR_HEIGHT / 2.0f;
     firstMouse = true;
+
     // set player values
+    hasStarted = false;
+    angle = 0;
+    soundCount = 0;
+    shot = false;
+    startRecoil = false;
+    goDown = false;
+    kills = 0;
+    isAlive = true;
+    health = 100;
     Position = position;
     origPosition = position;
     WorldUp = up;
@@ -67,7 +77,17 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     lastX = SCR_WIDTH / 2.0f;
     lastY = SCR_HEIGHT / 2.0f;
     firstMouse = true;
+
     // set player values
+    hasStarted = false;
+    angle = 0;
+    soundCount = 0;
+    shot = false;
+    startRecoil = false;
+    goDown = false;
+    kills = 0;
+    isAlive = true;
+    health = 100;
     Position = glm::vec3(posX, posY, posZ);
     origPosition = {posX, posY, posZ};
     WorldUp = glm::vec3(upX, upY, upZ);
@@ -224,7 +244,6 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
         {
             hasStarted = true;
-            setDefaultValues();
         }
     }
 
@@ -417,8 +436,20 @@ void Player::endRecoilAnimation()
 
 void Player::controlGunRendering()
 {
+    /* to test the dying and restarting the game mechanism,
+    the player gets automatically set to dead after 8 kills.
+    Eventually this should become: if (health <= 0) {isAlive = false;...} */
+    if (kills == 8) 
+    {
+        /* in case player took a shot while dying, let the recoil animation finish before
+        going to the ending screen and resetting the values if player presses enter, 
+        otherwise the gun will spawn in a wrongly rotated way after restarting the game */
+        if (!shot)
+        {
+            isAlive = false;
+        }
+    }
 
-    if (kills == 8) {isAlive = false;}
     // add passive player motion
     if (!isWalking)
     {
@@ -451,20 +482,6 @@ void Player::controlGunRendering()
         }
         drawGun(); // render rotating handgun
     }
-}
-
-void Player::setDefaultValues()
-{
-    angle = 0;
-    soundCount = 0;
-    shot = false;
-    startRecoil = false;
-    goDown = false;
-    kills = 0;
-    isAlive = true;
-    health = 100;
-    hasStarted = true;
-    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
 }
 
 void Player::updatePlayerVectors()
@@ -514,7 +531,6 @@ void Player::resetAll()
     isAlive = true;
     kills = 0;
     health = 100;
-    hasStarted = true;
     gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
     Pitch = PITCH;
     Yaw = YAW;

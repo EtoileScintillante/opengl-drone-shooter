@@ -111,10 +111,7 @@ public:
     /// Renders gun and controls the recoil movements.
     void controlGunRendering();
 
-    /// Set default player values.
-    void setDefaultValues();
-
-    /// Resets all values in case player wants to restart the game (excluding isAlive).
+    /// Resets all values in case player wants to restart the game.
     void resetAll();
 
     /**
