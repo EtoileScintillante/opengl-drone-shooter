@@ -28,7 +28,6 @@ void inGameScreen(TextRenderer &tr, Player &player);
 /// @param[out] tr TextRenderer object.
 /// @param[out] player Player object.
 /// @param[out] world WWorld object (for drawing skybox).
-/// @param[out] em EnemyManager object (will be reset).
-void endingScreen(TextRenderer &tr, Player &player, World &world, EnemyManager &em);
+void endingScreen(TextRenderer &tr, Player &player, World &world);
 
 #endif /*__HUD__*/
