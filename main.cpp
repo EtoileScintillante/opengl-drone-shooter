@@ -17,9 +17,6 @@ int main()
     // initialize and configure glwf, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
-    // configure global opengl state
-    glEnable(GL_DEPTH_TEST);
-
     // prepare game related objects
     Player player; 
     World world;
