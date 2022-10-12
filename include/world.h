@@ -21,7 +21,7 @@ public:
     static const unsigned int N_FLOWERS; // number of flowers
     static const float TERRAIN_SIZE;     // terrain size; it's a square with (x, z) = (0, 0) as center
     static const float GROUND_Y;         // y level of ground
-    // shader related
+    // matrices
     glm::mat4 view;       // camera view matrix
     glm::mat4 projection; // projection matrix
 
@@ -31,8 +31,10 @@ public:
     /// Destructor (frees allocated memory).
     ~World();
 
-    /// Renders the terrain.
-    void Draw();
+    /// @brief Renders the terrain (ground, trees, flowers and skybox).
+    /// @param view view matrix.
+    /// @param projection projection matrix.
+    void Draw(glm::mat4 view, glm::mat4 projection);
 
     /// Renders skybox.
     void drawSkyBox();
@@ -87,14 +89,11 @@ private:
     /// Creates model matrices for the flowers.
     void createFlowerModelMatrices();
 
-    /**
-     * @brief Sets up instanced array for a model.
-     * 
-     * @param[out] model model object.
-     * @param buffer instanced array buffer.
-     * @param modelMatrices pointer to an array containing the model matrices.
-     * @param amount number of instances.
-     */
+    /// @brief Sets up instanced array for a model.
+    /// @param model Model object.
+    /// @param buffer instanced array buffer.
+    /// @param modelMatrices pointer to an array containing the model matrices.
+    /// @param amount number of instances.
     void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);
 };
 

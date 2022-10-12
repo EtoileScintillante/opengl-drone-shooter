@@ -16,8 +16,11 @@ World::~World()
     delete[] flowerModelMatrices;
 }
 
-void World::Draw()
+void World::Draw(glm::mat4 View, glm::mat4 Projection)
 {
+    view = View;
+    projection = Projection;
+
     // depth test
     glEnable(GL_DEPTH_TEST);
 
