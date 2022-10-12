@@ -231,6 +231,10 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     // player died
     if (hasStarted && (!isAlive))
     {
+        // stop sound in case player dies while walking
+        ma_sound_stop(&walkingSound);
+
+        // reset values if player wants to play again (restart the game)
         if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
         {
             resetAll();
