@@ -2,8 +2,8 @@
 
 // TODO:
 // Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
-// and when player gets hit, decrease player's health. Is health 0? Player is killed --> show ending screen 
-// Add ending screen ("You died. Press [key] to play again or ESC to quit")
+// and when player gets hit, decrease player's health 
+// improve dying and spawning mechanism of player (it somewhat works but I don't like the current implementation)
 
 #include "player.h"
 #include "enemy.h"
@@ -37,13 +37,12 @@ int main()
         // title/start screen
         if (!player.hasStarted)
         {
-            // load starting and wait for keyboard input (enter = start game)
             startingScreen(text, player, world);
-            player.processKeyboardMouse(window, deltaTime);
+            player.processKeyboardMouse(window, deltaTime); // pressing enter starts the game
         }
     
         // game started
-        if (player.hasStarted)
+        if (player.hasStarted && player.isAlive)
         {
             // per-frame time logic
             currentFrame = static_cast<float>(glfwGetTime());
@@ -59,9 +58,7 @@ int main()
             player.processKeyboardMouse(window, deltaTime);
 
             // draw world objects (ground, trees, flowers and skybox)
-            world.view = player.GetViewMatrix();
-            world.projection = player.getProjectionMatrix();
-            world.Draw();
+            world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
 
             // draw gun and handle gun recoil movement
             player.controlGunRendering();
@@ -74,7 +71,11 @@ int main()
         }
 
         // ending screen
-        // TODO
+        if (player.hasStarted && (!player.isAlive))
+        {
+            endingScreen(text, player, world, manager);
+            player.processKeyboardMouse(window, deltaTime); // pressing enter restarts the game
+        }
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
