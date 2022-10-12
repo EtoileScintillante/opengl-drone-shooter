@@ -25,6 +25,7 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     firstMouse = true;
     // set player values
     Position = position;
+    origPosition = position;
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
@@ -68,6 +69,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     firstMouse = true;
     // set player values
     Position = glm::vec3(posX, posY, posZ);
+    origPosition = {posX, posY, posZ};
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
@@ -167,7 +169,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     }
 
     // in game (player can move and shoot)
-    if (hasStarted)
+    if (hasStarted && isAlive)
     {
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         {
@@ -223,6 +225,15 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         {
             hasStarted = true;
             setDefaultValues();
+        }
+    }
+
+    // player died
+    if (hasStarted && (!isAlive))
+    {
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
+        {
+            resetAll();
         }
     }
 }
@@ -402,6 +413,8 @@ void Player::endRecoilAnimation()
 
 void Player::controlGunRendering()
 {
+
+    if (kills == 8) {isAlive = false;}
     // add passive player motion
     if (!isWalking)
     {
@@ -467,15 +480,42 @@ void Player::updatePlayerVectors()
 void Player::processKeyboardMouse(GLFWwindow *window, float deltaTime)
 {
     // process mouse and keyboard if in game
-    if (hasStarted)
+    if (hasStarted && isAlive)
     {
         processInput(window, deltaTime);
         glfwGetCursorPos(window, &xPosIn, &yPosIn);
         ProcessMouseMovement();
     }
-    // pre-game or after player died: only keyboard
-    else
+
+    // pre-game: only keyboard
+    if (!hasStarted)
     {
         processInput(window, deltaTime);
     }
+
+    // after player died: only keyboard
+    if (hasStarted && (!isAlive))
+    {
+        processInput(window, deltaTime);
+    }
+}
+
+void Player::resetAll()
+{
+    angle = 0;
+    soundCount = 0;
+    shot = false;
+    startRecoil = false;
+    goDown = false;
+    isAlive = true;
+    kills = 0;
+    health = 100;
+    hasStarted = true;
+    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
+    Pitch = PITCH;
+    Yaw = YAW;
+    Position = origPosition;
+    gunPosition = {0.45f, -0.5f, -1.5f};
+    updatePlayerVectors();
+    setGunModelMatrix();
 }

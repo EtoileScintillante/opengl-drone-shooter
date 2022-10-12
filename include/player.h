@@ -114,6 +114,9 @@ public:
     /// Set default player values.
     void setDefaultValues();
 
+    /// Resets all values in case player wants to restart the game (excluding isAlive).
+    void resetAll();
+
     /**
      * @brief Processes all player input (keyboard + mouse).
      * 
@@ -145,6 +148,8 @@ private:
     // matrices
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
+    // for when resetting player
+    glm::vec3 origPosition; // original position of player when starting game for first time
 
     /// Renders gun.
     void drawGun();
