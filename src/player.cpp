@@ -463,3 +463,19 @@ void Player::updatePlayerVectors()
     Right = glm::normalize(glm::cross(Front, WorldUp)); // normalize the vectors
     Up = glm::normalize(glm::cross(Right, Front));
 }
+
+void Player::processKeyboardMouse(GLFWwindow *window, float deltaTime)
+{
+    // process mouse and keyboard if in game
+    if (hasStarted)
+    {
+        processInput(window, deltaTime);
+        glfwGetCursorPos(window, &xPosIn, &yPosIn);
+        ProcessMouseMovement();
+    }
+    // pre-game or after player died: only keyboard
+    else
+    {
+        processInput(window, deltaTime);
+    }
+}

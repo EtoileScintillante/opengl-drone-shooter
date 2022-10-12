@@ -93,6 +93,65 @@ public:
     /// Returns the view matrix calculated using Euler Angles and the LookAt Matrix.
     glm::mat4 GetViewMatrix() const;
 
+    /// Get projection matrix.
+    glm::mat4 getProjectionMatrix() const;
+
+    /// Get ortho projection matrix (part of HUD)
+    glm::mat4 getOrthoProjectionMatrix() const;
+
+    /// Get gun model matrix.
+    glm::mat4 getGunModelMatrix() const;
+
+    /// Get player's kill count as string (part of HUD).
+    std::string getKillsString() const;
+
+    /// Get player's health as string (part of HUD).
+    std::string getHealthString() const;
+
+    /// Renders gun and controls the recoil movements.
+    void controlGunRendering();
+
+    /// Set default player values.
+    void setDefaultValues();
+
+    /**
+     * @brief Processes all player input (keyboard + mouse).
+     * 
+     * @param window window pointer.
+     * @param deltaTime delta time (time passed between two frames).
+     */
+    void processKeyboardMouse(GLFWwindow *window, float deltaTime);
+
+private:
+    // gun related
+    Model gun;                // gun model
+    Shader shader;            // gun shader
+    glm::vec3 gunPosition;    // (base) position for gun
+    glm::mat4 gunModelMatrix; // model matrix for gun
+    float angle;              // recoil animation: this angle will be updated every frame to make the gun rotate up or down
+    bool startRecoil;         // start recoil animation?
+    bool goDown;              // recoil animation: gun needs to move down if true
+    // player movement control (mouse input)
+    bool isWalking;  // is player walking?
+    bool firstMouse; // first time moving mouse?
+    double lastX;    // last x position of mouse
+    double lastY;    // last y position of mouse
+    // audio
+    ma_engine engine;             // miniaudio engine
+    ma_sound walkingSound;        // sound object for walking soundeffect (needed to control looping of sound)
+    int soundCount;               // needed to make sure that the gunshot will only be played once every shot
+    std::string gunshotSoundPath; // path to gunshot wav file
+    std::string walkSoundPath;    // path to walking wav file
+    // matrices
+    glm::mat4 projection;   // projection matrix
+    glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
+
+    /// Renders gun.
+    void drawGun();
+
+    /// Renders gunfire.
+    void drawGunFire();
+
     /**
      * @brief Processes keyboard input.
      *
@@ -122,57 +181,6 @@ public:
 
     /// When player is walking, make gun move up and down.
     void walkingMotion();
-
-    /// Renders gun.
-    void drawGun();
-
-    /// Renders gunfire.
-    void drawGunFire();
-
-    /// Get projection matrix.
-    glm::mat4 getProjectionMatrix() const;
-
-    /// Get ortho projection matrix (part of HUD)
-    glm::mat4 getOrthoProjectionMatrix() const;
-
-    /// Get gun model matrix.
-    glm::mat4 getGunModelMatrix() const;
-
-    /// Get player's kill count as string (part of HUD).
-    std::string getKillsString() const;
-
-    /// Get player's health as string (part of HUD).
-    std::string getHealthString() const;
-
-    /// Renders gun and controls the recoil movements.
-    void controlGunRendering();
-
-    /// Set default player values.
-    void setDefaultValues();
-
-private:
-    // gun related
-    Model gun;                // gun model
-    Shader shader;            // gun shader
-    glm::vec3 gunPosition;    // (base) position for gun
-    glm::mat4 gunModelMatrix; // model matrix for gun
-    float angle;              // recoil animation: this angle will be updated every frame to make the gun rotate up or down
-    bool startRecoil;         // start recoil animation?
-    bool goDown;              // recoil animation: gun needs to move down if true
-    // player movement control (mouse input)
-    bool isWalking;  // is player walking?
-    bool firstMouse; // first time moving mouse?
-    double lastX;    // last x position of mouse
-    double lastY;    // last y position of mouse
-    // audio
-    ma_engine engine;             // miniaudio engine
-    ma_sound walkingSound;        // sound object for walking soundeffect (needed to control looping of sound)
-    int soundCount;               // needed to make sure that the gunshot will only be played once every shot
-    std::string gunshotSoundPath; // path to gunshot wav file
-    std::string walkSoundPath;    // path to walking wav file
-    // matrices
-    glm::mat4 projection;   // projection matrix
-    glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
 
     /// Sets projection matrix.
     void setProjectionMatrix();
