@@ -40,6 +40,9 @@ public:
      */
     void controlEnemyLife(Player &player, float bulletRange);
 
+    /// Stop all sounds.
+    void stopSounds();
+
 private:
     Model drone;                    // enemy model (in this program it's a drone)
     Shader shader;                  // enemy shader (must include geometry shader for explosion effect)

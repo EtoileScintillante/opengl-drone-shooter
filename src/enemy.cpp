@@ -290,3 +290,8 @@ void Enemy::MoveToPlayer()
     position.x += direction.x * SPEED;
     position.z += direction.z * SPEED;
 }
+
+void Enemy::stopSounds()
+{
+    ma_sound_stop(&hoverSound);
+}
