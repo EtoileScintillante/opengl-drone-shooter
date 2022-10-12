@@ -48,6 +48,9 @@ Enemy::~Enemy()
 
 void Enemy::spawn()
 {
+    // depth test
+    glEnable(GL_DEPTH_TEST);
+    
     // update position
     MoveToPlayer();
 

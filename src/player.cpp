@@ -292,6 +292,9 @@ void Player::walkingMotion()
 
 void Player::drawGun()
 {
+    // depth test
+    glEnable(GL_DEPTH_TEST);
+    
     // set uniforms and draw gun
     shader.use();
     shader.setMat4("view", viewLocalMat);
@@ -305,6 +308,9 @@ void Player::drawGun()
 
 void Player::drawGunFire()
 {
+    // depth test
+    glEnable(GL_DEPTH_TEST);
+
     // set uniforms and draw gun fire
     shader.use();
     shader.setMat4("view", viewLocalMat);

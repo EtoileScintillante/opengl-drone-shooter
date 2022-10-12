@@ -18,6 +18,10 @@ World::~World()
 
 void World::Draw()
 {
+    // depth test
+    glEnable(GL_DEPTH_TEST);
+
+    // draw objects
     drawSkyBox();
     drawGround();
     drawFlowers();
