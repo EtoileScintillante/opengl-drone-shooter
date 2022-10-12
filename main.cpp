@@ -3,7 +3,7 @@
 // TODO:
 // Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
 // and when player gets hit, decrease player's health 
-// improve dying and spawning mechanism of player (it somewhat works but I don't like the current implementation)
+// try to implement a smoother transition from in game screen to ending screen
 
 #include "player.h"
 #include "enemy.h"
@@ -73,7 +73,8 @@ int main()
         // ending screen
         if (player.hasStarted && (!player.isAlive))
         {
-            endingScreen(text, player, world, manager);
+            manager.reset(); // reset enemies in case player restarts the game
+            endingScreen(text, player, world);
             player.processKeyboardMouse(window, deltaTime); // pressing enter restarts the game
         }
 
