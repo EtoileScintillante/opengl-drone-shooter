@@ -35,3 +35,9 @@ void EnemyManager::manage(Player &player, float bulletRange)
         enemies[i]->controlEnemyLife(player, bulletRange);
     }
 }
+
+void EnemyManager::reset()
+{
+    enemyCount = 1; 
+    spawnTime = 0;
+}

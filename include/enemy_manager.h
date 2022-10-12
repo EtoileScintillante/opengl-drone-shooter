@@ -31,6 +31,9 @@ public:
      */
     void manage(Player &player, float bulletRange);
 
+    /// Resets all values (for when you want to restart the game).
+    void reset();
+
 private:
     std::vector<std::shared_ptr<Enemy>> enemies; // vector containing pointers to the enemy objects
     float spawnTime;                             // needed to control spawning of enemies
