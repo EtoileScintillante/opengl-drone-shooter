@@ -2,6 +2,7 @@
 
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
 const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
+const float Enemy::ATTACK_INTERVAL = 2.0f;
 const float Enemy::INTERVAL = 3.0f;
 const float Enemy::SPEED = 0.02f;
 
@@ -9,14 +10,20 @@ Enemy::Enemy()
 {
     // load model and shaders
     drone = Model("resources/models/drone/E 45 Aircraft_obj.obj", false);
+    bulletFire = Model("resources/models/handgun/Handgun_obj.obj", false);
     shader = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
+    shaderFire = Shader("shaders/model.vert", "shaders/model.frag");
 
     // set default values
     isDead = false;
     explodeTime = 0;
     magnitude = 0;
     soundCount = 0;
+    fireCount = 0;
+    fireSoundCount = 0;
+    attackTime = 0;
     spawnInterval = 0;
+    attack = false;
     canIncreaseScore = true;
 
     // generate random spawning position
@@ -25,16 +32,18 @@ Enemy::Enemy()
     // wav file paths
     soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
     soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
+    bulletSoundPath = "resources/audio/blaster-2-81267.wav";
 
     // miniaudio engine setup
     ma_result result = ma_engine_init(NULL, &engine);
-    if (result != MA_SUCCESS) {
+    if (result != MA_SUCCESS)
+    {
         std::cout << "ERROR: failed to initialize audio engine." << std::endl;
     }
 
     // load hover sound
     result = ma_sound_init_from_file(&engine, soundHoverPath.c_str(), 0, NULL, NULL, &hoverSound);
-    if (result != MA_SUCCESS) 
+    if (result != MA_SUCCESS)
     {
         std::cout << "ERROR: failed to load hover sound." << std::endl;
     }
@@ -50,7 +59,7 @@ void Enemy::spawn()
 {
     // depth test
     glEnable(GL_DEPTH_TEST);
-    
+
     // update position
     MoveToPlayer();
 
@@ -65,8 +74,21 @@ void Enemy::spawn()
     shader.setMat4("projection", projection);
     shader.setMat4("model", modelMatrix);
 
-    // draw
+    // draw enemy
     drone.Draw(shader);
+
+    // draw bullet fire
+    if (attack && fireCount == 0)
+    {
+        fireCount++;
+        generateFireModelMatrix();
+        shaderFire.use();
+        shaderFire.setMat4("view", view);
+        shaderFire.setMat4("projection", projection);
+        shaderFire.setMat4("model", modelMatrixFire);
+        bulletFire.drawSpecificMesh(shaderFire, 5);
+        playFireSound();
+    }
 }
 
 void Enemy::controlEnemyLife(Player &player, float bulletRange)
@@ -75,26 +97,24 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
     playerPosition = player.Position;
     projection = player.getProjectionMatrix();
     view = player.GetViewMatrix();
-    
-    // draw enemy
+
+    // draw enemy and optionally  bullet fire
     if (!isDead)
     {
-        spawn();
-    }
+        // update attack time
+        attackTime += deltaTime;
 
-    // compute distance to player
-    float d = distanceToPLayer();
-    
-    // play hovering sound while enemy is alive
-    if (isDead == false && d <= 30)
-    {
-        /* Here the distance in range 0 - 30 is mapped to the volume in range 
-        0.01 - 1.5. The volume is then subtracted from 1.5 to make sure that
-        a lower distance results in a higher volume and not the other way around */
-        float volume = 1.5 - ((d / 30) * (1.5 - 0.01) + 0.1);
-        ma_sound_set_volume(&hoverSound, volume);
-        ma_sound_set_looping(&hoverSound, true);
-        ma_sound_start(&hoverSound);
+        // check if enemy can attack
+        if (attackTime >= ATTACK_INTERVAL)
+        {
+            attack = true;
+        }
+
+        // draw
+        spawn();
+
+        // play hover sound
+        playHoverSound();
     }
 
     // check for collisions
@@ -105,26 +125,19 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
 
     // if enemy died: stop hover sound, play explosion sound and make enemy explode
     if (isDead)
-    {   
+    {
         // increase player's kill count
         if (canIncreaseScore)
         {
             player.kills++;
             canIncreaseScore = false;
         }
-        
-        // stop hover sound
-        ma_sound_stop(&hoverSound);
 
-        // explosion sound
-        if (soundCount == 0 && d <= 50)
-        {
-            soundCount++;
-            // same as above, but with distance in range 0 - 50
-            float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
-            ma_engine_set_volume(&engine, volume);
-            ma_engine_play_sound(&engine, soundExplosionPath.c_str(), NULL);
-        }
+        // stop hover sound
+        stopSounds();
+
+        // play explosion sound
+        playExplosionSound();
 
         // enemy explosion
         dyingAnimation();
@@ -159,18 +172,12 @@ void Enemy::dyingAnimation()
         spawn();
     }
     // spawn enemy again in new position after time interval has passed
-    else 
+    else
     {
         spawnInterval += deltaTime;
         if (spawnInterval >= INTERVAL)
         {
-            isDead = false;
-            explodeTime = 0;
-            magnitude = 0;
-            soundCount = 0;
-            spawnInterval = 0;
-            canIncreaseScore = true;
-            generatePosition();
+            setDefaultValues();
         }
     }
 }
@@ -187,15 +194,27 @@ void Enemy::generatePosition()
     float posZ = xzPlane(gen); // generate z position
 
     // add limitation: enemy can not spawn in the inner square of the terrain square
-    if (posX > -World::TERRAIN_SIZE/2 && posX < World::TERRAIN_SIZE/2)
+    if (posX > -World::TERRAIN_SIZE / 2 && posX < World::TERRAIN_SIZE / 2)
     {
-        if (posX < 0) {posX = -World::TERRAIN_SIZE/2;}
-        else {posX = World::TERRAIN_SIZE/2;}
+        if (posX < 0)
+        {
+            posX = -World::TERRAIN_SIZE / 2;
+        }
+        else
+        {
+            posX = World::TERRAIN_SIZE / 2;
+        }
     }
-    if (posZ > -World::TERRAIN_SIZE/2 && posZ < World::TERRAIN_SIZE/2)
+    if (posZ > -World::TERRAIN_SIZE / 2 && posZ < World::TERRAIN_SIZE / 2)
     {
-        if (posZ < 0) {posZ = -World::TERRAIN_SIZE/2;}
-        else {posZ = World::TERRAIN_SIZE/2;}
+        if (posZ < 0)
+        {
+            posZ = -World::TERRAIN_SIZE / 2;
+        }
+        else
+        {
+            posZ = World::TERRAIN_SIZE / 2;
+        }
     }
 
     position = glm::vec3(posX, yPlane(gen), posZ);
@@ -206,43 +225,43 @@ void Enemy::generateModelMatrix()
     // calculate rotation angle so that the enemy points towards the player's position
     float x = playerPosition.x - position.x;
     float z = playerPosition.z - position.z;
-    rotation = atan2(z, x); 
+    rotation = atan2(z, x);
     rotation += glm::radians(90.0f);
-    
+
     // create model matrix
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
-    modelMatrix = glm::rotate(modelMatrix, rotation, glm::vec3(0.0f, -1.0f, 0.0f)); 
+    modelMatrix = glm::rotate(modelMatrix, rotation, glm::vec3(0.0f, -1.0f, 0.0f));
     modelMatrix = glm::scale(modelMatrix, glm::vec3(0.6f));
 }
 
-/* 
+/*
 To construct a bounding box we need two things: a minimum bound and a maximum bound.
 We also want the bounding box to rotate with the model.
-We can imagine the bounding box like a quadrilateral inscribed in a circle where the center is 
-the position of the enemy on the x z plane. The two bounds represent two points on that circle. 
+We can imagine the bounding box like a quadrilateral inscribed in a circle where the center is
+the position of the enemy on the x z plane. The two bounds represent two points on that circle.
 We don't actually need all 4 points to create a bounding box, the two min and max bounds are enough.
-If the model rotates N degrees, we also want those two points to rotate N degrees. 
-So we baically we rotate those two points (the bounds) about the center by N degrees. 
+If the model rotates N degrees, we also want those two points to rotate N degrees.
+So we baically we rotate those two points (the bounds) about the center by N degrees.
 The formula (for counter clockwise rotation) is as follows:
 
 newX = cos(θ) * (X - Cx) - sin(θ) * (Y - Cy) + Cx.
 newY = sin(θ) * (X - Cx) + cos(θ) * (Y - Cy) + Cy.
 
-Cx and Cy are the center coordinates, θ is the angle in radians, 
+Cx and Cy are the center coordinates, θ is the angle in radians,
 X and Y are the initial coordinates and newX and newY are the rotated coordinates.
 
 Formula from https://math.stackexchange.com/a/814981.
 
-Important note: in this program the y coordinate remains untouched because the height of the box does 
-not change when rotating it around the y - axis. Also, the current implementation of calculateBoundingBox 
-is based on the drone model scaled by factor 0.6. The bounding box does not contain the whole model, 
+Important note: in this program the y coordinate remains untouched because the height of the box does
+not change when rotating it around the y - axis. Also, the current implementation of calculateBoundingBox
+is based on the drone model scaled by factor 0.6. The bounding box does not contain the whole model,
 but this is not a problem because the model is quite big, so it is not too difficult to hit it.
 See /doc/bounding_box for a visualization.
 */
 
 void Enemy::calculateBoundingBox()
-{   
+{
     // center of circle
     float Cx = position.x;
     float Cz = position.z;
@@ -282,7 +301,10 @@ void Enemy::MoveToPlayer()
 
     // normalize vector
     float magnitude = distanceToPLayer();
-    if (magnitude < 1) { magnitude = 1;}
+    if (magnitude < 1)
+    {
+        magnitude = 1;
+    }
     direction.x /= magnitude;
     direction.z /= magnitude;
 
@@ -294,4 +316,83 @@ void Enemy::MoveToPlayer()
 void Enemy::stopSounds()
 {
     ma_sound_stop(&hoverSound);
+}
+
+void Enemy::generateFireModelMatrix()
+{
+    // initialize fire model matrix the same as enemy model matrix
+    modelMatrixFire = modelMatrix;
+
+    // add offsets (note: these offsets are based on scale factor 0.6)
+    modelMatrixFire = glm::translate(modelMatrixFire, {position.x, position.y, position.z}); // position offset
+    modelMatrixFire = glm::rotate(modelMatrixFire, glm::radians(90.0f), {0.0f, 1.0f, 0.0f}); // rotation offset
+}
+
+void Enemy::playFireSound()
+{
+    // compute distance to player
+    float d = distanceToPLayer();
+
+    // play sound of conditions are true
+    if (d <= 50 && fireSoundCount == 0)
+    {
+        fireSoundCount++;
+        // same calculation as in playHoverSound, only the range differs
+        float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
+        ma_engine_set_volume(&engine, volume);
+        ma_engine_play_sound(&engine, bulletSoundPath.c_str(), NULL);
+        attack = false;
+        fireSoundCount = 0;
+        fireCount = 0;
+        attackTime = 0;
+    }
+}
+
+void Enemy::playHoverSound()
+{
+    // compute distance to player
+    float d = distanceToPLayer();
+
+    // play sound if enemy close enough to player
+    if (d <= 30)
+    {
+        /* Here the distance in range 0 - 30 is mapped to the volume in range
+        0.01 - 1.5. The volume is then subtracted from 1.5 to make sure that
+        a lower distance results in a higher volume and not the other way around */
+        float volume = 1.5 - ((d / 30) * (1.5 - 0.01) + 0.1);
+        ma_sound_set_volume(&hoverSound, volume);
+        ma_sound_set_looping(&hoverSound, true);
+        ma_sound_start(&hoverSound);
+    }
+}
+
+void Enemy::playExplosionSound()
+{
+    // compute distance to player
+    float d = distanceToPLayer();
+
+    // play explosion sound if enemy is close enough to player
+    if (soundCount == 0 && d <= 50)
+    {
+        soundCount++;
+        // same calculation as in playHoverSound, only the range differs
+        float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
+        ma_engine_set_volume(&engine, volume);
+        ma_engine_play_sound(&engine, soundExplosionPath.c_str(), NULL);
+    }
+}
+
+void Enemy::setDefaultValues()
+{
+    isDead = false;
+    attack = false;
+    explodeTime = 0;
+    magnitude = 0;
+    soundCount = 0;
+    fireCount = 0;
+    fireSoundCount = 0;
+    attackTime = 0;
+    spawnInterval = 0;
+    canIncreaseScore = true;
+    generatePosition();
 }
