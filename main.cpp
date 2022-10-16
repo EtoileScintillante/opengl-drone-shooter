@@ -2,8 +2,11 @@
 
 // TODO:
 // Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
-// and when player gets hit, decrease player's health 
+// and when player gets hit, decrease player's health (for this the player needs a bounding box!)
 // try to implement a smoother transition from in game screen to ending screen
+
+// Fix problem:
+// position of enemy bullet fire is way off, needs to be fixed
 
 #include "player.h"
 #include "enemy.h"
@@ -34,6 +37,11 @@ int main()
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        // per-frame time logic
+        currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // title/start screen
         if (!player.hasStarted)
         {
@@ -44,11 +52,6 @@ int main()
         // game started
         if (player.hasStarted && player.isAlive)
         {
-            // per-frame time logic
-            currentFrame = static_cast<float>(glfwGetTime());
-            deltaTime = currentFrame - lastFrame;
-            lastFrame = currentFrame;
-
             // pass time variables to player and enemy manager
             player.currentFrame = currentFrame; 
             manager.currentTime = currentFrame;
