@@ -17,17 +17,20 @@
 class Enemy
 {
 public:
+    // default enemy values
     static const float MAX_FLOAT_HEIGHT; // maximum floating height of enemy, measured from y = 0
     static const float MIN_FLOAT_HEIGHT; // minimum floating height of enemy, measured from y = 0
     static const float ATTACK_INTERVAL;  // time in seconds between attacks
     static const float INTERVAL;         // time in seconds between enemy dying and spawning again
     static const float SPEED;            // movement speed of enemy
+    // matrices
     glm::mat4 projection;                // projection matrix
     glm::mat4 view;                      // camera view matrix
+    // time 
     float currentFrame;                  // current frame/time
     float deltaTime;                     // time passed between two frames
+    // enemy attack related
     bool attack;                         // did enemy attack?
-    float attackTime;                    // to control enemy attacks
     glm::vec3 attackDir;                 // direction of attack (basically the enemy shoots a 'bullet')
 
     /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
@@ -49,11 +52,16 @@ public:
     void stopSounds();
 
 private:
+    // 3D models
     Model drone;                    // enemy model (in this program it's a drone)
     Model bulletFire;               // model for fire (shown when enemy shoots bullet)
+    // shaders
     Shader shader;                  // enemy shader (must include geometry shader for explosion effect)
     Shader shaderFire;              // bullet fire shader (no geometry shader)
+    // player related
+    bool canIncreaseScore;          // used to ensure that the player's kill count only increases by 1 point every enemy death
     glm::vec3 playerPosition;       // position of player
+    // audio
     ma_engine engine;               // miniaudio engine
     ma_sound hoverSound;            // miniaudio sound object for hover sound (to control looping of sound)
     std::string soundExplosionPath; // path to explosion wav file
@@ -61,17 +69,19 @@ private:
     std::string bulletSoundPath;    // path to bullet sound wav file
     int soundCount;                 // needed to make sure that the explosion can only be heard once per enemy death
     int fireSoundCount;             // needed to make sure that the bullet sound effect can only be heard once per shot
+    // enemy attack related
+    glm::mat4 modelMatrixFire;      // model matrix for bullet fire
     int fireCount;                  // needed to make sure that the bullet fire can only be seen once per shot
+    float attackTime;               // to control enemy attacks
+    // other
     glm::vec3 position;             // position of enemy
     glm::mat4 modelMatrix;          // model matrix for enemy
-    glm::mat4 modelMatrixFire;      // model matrix for bullet fire
     AABBox boundingBox;             // enemy bounding box
     bool isDead;                    // is enemy dead?
     float spawnInterval;            // used to control the time interval between enemy dying and spawning again
     float rotation;                 // rotation angle of enemy in radians
     float explodeTime;              // used to control the duration of the dying animation (enemy explodes)
-    float magnitude;                // used to control the explosion (dying animation)
-    bool canIncreaseScore;          // used to ensure that the player's kill count only increases by 1 point every enemy death
+    float magnitude;                // used to control how the explosion of the enemy looks 
 
     /// Spawns the enemy.
     void spawn();
