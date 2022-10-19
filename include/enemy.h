@@ -8,6 +8,7 @@
 #define __ENEMY_H__
 
 #include <cmath>
+#include <random>
 #include "world.h"
 #include "player.h"
 #include "ray.h"
@@ -22,6 +23,7 @@ public:
     static const float MIN_FLOAT_HEIGHT; // minimum floating height of enemy, measured from y = 0
     static const float ATTACK_INTERVAL;  // time in seconds between attacks
     static const float INTERVAL;         // time in seconds between enemy dying and spawning again
+    static const float DAMAGE;           // amount of damage the enemy can do to the player per hit
     static const float SPEED;            // movement speed of enemy
     // matrices
     glm::mat4 projection;                // projection matrix
@@ -127,6 +129,9 @@ private:
 
     /// Sets all values back to default (when enemy dies and then respawns).
     void setDefaultValues();
+
+    /// Attacks player: shoot laser beam in player's direction.
+    void attackPlayer(Player &player);
 };
 
 #endif /*__ENEMY__*/

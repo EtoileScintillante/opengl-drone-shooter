@@ -4,6 +4,7 @@ const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
 const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
 const float Enemy::ATTACK_INTERVAL = 2.5f;
 const float Enemy::INTERVAL = 3.0f;
+const float Enemy::DAMAGE = 10.0f;
 const float Enemy::SPEED = 0.02f;
 
 Enemy::Enemy()
@@ -108,6 +109,7 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
         if (attackTime >= ATTACK_INTERVAL)
         {
             attack = true;
+            attackPlayer(player);
         }
 
         // draw
@@ -120,7 +122,7 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
     // check for collisions
     if (player.shot)
     {
-        collisionDetection(player.Position, player.Front, bulletRange);
+        collisionDetection(playerPosition, player.Front, bulletRange);
     }
 
     // if enemy died: stop hover sound, play explosion sound and make enemy explode
@@ -397,4 +399,30 @@ void Enemy::setDefaultValues()
     spawnInterval = 0;
     canIncreaseScore = true;
     generatePosition();
+}
+
+void Enemy::attackPlayer(Player &player)
+{
+    // create a direction vector and normalize it
+    float dx, dy, dz, d;
+    dx = player.Position.x - position.x;
+    dy = player.Position.y - position.y;
+    dz = player.Position.z - position.z;
+    d = sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2)); // distance on x y z plane
+    glm::vec3 dir = {dx/d, dy/d, dz/d}; // normalized direction vector
+
+    // add random offset between min and max (otherwise the enemy's aim would too good)
+    float min = -0.1;
+    float max = 0.1;
+    float offset = ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
+    dir.x += offset;
+    dir.y += offset;
+    dir.z += offset;
+
+    // perform collision detection
+    Ray r = Ray(position, dir);
+    if (player.boundingBox.intersect(r, World::TERRAIN_SIZE * 2))
+    {
+        player.gotAttacked(DAMAGE);
+    }
 }
