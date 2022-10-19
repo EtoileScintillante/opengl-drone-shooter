@@ -9,7 +9,6 @@
 #define __HUD_H__
 
 #include "text_renderer.h"
-#include "enemy_manager.h"
 #include "player.h"
 #include "world.h"
 
