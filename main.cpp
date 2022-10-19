@@ -1,12 +1,8 @@
 /// === Shoot drones! === ///
 
 // TODO:
-// Make the drones dangerous; they should be able to hit the player (maybe they can shoot bullets too?)
-// and when player gets hit, decrease player's health (for this the player needs a bounding box!)
-// try to implement a smoother transition from in game screen to ending screen
-
-// Fix problem:
-// position of enemy bullet fire is way off, needs to be fixed
+// improve transition to ending screen
+// maybe make ending screen (and title screen) looks nicer
 
 #include "player.h"
 #include "enemy.h"
