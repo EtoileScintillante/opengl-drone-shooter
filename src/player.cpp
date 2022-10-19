@@ -55,6 +55,7 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     // wav file paths
     gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
     walkSoundPath = "resources/audio/footsteps.wav";
+    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
 
     // miniaudio engines setup
     ma_result result = ma_engine_init(NULL, &engine);
@@ -109,6 +110,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     // wav file paths
     gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
     walkSoundPath = "resources/audio/footsteps.wav";
+    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
 
     // miniaudio engines setup
     ma_result result = ma_engine_init(NULL, &engine);
@@ -218,7 +220,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
             if (soundCount == 0)
             {
                 soundCount++;
-                ma_engine_set_volume(&engine, 1.3);
+                ma_engine_set_volume(&engine, 2.5);
                 ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
             }
             shot = true;
@@ -436,10 +438,11 @@ void Player::endRecoilAnimation()
 
 void Player::controlGunRendering()
 {
-    /* to test the dying and restarting the game mechanism,
-    the player gets automatically set to dead after 8 kills.
-    Eventually this should become: if (health <= 0) {isAlive = false;...} */
-    if (kills == 8) 
+    // create bounding box
+    createBoundingBox();
+
+    // player dies if no health left
+    if (health <= 0) 
     {
         /* in case player took a shot while dying, let the recoil animation finish before
         going to the ending screen and resetting the values if player presses enter, 
@@ -498,6 +501,13 @@ void Player::updatePlayerVectors()
     Up = glm::normalize(glm::cross(Right, Front));
 }
 
+void Player::gotAttacked(float damage)
+{
+    health -= damage;
+    ma_engine_set_volume(&engine, 1.8);
+    ma_engine_play_sound(&engine, damageSoundPath.c_str(), NULL); 
+}
+
 void Player::processKeyboardMouse(GLFWwindow *window, float deltaTime)
 {
     // process mouse and keyboard if in game
@@ -538,4 +548,15 @@ void Player::resetAll()
     gunPosition = {0.45f, -0.5f, -1.5f};
     updatePlayerVectors();
     setGunModelMatrix();
+}
+
+
+void Player::createBoundingBox()
+{
+    // create the min and max bound 
+    glm::vec3 vmin = {Position.x - 0.3, Position.y - 1.0f, Position.z - 0.6};
+    glm::vec3 vmax = {Position.x + 0.3, Position.y + 0.5f, Position.z};
+
+    // create boudning box
+    boundingBox = AABBox(vmin, vmax);
 }

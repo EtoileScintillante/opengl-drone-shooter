@@ -9,6 +9,7 @@
 #define __PLAYER_H__
 
 #include "world.h"
+#include "box.h"
 #include "miniaudio.h"
 
 class Player
@@ -55,11 +56,12 @@ public:
     bool shot; // has player taken a shot?
     // time
     float currentFrame;
+    // collisions
+    AABBox boundingBox; // bounding box for collision detection (the bounding box is a cuboid, positioned behind the gun)
     // game
-    int health;
-    bool isAlive;
-    bool hasStarted;
-    int kills;
+    bool isAlive;    // is player alive?
+    bool hasStarted; // has player started the game?
+    int kills;       // kill counter
 
     /**
      * @brief Construct a new Player object with vectors. Also initializes player related objects
@@ -114,6 +116,9 @@ public:
     /// Resets all values in case player wants to restart the game.
     void resetAll();
 
+    /// Decreases player's health by damage and plays damage sound effect.
+    void gotAttacked(float damage);
+
     /**
      * @brief Processes all player input (keyboard + mouse).
      * 
@@ -142,9 +147,13 @@ private:
     int soundCount;               // needed to make sure that the gunshot will only be played once every shot
     std::string gunshotSoundPath; // path to gunshot wav file
     std::string walkSoundPath;    // path to walking wav file
+    std::string damageSoundPath;  // path to damage wav
     // matrices
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
+    // game
+    int health;    // player's health (initialized at 100)
+
     // for when resetting player
     glm::vec3 origPosition; // original position of player when starting game for first time
 
@@ -198,6 +207,9 @@ private:
 
     /// Calculates the front vector from the Player's (updated) Euler Angles.
     void updatePlayerVectors();
+
+    /// Creates bounding box for player.
+    void createBoundingBox();
 };
 
 #endif /*__PLAYER__*/
