@@ -2,7 +2,7 @@
 
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
 const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
-const float Enemy::ATTACK_INTERVAL = 2.5f;
+const float Enemy::ATTACK_INTERVAL = 2.0f;
 const float Enemy::INTERVAL = 3.0f;
 const float Enemy::DAMAGE = 10.0f;
 const float Enemy::SPEED = 0.02f;
@@ -11,17 +11,17 @@ Enemy::Enemy()
 {
     // load model and shaders
     drone = Model("resources/models/drone/E 45 Aircraft_obj.obj", false);
-    bulletFire = Model("resources/models/handgun/Handgun_obj.obj", false);
-    shader = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
-    shaderFire = Shader("shaders/model.vert", "shaders/laser.frag");
+    laserBeam = Model("resources/models/handgun/Handgun_obj.obj", false);
+    shaderDrone = Shader("shaders/explode.vert", "shaders/explode.frag", "shaders/explode.geom");
+    shaderLaser = Shader("shaders/model.vert", "shaders/laser.frag");
 
     // set default values
     isDead = false;
     explodeTime = 0;
     magnitude = 0;
     soundCount = 0;
-    fireCount = 0;
-    fireSoundCount = 0;
+    laserCount = 0;
+    laserSoundCount = 0;
     attackTime = 0;
     spawnInterval = 0;
     attack = false;
@@ -33,7 +33,7 @@ Enemy::Enemy()
     // wav file paths
     soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
     soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
-    bulletSoundPath = "resources/audio/blaster-2-81267.wav";
+    soundLaserPath = "resources/audio/blaster-2-81267.wav";
 
     // miniaudio engine setup
     ma_result result = ma_engine_init(NULL, &engine);
@@ -68,27 +68,27 @@ void Enemy::spawn()
     generateModelMatrix();
 
     // set unifroms
-    shader.use();
-    shader.setBool("isDead", isDead);
-    shader.setFloat("magnitude", magnitude);
-    shader.setMat4("view", view);
-    shader.setMat4("projection", projection);
-    shader.setMat4("model", modelMatrix);
+    shaderDrone.use();
+    shaderDrone.setBool("isDead", isDead);
+    shaderDrone.setFloat("magnitude", magnitude);
+    shaderDrone.setMat4("view", view);
+    shaderDrone.setMat4("projection", projection);
+    shaderDrone.setMat4("model", modelMatrix);
 
     // draw enemy
-    drone.Draw(shader);
+    drone.Draw(shaderDrone);
 
-    // draw bullet fire
-    if (attack && fireCount == 0)
+    // draw laser beam
+    if (attack && laserCount == 0)
     {
-        fireCount++;
-        generateFireModelMatrix();
-        shaderFire.use();
-        shaderFire.setMat4("view", view);
-        shaderFire.setMat4("projection", projection);
-        shaderFire.setMat4("model", modelMatrixFire);
-        bulletFire.drawSpecificMesh(shaderFire, 5);
-        playFireSound();
+        laserCount++;
+        generateLaserModelMatrix();
+        shaderLaser.use();
+        shaderLaser.setMat4("view", view);
+        shaderLaser.setMat4("projection", projection);
+        shaderLaser.setMat4("model", modelMatrixFire);
+        laserBeam.drawSpecificMesh(shaderLaser, 5);
+        playLaserSound();
     }
 }
 
@@ -99,7 +99,7 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
     projection = player.getProjectionMatrix();
     view = player.GetViewMatrix();
 
-    // draw enemy and optionally  bullet fire
+    // draw enemy and optionally laser beam if enemy attacks
     if (!isDead)
     {
         // update attack time
@@ -136,7 +136,7 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
         }
 
         // stop hover sound
-        stopSounds();
+        ma_sound_stop(&hoverSound);
 
         // play explosion sound
         playExplosionSound();
@@ -315,12 +315,7 @@ void Enemy::MoveToPlayer()
     position.z += direction.z * SPEED;
 }
 
-void Enemy::stopSounds()
-{
-    ma_sound_stop(&hoverSound);
-}
-
-void Enemy::generateFireModelMatrix()
+void Enemy::generateLaserModelMatrix()
 {
     // initialize fire model matrix
     modelMatrixFire = glm::mat4(1.0f);
@@ -332,22 +327,22 @@ void Enemy::generateFireModelMatrix()
     modelMatrixFire = glm::scale(modelMatrixFire, glm::vec3(0.6f));
 }
 
-void Enemy::playFireSound()
+void Enemy::playLaserSound()
 {
     // compute distance to player
     float d = distanceToPLayer();
 
-    // play sound of conditions are true
-    if (d <= 50 && fireSoundCount == 0)
+    // play sound if conditions are true
+    if (d <= 50 && laserSoundCount == 0)
     {
-        fireSoundCount++;
+        laserSoundCount++;
         // same calculation as in playHoverSound, only the range differs
         float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
         ma_engine_set_volume(&engine, volume);
-        ma_engine_play_sound(&engine, bulletSoundPath.c_str(), NULL);
+        ma_engine_play_sound(&engine, soundLaserPath.c_str(), NULL);
         attack = false;
-        fireSoundCount = 0;
-        fireCount = 0;
+        laserSoundCount = 0;
+        laserCount = 0;
         attackTime = 0;
     }
 }
@@ -393,11 +388,12 @@ void Enemy::setDefaultValues()
     explodeTime = 0;
     magnitude = 0;
     soundCount = 0;
-    fireCount = 0;
-    fireSoundCount = 0;
+    laserCount = 0;
+    laserSoundCount = 0;
     attackTime = 0;
     spawnInterval = 0;
     canIncreaseScore = true;
+    ma_sound_stop(&hoverSound);
     generatePosition();
 }
 
