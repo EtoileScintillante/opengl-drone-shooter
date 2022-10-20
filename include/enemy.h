@@ -1,8 +1,9 @@
 /**
  * enemy.h
  *
- * Created by EtoileScintillante.
  * This file contains an Enemy class.
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __ENEMY_H__

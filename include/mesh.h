@@ -1,6 +1,8 @@
 /*
  * mesh.h
  *
+ * This file contains a Mesh class.
+ * 
  * Original author: Joey de Vries (from learnopengl)
  * Modified by EtoileScintillante.
  */
@@ -52,8 +54,12 @@ public:
     /// Constructor (here we give the mesh all the necessary data).
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 
-    /// Render the mesh (here we give a shader to the Draw function; by passing the shader to the mesh
-    /// we can set several uniforms before drawing (like linking samplers to texture units)).
+    /**
+     * @brief Renders the mesh. Here we give a shader to the Draw function; by passing the shader to the mesh
+     * we can set several uniforms before drawing (like linking samplers to texture units).
+     * 
+     * @param shader shader.
+     */
     void Draw(Shader &shader);
 
 private:

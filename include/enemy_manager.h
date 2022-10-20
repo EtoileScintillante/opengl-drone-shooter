@@ -1,6 +1,8 @@
 /**
   * enemy_manager.h
   * 
+  * This file contains a class to control the lives of the enemies.
+  * 
   * Created by EtoileScintillante.
   */
 
@@ -20,18 +22,18 @@ public:
     float currentTime;            // current time/frame
     float deltaTime;              // time passed between two frames
 
-    /// Construct a Enemy Manager object. This also initializes the enemy objects.
+    /// Constructs a Enemy Manager object. This also initializes the enemy objects.
     EnemyManager();
 
     /**
      * @brief Manages the enemy objects. 
      * 
-     * @param player player object.
+     * @param player Player object.
      * @param bulletRange range of bullet (maximum distance the bullet can travel).
      */
     void manage(Player &player, float bulletRange);
 
-    /// Resets all values (for when you want to restart the game).
+    /// Resets all values (in case the game gets restarted).
     void reset();
 
 private:

@@ -1,6 +1,8 @@
 /*                                  
  * shader.h
  *
+ * This file contains a shader class to make compiling and using shaders easier.
+ * 
  * Original author: Joey de Vries (from learnopengl)
  * Modified by EtoileScintillante.
  */

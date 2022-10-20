@@ -1,9 +1,11 @@
 /**
  * texture_loading.h
  * 
- * Created by EtoileScintillante.
+ * This file contains functions to load textures.
  * All functions are originally from https://www.learnopengl.com.
  * loadTexture and TextureFromFile have been modified.
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __TEXTURE_LOADING__

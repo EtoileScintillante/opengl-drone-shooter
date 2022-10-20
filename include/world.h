@@ -1,6 +1,9 @@
 /**
  * world.h
  *
+ * This file contains a World class.
+ * It is used to handle all the world objects: ground, trees, flowers and skybox.
+ * 
  * Created by EtoileScintillante.
  */
 
@@ -31,9 +34,12 @@ public:
     /// Destructor (frees allocated memory).
     ~World();
 
-    /// @brief Renders the terrain (ground, trees, flowers and skybox).
-    /// @param view view matrix.
-    /// @param projection projection matrix.
+    /**
+     * @brief Renders the world (ground, trees, flowers and skybox).
+     * 
+     * @param view view matrix.
+     * @param projection projection matrix.
+     */
     void Draw(glm::mat4 view, glm::mat4 projection);
 
     /// Renders skybox.
@@ -43,14 +49,14 @@ public:
     std::vector<glm::vec3> getTreePositions() const;
 
 private:
-    // objects & shaders
+    // objects and shaders
     Shader shaderModel;  // model shader
     Shader shaderGround; // ground shader
     Shader shaderSkybox; // skybox shader
     Model tree;          // tree model
     Model flowers;       // flower model
     SkyBox skybox;       // skybox
-    // object related
+    // object related attributes
     std::vector<glm::vec3> treePos;    // tree positions
     std::vector<glm::vec3> flowerPos;  // flower positions
     std::vector<float> groundVertices; // ground vertex data
@@ -89,11 +95,14 @@ private:
     /// Creates model matrices for the flowers.
     void createFlowerModelMatrices();
 
-    /// @brief Sets up instanced array for a model.
-    /// @param model Model object.
-    /// @param buffer instanced array buffer.
-    /// @param modelMatrices pointer to an array containing the model matrices.
-    /// @param amount number of instances.
+    /**
+     * @brief Sets up an instanced array for a model.
+     * 
+     * @param model Model object.
+     * @param buffer instanced array buffer.
+     * @param modelMatrices pointer to an array containing the model matrices.
+     * @param amount number of instances.
+     */
     void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);
 };
 

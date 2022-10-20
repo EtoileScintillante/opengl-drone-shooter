@@ -1,8 +1,10 @@
 /**
  * ray.h
  * 
- * Created by EtoileScintillante.
+ * This file contains a Ray class (needed for collision detection).
  * Resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __RAY_H__

@@ -1,6 +1,8 @@
 /*                                  
  * model.h
  *
+ * This file contains a class to load and render an obj/mtl 3D model.
+ * 
  * Original author: Joey de Vries (from learnopengl)
  * Modified by EtoileScintillante.
  */
@@ -33,7 +35,7 @@ class Model
 public:
     // model data
     std::vector<Texture> textures_loaded; // stores all the textures loaded so far, to make sure textures aren't loaded more than once
-    std::vector<Mesh>    meshes;
+    std::vector<Mesh>    meshes;          // stores all the meshes of the model
     std::string directory;                // model directory
     bool gammaCorrection;                 // apply gamma correction?
     bool flipVertically;                  // flip image vertically on load? 
@@ -60,21 +62,32 @@ private:
     /// Loads a model with supported ASSIMP extensions from file and stores the resulting meshes in the meshes vector.
     void loadModel(std::string const &path);
 
-    /// Processes a node in a recursive fashion: 
-    /// processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+    /**
+     * @brief Processes a node in a recursive fashion: 
+     * processes each individual mesh located at the node and repeats this process on its children nodes (if any).
+     * 
+     * @param node aiNode* node.
+     * @param scene aiScene* scene.
+     */
     void processNode(aiNode *node, const aiScene *scene);
 
-    /// Processes the data of a mesh.
+    /**
+     * @brief Processes the data of a mesh (vertices, indices and textures).
+     * 
+     * @param mesh aiMesh* mesh.
+     * @param scene aiScene* scene.
+     * @return Mesh 
+     */
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
 
     /**
      * @brief Checks all material textures of a given type and loads the textures if they're not loaded yet. 
      * The required info is returned as a Texture struct.
      * 
-     * @param mat materials.
+     * @param mat materials (aiMaterial*).
      * @param type type of texture (aiTextureType_DIFFUSE, aiTextureType_SPECULAR, aiTextureType_HEIGHT, aiTextureType_AMBIENT).
      * @param typeName name of texture (how texture is defined in shader).
-     * @return std::vector<Texture> vector with textures.
+     * @return std::vector<Texture>
      */
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type, std::string typeName);
 };

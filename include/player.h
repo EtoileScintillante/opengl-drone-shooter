@@ -1,8 +1,10 @@
 /**
  * player.h
  *
- * Created by EtoileScintillante.
+ * This file contains a Player class (basically a camera).
  * Based on the camera class made by Joey de Vries (from learnopengl).
+ *
+ * Created by EtoileScintillante.
  */
 
 #ifndef __PLAYER_H__
@@ -29,7 +31,7 @@ public:
     static const float BOTTOM_LIMIT_Z; // bottom limit z ppane
     static const float UPPER_LIMIT_Z;  // upper limit z plane
     // default player values
-    static const float YAW;         // eluer angle related
+    static const float YAW;         // euler angle related
     static const float PITCH;       // euler angle related
     static const float SPEED;       // movement speed
     static const float SENSITIVITY; // mouse sensitivity
@@ -37,12 +39,12 @@ public:
     // screen dimensions (used to set the projection matrix)
     static const int SCR_HEIGHT;
     static const int SCR_WIDTH;
-    // other player attributes
-    glm::vec3 Position;
-    glm::vec3 Front;
-    glm::vec3 Up;
-    glm::vec3 Right;
-    glm::vec3 WorldUp;
+    // other player attributes (view space related)
+    glm::vec3 Position; // position of player, this is also where the player first starts.
+    glm::vec3 Front;    // front vector
+    glm::vec3 Up;       // up vector
+    glm::vec3 Right;    // right vector
+    glm::vec3 WorldUp;  // world up vector
     // euler Angles
     float Yaw;
     float Pitch;
@@ -55,7 +57,7 @@ public:
     // gun related
     bool shot; // has player taken a shot?
     // time
-    float currentFrame;
+    float currentFrame; // current time/frame
     // collisions
     AABBox boundingBox; // bounding box for collision detection (the bounding box is a cuboid, positioned behind the gun)
     // game
@@ -64,8 +66,8 @@ public:
     int kills;       // kill counter
 
     /**
-     * @brief Construct a new Player object with vectors. Also initializes player related objects
-     * like the gun and audio objects.
+     * @brief Constructs a new Player object with vectors.
+     * Also initializes player related objects like the gun and audio objects.
      *
      * @param position player position vector.
      * @param up player up vector.
@@ -75,8 +77,8 @@ public:
     Player(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH);
 
     /**
-     * @brief Construct a new Player object with scalar values. Also initializes player related objects
-     * like the gun and audio objects.
+     * @brief Constructs a new Player object with scalar values.
+     * Also initializes player related objects like the gun and audio objects.
      *
      * @param posX x value of position vector.
      * @param posY y value of position vector.
@@ -121,7 +123,7 @@ public:
 
     /**
      * @brief Processes all player input (keyboard + mouse).
-     * 
+     *
      * @param window window pointer.
      * @param deltaTime delta time (time passed between two frames).
      */
@@ -152,7 +154,7 @@ private:
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
     // game
-    int health;    // player's health (initialized at 100)
+    int health; // player's health (initialized at 100)
 
     // for when resetting player
     glm::vec3 origPosition; // original position of player when starting game for first time
@@ -183,7 +185,7 @@ private:
     /**
      * @brief Processes input received from a mouse input system.
      *
-     * @param constrainPitch limit pitch to a maximum of 90 degrees up and 45 degrees down?
+     * @param constrainPitch limits pitch to a maximum of 90 degrees up and 45 degrees down if true.
      */
     void ProcessMouseMovement(GLboolean constrainPitch = true);
 

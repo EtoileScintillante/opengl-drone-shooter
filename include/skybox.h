@@ -1,6 +1,8 @@
 /*                                  
  * skybox.h
  *
+ * This file contains a SkyBox class, to load and render a skybox/cubemap.
+ * 
  * Created by EtoileScintillante.
  */
 

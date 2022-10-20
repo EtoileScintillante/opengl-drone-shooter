@@ -1,8 +1,10 @@
 /**
  * box.h
  * 
- * Created by EtoileScintillante.
+ * This file contains a AABBox (bounding box) class for collision detection.
  * Resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __BOX_H__
@@ -26,8 +28,7 @@ public:
      */
     AABBox(glm::vec3 vmin, glm::vec3 vmax);
 
-    /// @brief Checks whether the min values are acually smaller than max values.
-    /// @return true if valid, else false.
+    /// Returns true if the given bounds are valid (min < max and max > min), else false.
     bool isValid();
 
     /// Swaps values when necessary (when they are not valid).

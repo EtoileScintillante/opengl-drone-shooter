@@ -1,8 +1,10 @@
 /**
  * text_renderer.h
  *
- * Created by EtoileScintillante.
+ * This file contains a TextRenderer class and Character struct to make text rendering easier.
  * Based on code from Joey de Vries (https://learnopengl.com/In-Practice/Text-Rendering).
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __TEXT_RENDERER_H__
@@ -37,8 +39,14 @@ class TextRenderer
 public:
     glm::mat4 projection; // projection matrix 
 
-    /// Constructs new TextRenderer object.
-    /// Also initializes FreeType library, loads font and compiles shaders.
+    /**
+     * @brief Constructs a new Text Renderer object.
+     * Also initializes FreeType library, loads font and compiles shaders.
+     * 
+     * @param pathToFont path to font (ttf).
+     * @param pathVertexShader path to vertex shader.
+     * @param pathFragmentShader path to fragment shader.
+     */
     TextRenderer(std::string pathToFont, std::string pathVertexShader, std::string pathFragmentShader);
 
     /**
