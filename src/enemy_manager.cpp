@@ -40,7 +40,7 @@ void EnemyManager::reset()
 {
     for (unsigned int i = 0; i < enemyCount - 1; i++)
     {
-        enemies[i]->stopSounds();
+        enemies[i]->setDefaultValues(); // also reset enemies
     }
     enemyCount = 1; 
     spawnTime = 0;
