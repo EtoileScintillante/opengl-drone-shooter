@@ -62,7 +62,7 @@ void Enemy::spawn()
     glEnable(GL_DEPTH_TEST);
 
     // update position
-    MoveToPlayer();
+    moveToPlayer();
 
     // generate model matrix
     generateModelMatrix();
@@ -293,7 +293,7 @@ float Enemy::distanceToPLayer()
     return sqrt(dx + dz);
 }
 
-void Enemy::MoveToPlayer()
+void Enemy::moveToPlayer()
 {
     // create direction vector
     glm::vec3 direction;

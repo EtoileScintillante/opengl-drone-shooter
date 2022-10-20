@@ -2,6 +2,7 @@
  * enemy.h
  *
  * Created by EtoileScintillante.
+ * This file contains an Enemy class.
  */
 
 #ifndef __ENEMY_H__
@@ -34,18 +35,25 @@ public:
     // enemy attack related
     bool attack; // did enemy attack?
 
-    /// @brief Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
+    /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
     Enemy();
 
-    /// @brief Destructor.
+    /// Destructor.
     ~Enemy();
 
     /// @brief Controls life of enemy: spawning and dying (collision detection is part of it).
     /// @param player Player object.
     /// @param bulletRange range of bullet (maximum distance the bullet can travel).
+
+    /**
+     * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
+     * 
+     * @param player Player object.
+     * @param bulletRange range of bullet (maximum distance the bullet can travel).
+     */
     void controlEnemyLife(Player &player, float bulletRange);
 
-    /// @brief Sets all values back to default (for when enemy dies and then respawns).
+    /// Sets all values back to default (for when enemy dies and then respawns).
     void setDefaultValues();
 
 private:
@@ -54,7 +62,7 @@ private:
     Model laserBeam; // model for fire (shown when enemy shoots bullet)
     // shaders
     Shader shaderDrone; // enemy shader (must include geometry shader for explosion effect)
-    Shader shaderLaser; // bullet fire shader (no geometry shader)
+    Shader shaderLaser; // laser beam shader (no geometry shader)
     // player related
     bool canIncreaseScore;    // used to ensure that the player's kill count only increases by 1 point every enemy death
     glm::vec3 playerPosition; // position of player
@@ -80,48 +88,54 @@ private:
     float explodeTime;     // used to control the duration of the dying animation (enemy explodes)
     float magnitude;       // used to control how the explosion of the enemy looks
 
-    /// @brief Spawns the enemy.
+    /// Spawns the enemy.
     void spawn();
 
-    /// @brief Detects whether the enemy has been hit by a bullet (using ray-box intersection).
-    /// @param bulletStartPos starting position of the bullet (in this program that is the player's position).
-    /// @param bulletDir direction of the bullet (in this program that is the front vector of the player).
-    /// @param bulletRange range of bullet (maximum distance the bullet can travel).
+    /**
+     * @brief Detects whether the enemy has been hit by a bullet (using ray-box intersection).
+     * 
+     * @param bulletStartPos starting position of the bullet (in this program that is the player's position).
+     * @param bulletDir direction of the bullet (in this program that is the front vector of the player).
+     * @param bulletRange range of bullet (maximum distance the bullet can travel).
+     */
     void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
 
-    /// @brief Makes enemy explode when it gets shot (using the geometry shader).
+    /// Makes enemy explode when it gets shot (using the geometry shader).
     void dyingAnimation();
 
-    /// @brief Generates random position for enemy.
+    /// Generates random position for enemy.
     void generatePosition();
 
-    /// @brief Generates model matrix for enemy.
+    /// Generates model matrix for enemy.
     void generateModelMatrix();
 
-    /// @brief Calculates bounding box for enemy using the enemy's current position.
+    /// Calculates bounding box for enemy using the enemy's current position.
     void calculateBoundingBox();
 
-    /// @brief Returns the distance between the enemy position and player position on the x z plane.
+    /// Returns the distance between the enemy position and player position on the x z plane.
     float distanceToPLayer();
 
-    /// @brief Updates the position vector of the enemy so that it moves towards the player.
-    void MoveToPlayer();
+    /// Updates the position vector of the enemy so that it moves towards the player.
+    void moveToPlayer();
 
-    /// @brief Generates model matrix for the laser beam model.
+    /// Generates model matrix for the laser beam model.
     void generateLaserModelMatrix();
 
-    /// @brief Plays laser beam sound.
+    /// Plays laser beam sound.
     void playLaserSound();
 
-    /// @brief Plays hover sound.
+    /// Plays hover sound.
     void playHoverSound();
 
-    /// @brief Plays explosion sound.
+    /// Plays explosion sound.
     void playExplosionSound();
 
-    /// @brief Attacks player: shoot laser beam in player's direction.
-    /// This also handles collision detection between the enemy's laser and the player.
-    /// @param player Player object.
+    /**
+     * @brief Attacks player: shoot laser beam in player's direction. 
+     * This also handles collision detection between the enemy's laser and the player.
+     * 
+     * @param player Player object.
+     */
     void attackPlayer(Player &player);
 };
 
