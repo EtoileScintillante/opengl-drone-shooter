@@ -42,10 +42,6 @@ public:
     /// Destructor.
     ~Enemy();
 
-    /// @brief Controls life of enemy: spawning and dying (collision detection is part of it).
-    /// @param player Player object.
-    /// @param bulletRange range of bullet (maximum distance the bullet can travel).
-
     /**
      * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
      * 
