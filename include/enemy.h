@@ -109,7 +109,7 @@ private:
     /// Calculates bounding box for enemy using the enemy's current position.
     void calculateBoundingBox();
 
-    /// Returns the distance between the enemy position and player position on the x z plane.
+    /// Returns the distance between the enemy position and player position in 3D space (x y z).
     float distanceToPLayer();
 
     /// Updates the position vector of the enemy so that it moves towards the player.

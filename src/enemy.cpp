@@ -94,6 +94,7 @@ void Enemy::spawn()
 
 void Enemy::controlEnemyLife(Player &player, float bulletRange)
 {
+    std::cout << distanceToPLayer() << std::endl;
     // set variables
     playerPosition = player.Position;
     projection = player.getProjectionMatrix();
@@ -289,8 +290,9 @@ void Enemy::calculateBoundingBox()
 float Enemy::distanceToPLayer()
 {
     float dx = pow((position.x - playerPosition.x), 2);
+    float dy = pow((position.y - playerPosition.y), 2);
     float dz = pow((position.z - playerPosition.z), 2);
-    return sqrt(dx + dz);
+    return sqrt(dx + dy + dz);
 }
 
 void Enemy::moveToPlayer()
@@ -404,7 +406,7 @@ void Enemy::attackPlayer(Player &player)
     dx = player.Position.x - position.x;
     dy = player.Position.y - position.y;
     dz = player.Position.z - position.z;
-    d = sqrt(pow(dx, 2) + pow(dy, 2) + pow(dz, 2)); // distance on x y z plane
+    d = distanceToPLayer(); 
     glm::vec3 dir = {dx/d, dy/d, dz/d}; // normalized direction vector
 
     // add random offset between min and max (otherwise the enemy's aim would too good)
