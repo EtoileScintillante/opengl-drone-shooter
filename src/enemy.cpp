@@ -94,7 +94,6 @@ void Enemy::spawn()
 
 void Enemy::controlEnemyLife(Player &player, float bulletRange)
 {
-    std::cout << distanceToPLayer() << std::endl;
     // set variables
     playerPosition = player.Position;
     projection = player.getProjectionMatrix();
@@ -260,7 +259,7 @@ Important note: in this program the y coordinate remains untouched because the h
 not change when rotating it around the y - axis. Also, the current implementation of calculateBoundingBox
 is based on the drone model scaled by factor 0.6. The bounding box does not contain the whole model,
 but this is not a problem because the model is quite big, so it is not too difficult to hit it.
-See /doc/bounding_box for a visualization.
+See /doc/enemy_bbox for a visualization.
 */
 
 void Enemy::calculateBoundingBox()
