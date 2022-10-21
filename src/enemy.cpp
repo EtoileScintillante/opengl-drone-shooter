@@ -94,7 +94,6 @@ void Enemy::spawn()
 
 void Enemy::controlEnemyLife(Player &player, float bulletRange)
 {
-    std::cout << distanceToPLayer() << std::endl;
     // set variables
     playerPosition = player.Position;
     projection = player.getProjectionMatrix();

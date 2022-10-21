@@ -557,6 +557,6 @@ void Player::createBoundingBox()
     glm::vec3 vmin = {Position.x - 0.3, Position.y - 1.0f, Position.z - 0.6};
     glm::vec3 vmax = {Position.x + 0.3, Position.y + 0.5f, Position.z};
 
-    // create boudning box (it's a cuboid; see docs/player_bbox for a visualization)
+    // create bounding box (it's a cuboid; see docs/player_bbox for a visualization)
     boundingBox = AABBox(vmin, vmax);
 }
