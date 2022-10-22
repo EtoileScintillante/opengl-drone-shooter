@@ -25,7 +25,7 @@ void World::Draw(glm::mat4 View, glm::mat4 Projection)
     glEnable(GL_DEPTH_TEST);
 
     // draw objects
-    drawSkyBox();
+    drawSkyBox(false);
     drawGround();
     drawFlowers();
     drawTrees();
@@ -109,10 +109,21 @@ void World::drawGround()
     glActiveTexture(GL_TEXTURE0);
 }
 
-void World::drawSkyBox()
+void World::drawSkyBox(bool grayscale)
 {
     // render skybox
     glDepthFunc(GL_LEQUAL);
+    shaderSkybox.use();
+
+    if (grayscale)
+    {
+        shaderSkybox.setBool("grayscale", true);
+    }
+    else
+    {
+        shaderSkybox.setBool("grayscale", false);
+    }
+
     skybox.Draw(shaderSkybox, view, projection);
     glDepthFunc(GL_LESS);
 }

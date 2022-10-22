@@ -42,8 +42,12 @@ public:
      */
     void Draw(glm::mat4 view, glm::mat4 projection);
 
-    /// Renders skybox.
-    void drawSkyBox();
+    /**
+     * @brief Renders skybox.
+     * 
+     * @param grayscale add grayscale filter if true.
+     */
+    void drawSkyBox(bool grayscale);
 
     /// Returns the tree positions.
     std::vector<glm::vec3> getTreePositions() const;
