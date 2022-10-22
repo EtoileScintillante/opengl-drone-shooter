@@ -152,7 +152,7 @@ private:
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
     // game
     float health; // player's health (initialized at 100)
-
+    
     // for when resetting player
     glm::vec3 origPosition; // original position of player when starting game for first time
 
@@ -209,6 +209,9 @@ private:
 
     /// Creates bounding box for player.
     void createBoundingBox();
+
+    /// Sets up audio related objects.
+    void audioSetup();
 };
 
 #endif /*__PLAYER__*/

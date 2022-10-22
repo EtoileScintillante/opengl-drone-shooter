@@ -52,24 +52,8 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     gun = Model("resources/models/handgun/Handgun_obj.obj", false);
     shader = Shader("shaders/model.vert", "shaders/model.frag");
 
-    // wav file paths
-    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
-    walkSoundPath = "resources/audio/footsteps.wav";
-    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
-
-    // miniaudio engines setup
-    ma_result result = ma_engine_init(NULL, &engine);
-    if (result != MA_SUCCESS) {
-        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
-    }
-    
-    // load walking sound
-    result = ma_sound_init_from_file(&engine, walkSoundPath.c_str(), 0, NULL, NULL, &walkingSound);
-    if (result != MA_SUCCESS) 
-    {
-        std::cout << "ERROR: failed to load walking sound." << std::endl;
-    }
-    ma_sound_set_looping(&walkingSound, true);
+    // audio setup
+    audioSetup();
 }
 
 Player::Player(float posX, float posY, float posZ, float upX, float upY, float upZ, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
@@ -107,25 +91,8 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     gun = Model("resources/models/handgun/Handgun_obj.obj", false);
     shader = Shader("shaders/model.vert", "shaders/model.frag");
 
-    // wav file paths
-    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
-    walkSoundPath = "resources/audio/footsteps.wav";
-    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
-
-    // miniaudio engines setup
-    ma_result result = ma_engine_init(NULL, &engine);
-    if (result != MA_SUCCESS) {
-        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
-    }
-    
-    // load walking sound
-    result = ma_sound_init_from_file(&engine, walkSoundPath.c_str(), 0, NULL, NULL, &walkingSound);
-    if (result != MA_SUCCESS) 
-    {
-        std::cout << "ERROR: failed to load walking sound." << std::endl;
-    }
-    ma_sound_set_volume(&walkingSound, 1.0);
-    ma_sound_set_looping(&walkingSound, true);
+    // audio setup
+    audioSetup();
 }
 
 Player::~Player()
@@ -554,4 +521,26 @@ void Player::createBoundingBox()
 
     // create bounding box (it's a cuboid; see docs/player_bbox for a visualization)
     boundingBox = AABBox(vmin, vmax);
+}
+
+void Player::audioSetup()
+{
+    // wav file paths
+    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
+    walkSoundPath = "resources/audio/footsteps.wav";
+    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
+
+    // miniaudio engines setup
+    ma_result result = ma_engine_init(NULL, &engine);
+    if (result != MA_SUCCESS) {
+        std::cout << "ERROR: failed to initialize audio engine." << std::endl;
+    }
+    
+    // load walking sound
+    result = ma_sound_init_from_file(&engine, walkSoundPath.c_str(), 0, NULL, NULL, &walkingSound);
+    if (result != MA_SUCCESS) 
+    {
+        std::cout << "ERROR: failed to load walking sound." << std::endl;
+    }
+    ma_sound_set_looping(&walkingSound, true);
 }
