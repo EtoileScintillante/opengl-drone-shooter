@@ -106,11 +106,8 @@ public:
     /// Get gun model matrix.
     glm::mat4 getGunModelMatrix() const;
 
-    /// Get player's kill count as string (part of HUD).
-    std::string getKillsString() const;
-
     /// Get player's health as string (part of HUD).
-    std::string getHealthString() const;
+    float getHealth() const;
 
     /// Renders gun and controls the recoil movements.
     void controlGunRendering();
@@ -154,7 +151,7 @@ private:
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
     // game
-    int health; // player's health (initialized at 100)
+    float health; // player's health (initialized at 100)
 
     // for when resetting player
     glm::vec3 origPosition; // original position of player when starting game for first time

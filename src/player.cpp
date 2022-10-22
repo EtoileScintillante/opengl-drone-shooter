@@ -396,14 +396,9 @@ glm::mat4 Player::getGunModelMatrix() const
     return gunModelMatrix;
 }
 
-std::string Player::getKillsString() const
-{
-    return "Kills: " + std::to_string(kills);
-}
-
-std::string Player::getHealthString() const
+float Player::getHealth() const
 {   
-    return "Health: " + std::to_string(health);
+    return health;
 }
 
 void Player::startRecoilAnimation()
