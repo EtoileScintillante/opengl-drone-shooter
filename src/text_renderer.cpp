@@ -3,6 +3,7 @@
 TextRenderer::TextRenderer(std::string pathToFont, std::string pathVertexShader, std::string pathFragmentShader)
 {
     this->font = pathToFont;
+    blink = 0;
 
     // compile shader
     shader = Shader(pathVertexShader.c_str(), pathFragmentShader.c_str());

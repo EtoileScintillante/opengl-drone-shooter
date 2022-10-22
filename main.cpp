@@ -37,6 +37,7 @@ int main()
         currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
+        text.deltaTime = deltaTime;
 
         // title/start screen
         if (!player.hasStarted)
@@ -56,13 +57,9 @@ int main()
             // keyboard and mouse input
             player.processKeyboardMouse(window, deltaTime);
 
-            // draw world objects (ground, trees, flowers and skybox)
+            // draw the world objects, the gun and the enemies
             world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
-
-            // draw gun and handle gun recoil movement
             player.controlGunRendering();
-            
-            // manage enemy objects
             manager.manage(player, World::TERRAIN_SIZE * 2);
 
             // HUD

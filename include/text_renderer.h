@@ -38,6 +38,8 @@ class TextRenderer
 {
 public:
     glm::mat4 projection; // projection matrix 
+    float deltaTime;      // time passed between two frames
+    float blink;          // needed to make text blink
 
     /**
      * @brief Constructs a new Text Renderer object.
