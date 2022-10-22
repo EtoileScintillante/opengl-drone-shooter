@@ -1,9 +1,5 @@
 /// === Shoot drones! === ///
 
-// TODO:
-// improve transition to ending screen
-// maybe make ending screen (and title screen) looks nicer
-
 #include "player.h"
 #include "enemy.h"
 #include "hud.h"
@@ -26,6 +22,9 @@ int main()
     float currentFrame;
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
+
+    // aim assist
+    bool aimAssist = true;
 
     // render loop
     while (!glfwWindowShouldClose(window))
@@ -63,7 +62,7 @@ int main()
             manager.manage(player, World::TERRAIN_SIZE * 2);
 
             // HUD
-            inGameScreen(text, player);
+            inGameScreen(text, player, aimAssist);
         }
 
         // ending screen
