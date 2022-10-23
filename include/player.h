@@ -2,6 +2,7 @@
  * player.h
  *
  * This file contains a Player class (basically a camera).
+ * There is no real player character; it's basically just a gun with a bounding box.
  * Based on the camera class made by Joey de Vries (from learnopengl).
  *
  * Created by EtoileScintillante.
@@ -109,8 +110,8 @@ public:
     /// Get player's health as string (part of HUD).
     float getHealth() const;
 
-    /// Renders gun and controls the recoil movements.
-    void controlGunRendering();
+    /// Controls the rendering of the player (the gun).
+    void controlPlayerRendering();
 
     /// Resets all values in case player wants to restart the game.
     void resetAll();

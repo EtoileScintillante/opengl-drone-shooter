@@ -58,7 +58,7 @@ int main()
 
             // draw the world objects, the gun and the enemies
             world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
-            player.controlGunRendering();
+            player.controlPlayerRendering();
             manager.manage(player, World::TERRAIN_SIZE * 2);
 
             // HUD

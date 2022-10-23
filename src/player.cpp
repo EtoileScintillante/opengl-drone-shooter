@@ -74,7 +74,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     isAlive = true;
     health = 100;
     Position = glm::vec3(posX, posY, posZ);
-    origPosition = {posX, posY, posZ};
+    origPosition = glm::vec3(posX, posY, posZ);
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
@@ -151,7 +151,7 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
 
-    // close window
+    // close window on ESC
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
@@ -398,7 +398,7 @@ void Player::endRecoilAnimation()
     }
 }
 
-void Player::controlGunRendering()
+void Player::controlPlayerRendering()
 {
     // create bounding box
     createBoundingBox();
@@ -503,7 +503,6 @@ void Player::resetAll()
     isAlive = true;
     kills = 0;
     health = 100;
-    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
     Pitch = PITCH;
     Yaw = YAW;
     Position = origPosition;
