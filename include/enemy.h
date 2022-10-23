@@ -2,6 +2,7 @@
  * enemy.h
  *
  * This file contains an Enemy class.
+ * The enemy is a drone that shoots laser beams in the direction of the player.
  * 
  * Created by EtoileScintillante.
  */

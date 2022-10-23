@@ -1,7 +1,7 @@
 /**
  * box.h
  * 
- * This file contains a AABBox (bounding box) class for collision detection.
+ * This file contains an AABBox (bounding box) class for collision detection.
  * Resource: https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection
  * 
  * Created by EtoileScintillante.

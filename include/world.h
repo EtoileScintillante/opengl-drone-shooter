@@ -2,7 +2,7 @@
  * world.h
  *
  * This file contains a World class.
- * It is used to handle all the world objects: ground, trees, flowers and skybox.
+ * The world consists of four objects: ground, trees, flowers and a skybox.
  * 
  * Created by EtoileScintillante.
  */

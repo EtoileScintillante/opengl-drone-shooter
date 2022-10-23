@@ -1,8 +1,9 @@
 /**
  * glfw_setup.h
  * 
- * Created by EtoileScintillante.
  * This file was created so that the glfw setup and window related functions don't have to be in main.cpp.
+ * 
+ * Created by EtoileScintillante.
  */
 
 #ifndef __GLFW_SETUP_H__
