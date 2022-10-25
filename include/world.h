@@ -31,9 +31,6 @@ public:
     /// Default constructor; constructs a new world object.
     World();
 
-    /// Destructor (frees allocated memory).
-    ~World();
-
     /**
      * @brief Renders the world (ground, trees, flowers and skybox).
      * 
@@ -69,8 +66,8 @@ private:
     unsigned int treeBuffer;           // buffer for tree models
     unsigned int flowerBuffer;         // buffer for flower models
     // matrix data (used for instancing)
-    glm::mat4 *treeModelMatrices = new glm::mat4[N_TREES];     // tree model matrices
-    glm::mat4 *flowerModelMatrices = new glm::mat4[N_FLOWERS]; // flower model matrices
+    std::vector<glm::mat4> treeModelMatrices;   // tree model matrices
+    std::vector<glm::mat4> flowerModelMatrices; // flower model matrices    
 
     /// Sets up all the objects so that they can be rendered.
     void setupWorld();
@@ -104,10 +101,10 @@ private:
      * 
      * @param model Model object.
      * @param buffer instanced array buffer.
-     * @param modelMatrices pointer to an array containing the model matrices.
+     * @param modelMatrices vector containing the model matrices.
      * @param amount number of instances.
      */
-    void setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount);
+    void setupInstancedArray(Model &model, unsigned int buffer, std::vector<glm::mat4> modelMatrices, int amount);
 };
 
 #endif /*__WORLD__*/

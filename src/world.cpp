@@ -10,12 +10,6 @@ World::World()
     setupWorld();
 }
 
-World::~World()
-{
-    delete[] treeModelMatrices;
-    delete[] flowerModelMatrices;
-}
-
 void World::Draw(glm::mat4 View, glm::mat4 Projection)
 {
     view = View;
@@ -206,7 +200,7 @@ void World::createTreeModelMatrices()
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, treePos[i]); // translation
         model = glm::scale(model, glm::vec3(0.4f)); // make model a bit smaller
-        treeModelMatrices[i] = model; // add matrix to array of matrices
+        treeModelMatrices.push_back(model);
     }
 }
 
@@ -219,11 +213,11 @@ void World::createFlowerModelMatrices()
         float rotAngle = static_cast<float>((rand() % 360)); 
         model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation
         model = glm::scale(model, glm::vec3(2.5f)); // make model bigger
-        flowerModelMatrices[i] = model; // add matrix to array of matrices
+        flowerModelMatrices.push_back(model);
     }
 }
 
-void World::setupInstancedArray(Model &model, unsigned int buffer, glm::mat4 *modelMatrices, int amount)
+void World::setupInstancedArray(Model &model, unsigned int buffer, std::vector<glm::mat4> modelMatrices, int amount)
 {
     // configure instanced array
     glGenBuffers(1, &buffer);
