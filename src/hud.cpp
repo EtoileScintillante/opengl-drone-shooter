@@ -10,7 +10,7 @@ void startingScreen(TextRenderer &tr, Player &player, World &world)
     world.projection = player.getProjectionMatrix();
     world.drawSkyBox(false);
 
-    // set projection matrix and render title screen
+    // set projection matrix and render title screen with instructions on how to play
     tr.projection = player.getOrthoProjectionMatrix();
 
     // title
@@ -22,8 +22,12 @@ void startingScreen(TextRenderer &tr, Player &player, World &world)
         tr.RenderText("Press  ENTER  to  start", 253.0f, 303.0f, 0.55f, glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
-    // credentials
-    tr.RenderText("by  Esma", 352.0f, 30.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    // instructions (it looks weird but this way the colons are aligned)
+    tr.RenderText("Space  :  take shot", 310.0f, 180.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("W              :   forwards", 310.0f, 155.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("S                :   backwards", 310.0f, 135.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("D                :   right", 310.0f, 115.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("A               :   left", 310.0f, 95.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
@@ -56,10 +60,16 @@ void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
     // aim assist
     if (aimAssist)
     {
+        /*
         tr.RenderText("-", 380.0f, 298.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
         tr.RenderText("-", 403.0f, 298.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
         tr.RenderText("|", 395.0f, 310.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
         tr.RenderText("|", 395.0f, 290.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
+        */
+        tr.RenderText("-", 380.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
+        tr.RenderText("-", 403.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
+        tr.RenderText("|", 395.0f, 312.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
+        tr.RenderText("|", 395.0f, 292.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
     }
 }
 

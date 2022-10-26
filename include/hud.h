@@ -2,6 +2,8 @@
  * hud.h 
  *
  * This file contains functions to render the title screen, ending screen and the HUD (heads up display).
+ * Current implementations of the functions are based on a window size of 800 x 600 (W x H) and
+ * on the font "theboldfont.ttf".
  * 
  * Created by EtoileScintillante.
  */
