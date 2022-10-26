@@ -60,12 +60,6 @@ void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
     // aim assist
     if (aimAssist)
     {
-        /*
-        tr.RenderText("-", 380.0f, 298.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("-", 403.0f, 298.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("|", 395.0f, 310.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("|", 395.0f, 290.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
-        */
         tr.RenderText("-", 380.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
         tr.RenderText("-", 403.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
         tr.RenderText("|", 395.0f, 312.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
