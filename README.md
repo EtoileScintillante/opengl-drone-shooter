@@ -21,6 +21,7 @@ There is no actual player character, it’s just a gun. The direction of the bul
 <img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
 
 There is also an ‘aim assist’ option, if this is turned on there will be a red cross rendered in the center of the screen.
+The aim assist cross is meant to represent the direction of the bullet. However, the direction of the bullet is the player's front vector, which is not exactly the same as the center of the screen. It is for this reason that the aim assist might seem a bit off sometimes (especially when standing far away from the enemy) but it is still nice to have.
 #### Aim assist on
 <img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/aim_assist_on.png" width="400" height="250" alt="aim assist on" />
 
