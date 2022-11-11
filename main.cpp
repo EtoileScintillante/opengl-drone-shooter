@@ -5,6 +5,7 @@
 #include "hud.h"
 #include "glfw_setup.h"
 #include "enemy_manager.h"
+#include "collision_detection.h"
 #include "text_renderer.h"
 
 int main()
@@ -16,6 +17,7 @@ int main()
     Player player; 
     World world;
     EnemyManager manager;
+    CollisionDetector detector;
     TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
 
     // timing
@@ -46,7 +48,7 @@ int main()
         }
     
         // game started
-        if (player.hasStarted && player.isAlive)
+        if (player.hasStarted && player.getLifeState())
         {
             // pass time variables to player and enemy manager
             player.currentFrame = currentFrame; 
@@ -59,14 +61,17 @@ int main()
             // draw the world objects, the gun and the enemies
             world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
             player.controlPlayerRendering();
-            manager.manage(player, World::TERRAIN_SIZE * 2);
+            manager.manage(player.Position, player.GetViewMatrix(), player.getProjectionMatrix());
+
+            // handle collisions
+            detector.Detect(player, manager);
 
             // HUD
             inGameScreen(text, player, aimAssist);
         }
 
         // ending screen
-        if (player.hasStarted && (!player.isAlive))
+        if (player.hasStarted && (!player.getLifeState()))
         {
             manager.reset(); // reset enemies in case player restarts the game
             endingScreen(text, player, world);
