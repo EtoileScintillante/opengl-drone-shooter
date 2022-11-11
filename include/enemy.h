@@ -25,7 +25,7 @@ public:
     static const float MAX_FLOAT_HEIGHT; // maximum floating height of enemy, measured from y = 0
     static const float MIN_FLOAT_HEIGHT; // minimum floating height of enemy, measured from y = 0
     static const float ATTACK_INTERVAL;  // time in seconds between attacks
-    static const float INTERVAL;         // time in seconds between enemy dying and spawning again
+    static const float SPAWN_INTERVAL;   // time in seconds between enemy dying and spawning again
     static const float DAMAGE;           // amount of damage the enemy can do to the player per hit
     static const float SPEED;            // movement speed of enemy
     // matrices
@@ -36,20 +36,20 @@ public:
     float deltaTime;    // time passed between two frames
     // enemy attack related
     bool canDamage;           // to ensure that enemy only damages player once per laser shot
-    float range;              // range of laserbeam 
-    glm::vec3 laserDirection; // direction of laserbeam
+    float range;              // range of laser beam 
+    glm::vec3 laserDirection; // direction of laser beam
     // other
     glm::vec3 position; // position of enemy
     AABBox boundingBox; // enemy bounding box
 
-    /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
+    /// Initializes new enemy object. Also sets up enemy and laser beam models and audio related objects.
     Enemy();
 
     /// Destructor.
     ~Enemy();
 
     /**
-     * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
+     * @brief Controls life of enemy: spawning and dying.
      * 
      * @param playerPos player position.
      * @param viewMatrix view matrix.
@@ -69,9 +69,9 @@ public:
 private:
     // 3D models
     Model drone;     // enemy model (in this program it's a drone)
-    Model laserBeam; // model for fire (shown when enemy shoots bullet)
+    Model laserBeam; // laser beam model 
     // shaders
-    Shader shaderDrone; // enemy shader (must include geometry shader for explosion effect)
+    Shader shaderDrone; // enemy shader (includes geometry shader for explosion effect)
     Shader shaderLaser; // laser beam shader (no geometry shader)
     // audio
     ma_engine engine;               // miniaudio engine
@@ -81,9 +81,9 @@ private:
     std::string soundLaserPath;     // path to laser beam wav file
     int explosionSoundCount;        // needed to make sure that the explosion can only be heard once per enemy death
     // enemy attack related
-    glm::mat4 modelMatrixFire; // model matrix for bullet fire
-    bool renderLaser;          // did enemy attack? If so, render laser beam and play laser sound
-    float attackTime;          // to control enemy attacks
+    glm::mat4 modelMatrixLaser; // model matrix for laser beam
+    bool renderLaser;           // did enemy attack? If so, render laser beam and play laser sound
+    float attackTime;           // to control enemy attacks
     // other
     glm::mat4 modelMatrix;    // model matrix for enemy
     glm::vec3 playerPosition; // used to calculate enemy's model matrix, distance between enemy and player and more
@@ -123,7 +123,7 @@ private:
     /// Plays explosion sound.
     void playExplosionSound();
 
-    /// Calculates the direction of the laser
+    /// Calculates the direction of the laser beam.
     void calculateLaserDirection();
 
     /// Calculates bounding box for enemy using the enemy's current position.

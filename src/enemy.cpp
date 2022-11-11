@@ -3,7 +3,7 @@
 const float Enemy::MIN_FLOAT_HEIGHT = 2.5f;
 const float Enemy::MAX_FLOAT_HEIGHT = 4.0f;
 const float Enemy::ATTACK_INTERVAL = 2.0f;
-const float Enemy::INTERVAL = 3.0f;
+const float Enemy::SPAWN_INTERVAL = 3.0f;
 const float Enemy::DAMAGE = 10.0f;
 const float Enemy::SPEED = 0.02f;
 
@@ -149,7 +149,7 @@ void Enemy::dyingAnimation()
     else
     {
         spawnInterval += deltaTime;
-        if (spawnInterval >= INTERVAL)
+        if (spawnInterval >= SPAWN_INTERVAL)
         {
             setDefaultValues();
         }
@@ -291,13 +291,13 @@ void Enemy::moveToPlayer()
 void Enemy::generateLaserModelMatrix()
 {
     // initialize fire model matrix
-    modelMatrixFire = glm::mat4(1.0f);
+    modelMatrixLaser = glm::mat4(1.0f);
 
     // add offsets (note: these offsets are based on enemy scale factor 0.6)
     rotation += glm::radians(270.0f);
-    modelMatrixFire = glm::translate(modelMatrixFire, {position.x, position.y - 0.6f, position.z}); // position offset
-    modelMatrixFire = glm::rotate(modelMatrixFire, rotation, glm::vec3(0.0f, -1.0f, 0.0f)); // rotation offset
-    modelMatrixFire = glm::scale(modelMatrixFire, glm::vec3(0.6f));
+    modelMatrixLaser = glm::translate(modelMatrixLaser, {position.x, position.y - 0.6f, position.z}); // position offset
+    modelMatrixLaser = glm::rotate(modelMatrixLaser, rotation, glm::vec3(0.0f, -1.0f, 0.0f)); // rotation offset
+    modelMatrixLaser = glm::scale(modelMatrixLaser, glm::vec3(0.6f));
 }
 
 void Enemy::playLaserSound()
