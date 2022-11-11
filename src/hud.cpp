@@ -39,7 +39,7 @@ void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
     tr.projection = player.getOrthoProjectionMatrix();
     int playerHealth = static_cast<int>(player.getHealth());
     std::string health = "Health:  " + std::to_string(playerHealth);
-    std::string kill = "Kills:  " + std::to_string(player.kills);
+    std::string kill = "Kills:  " + std::to_string(player.getKills());
 
     // kill count
     tr.RenderText(kill, 365.0f, 565.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
@@ -90,6 +90,6 @@ void endingScreen(TextRenderer &tr, Player &player, World &world)
     }
 
     // kill count
-    std::string kill = "Kills:  " + std::to_string(player.kills);
+    std::string kill = "Kills:  " + std::to_string(player.getKills());
     tr.RenderText(kill, 335.0f, 300.0f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
 }

@@ -16,7 +16,7 @@ EnemyManager::EnemyManager()
     }
 }
 
-void EnemyManager::manage(Player &player, float bulletRange)
+void EnemyManager::manage(glm::vec3 playerPos, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
     if (enemyCount < MAX_ENEMIES + 1) // enemyCount starts at 1
     {
@@ -32,7 +32,7 @@ void EnemyManager::manage(Player &player, float bulletRange)
     {
         enemies[i]->currentFrame = currentTime;
         enemies[i]->deltaTime = deltaTime;
-        enemies[i]->controlEnemyLife(player, bulletRange);
+        enemies[i]->controlEnemyLife(playerPos, viewMatrix, projectionMatrix);
     }
 }
 

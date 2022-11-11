@@ -39,6 +39,7 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
+    range = World::TERRAIN_SIZE * 2;
     updatePlayerVectors();
 
     // set base position of gun
@@ -78,6 +79,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
+    range = World::TERRAIN_SIZE * 2;
     updatePlayerVectors();
 
     // set base position of gun
@@ -366,6 +368,22 @@ glm::mat4 Player::getGunModelMatrix() const
 float Player::getHealth() const
 {   
     return health;
+}
+
+bool Player::getLifeState() const
+{
+    if (isAlive) {return true;}
+    else {return false;}
+}
+
+int Player::getKills() const
+{
+    return kills;
+}
+
+void Player::updateKills()
+{
+    kills++;
 }
 
 void Player::startRecoilAnimation()

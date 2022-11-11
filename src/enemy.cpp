@@ -19,13 +19,11 @@ Enemy::Enemy()
     isDead = false;
     explodeTime = 0;
     magnitude = 0;
-    soundCount = 0;
-    laserCount = 0;
-    laserSoundCount = 0;
+    explosionSoundCount = 0;
     attackTime = 0;
     spawnInterval = 0;
-    attack = false;
-    canIncreaseScore = true;
+    renderLaser = false;
+    range = World::TERRAIN_SIZE * 2;
 
     // generate random spawning position
     generatePosition();
@@ -79,9 +77,8 @@ void Enemy::spawn()
     drone.Draw(shaderDrone);
 
     // draw laser beam
-    if (attack && laserCount == 0)
+    if (renderLaser) 
     {
-        laserCount++;
         generateLaserModelMatrix();
         shaderLaser.use();
         shaderLaser.setMat4("view", view);
@@ -92,49 +89,40 @@ void Enemy::spawn()
     }
 }
 
-void Enemy::controlEnemyLife(Player &player, float bulletRange)
+void Enemy::controlEnemyLife(glm::vec3 playerPos, glm::mat4 viewMatrix, glm::mat4 projectionMatrix)
 {
     // set variables
-    playerPosition = player.Position;
-    projection = player.getProjectionMatrix();
-    view = player.GetViewMatrix();
+    playerPosition = playerPos;
+    projection = projectionMatrix;
+    view = viewMatrix;
 
     // draw enemy and optionally laser beam if enemy attacks
     if (!isDead)
     {
+        // update bounding box
+        calculateBoundingBox();
+
         // update attack time
         attackTime += deltaTime;
 
         // check if enemy can attack
         if (attackTime >= ATTACK_INTERVAL)
         {
-            attack = true;
-            attackPlayer(player);
+            calculateLaserDirection();
+            renderLaser = true; // set to true to render the laserbeam
+            canDamage = true; // set to true so that enemy can damage player
         }
 
-        // draw
+        // draw enemy
         spawn();
 
         // play hover sound
         playHoverSound();
     }
 
-    // check for collisions
-    if (player.shot)
-    {
-        collisionDetection(playerPosition, player.Front, bulletRange);
-    }
-
     // if enemy died: stop hover sound, play explosion sound and make enemy explode
     if (isDead)
     {
-        // increase player's kill count
-        if (canIncreaseScore)
-        {
-            player.kills++;
-            canIncreaseScore = false;
-        }
-
         // stop hover sound
         ma_sound_stop(&hoverSound);
 
@@ -146,22 +134,6 @@ void Enemy::controlEnemyLife(Player &player, float bulletRange)
     }
 }
 
-void Enemy::collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange)
-{
-    // construct ray object with start position and direction of bullet
-    glm::vec3 orig = bulletStartPos;
-    glm::vec3 dir = bulletDir;
-    Ray ray(orig, dir);
-
-    // calculate bounding box
-    calculateBoundingBox();
-
-    // check for collision
-    if (boundingBox.intersect(ray, bulletRange) == true)
-    {
-        isDead = true;
-    }
-}
 
 void Enemy::dyingAnimation()
 {
@@ -334,16 +306,13 @@ void Enemy::playLaserSound()
     float d = distanceToPLayer();
 
     // play sound if conditions are true
-    if (d <= 50 && laserSoundCount == 0)
+    if (d <= 50) 
     {
-        laserSoundCount++;
         // same calculation as in playHoverSound, only the range differs
         float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
         ma_engine_set_volume(&engine, volume);
         ma_engine_play_sound(&engine, soundLaserPath.c_str(), NULL);
-        attack = false;
-        laserSoundCount = 0;
-        laserCount = 0;
+        renderLaser = false; 
         attackTime = 0;
     }
 }
@@ -372,9 +341,9 @@ void Enemy::playExplosionSound()
     float d = distanceToPLayer();
 
     // play explosion sound if enemy is close enough to player
-    if (soundCount == 0 && d <= 50)
+    if (explosionSoundCount == 0 && d <= 50)
     {
-        soundCount++;
+        explosionSoundCount++;
         // same calculation as in playHoverSound, only the range differs
         float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
         ma_engine_set_volume(&engine, volume);
@@ -385,41 +354,48 @@ void Enemy::playExplosionSound()
 void Enemy::setDefaultValues()
 {
     isDead = false;
-    attack = false;
+    renderLaser = false;
     explodeTime = 0;
     magnitude = 0;
-    soundCount = 0;
-    laserCount = 0;
-    laserSoundCount = 0;
+    explosionSoundCount = 0;
     attackTime = 0;
     spawnInterval = 0;
-    canIncreaseScore = true;
     ma_sound_stop(&hoverSound);
     generatePosition();
 }
 
-void Enemy::attackPlayer(Player &player)
+void Enemy::calculateLaserDirection()
 {
-    // create a direction vector and normalize it
+     // create a direction vector and normalize it
     float dx, dy, dz, d;
-    dx = player.Position.x - position.x;
-    dy = player.Position.y - position.y;
-    dz = player.Position.z - position.z;
+    dx = playerPosition.x - position.x;
+    dy = playerPosition.y - position.y;
+    dz = playerPosition.z - position.z;
     d = distanceToPLayer(); 
-    glm::vec3 dir = {dx/d, dy/d, dz/d}; // normalized direction vector
+    laserDirection = {dx/d, dy/d, dz/d}; // normalized direction vector
 
     // add random offset between min and max (otherwise the enemy's aim would too good)
     float min = -0.1;
     float max = 0.1;
     float offset = ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
-    dir.x += offset;
-    dir.y += offset;
-    dir.z += offset;
+    laserDirection.x += offset;
+    laserDirection.y += offset;
+    laserDirection.z += offset;
+}
 
-    // perform collision detection
-    Ray r = Ray(position, dir);
-    if (player.boundingBox.intersect(r, World::TERRAIN_SIZE * 2))
+void Enemy::gotHit()
+{
+    isDead = true;
+}
+
+bool Enemy::getLifeState() const
+{
+    if (!isDead) 
     {
-        player.gotAttacked(DAMAGE);
+        return true;
+    }
+    else 
+    {
+        return false;
     }
 }

@@ -35,7 +35,12 @@ public:
     float currentFrame; // current frame/time
     float deltaTime;    // time passed between two frames
     // enemy attack related
-    bool attack; // did enemy attack?
+    bool canDamage;           // to ensure that enemy only damages player once per laser shot
+    float range;              // range of laserbeam 
+    glm::vec3 laserDirection; // direction of laserbeam
+    // other
+    glm::vec3 position; // position of enemy
+    AABBox boundingBox; // enemy bounding box
 
     /// Initializes new enemy object. Also initialisez 3D enemy model and audio related objects.
     Enemy();
@@ -46,13 +51,20 @@ public:
     /**
      * @brief Controls life of enemy: spawning and dying (collision detection is part of it).
      * 
-     * @param player Player object.
-     * @param bulletRange range of bullet (maximum distance the bullet can travel).
+     * @param playerPos player position.
+     * @param viewMatrix view matrix.
+     * @param projectionMatrix projection matrix.
      */
-    void controlEnemyLife(Player &player, float bulletRange);
+    void controlEnemyLife(glm::vec3 playerPos, glm::mat4 viewMatrix, glm::mat4 projectionMatrix);
 
     /// Sets all values back to default (for when enemy dies and then respawns).
     void setDefaultValues();
+
+    /// Enemy got hit by player: update isDead value.
+    void gotHit();
+
+    /// Returns true if enemy is alive, else false.
+    bool getLifeState() const;
 
 private:
     // 3D models
@@ -61,42 +73,28 @@ private:
     // shaders
     Shader shaderDrone; // enemy shader (must include geometry shader for explosion effect)
     Shader shaderLaser; // laser beam shader (no geometry shader)
-    // player related
-    bool canIncreaseScore;    // used to ensure that the player's kill count only increases by 1 point every enemy death
-    glm::vec3 playerPosition; // position of player
     // audio
     ma_engine engine;               // miniaudio engine
     ma_sound hoverSound;            // miniaudio sound object for hover sound (to control looping of sound)
     std::string soundExplosionPath; // path to explosion wav file
     std::string soundHoverPath;     // path to helicopter hovering wav file
     std::string soundLaserPath;     // path to laser beam wav file
-    int soundCount;                 // needed to make sure that the explosion can only be heard once per enemy death
-    int laserSoundCount;            // needed to make sure that the laser beam sound effect can only be heard once per shot
+    int explosionSoundCount;        // needed to make sure that the explosion can only be heard once per enemy death
     // enemy attack related
     glm::mat4 modelMatrixFire; // model matrix for bullet fire
-    int laserCount;            // needed to make sure that the laser beam can only be seen once per shot
+    bool renderLaser;          // did enemy attack? If so, render laser beam and play laser sound
     float attackTime;          // to control enemy attacks
     // other
-    glm::vec3 position;    // position of enemy
-    glm::mat4 modelMatrix; // model matrix for enemy
-    AABBox boundingBox;    // enemy bounding box
-    bool isDead;           // is enemy dead?
-    float spawnInterval;   // used to control the time interval between enemy dying and spawning again
-    float rotation;        // rotation angle of enemy in radians
-    float explodeTime;     // used to control the duration of the dying animation (enemy explodes)
-    float magnitude;       // used to control how the explosion of the enemy looks
+    glm::mat4 modelMatrix;    // model matrix for enemy
+    glm::vec3 playerPosition; // used to calculate enemy's model matrix, distance between enemy and player and more
+    bool isDead;              // is enemy dead?
+    float spawnInterval;      // used to control the time interval between enemy dying and spawning again
+    float rotation;           // rotation angle of enemy in radians
+    float explodeTime;        // used to control the duration of the dying animation (enemy explodes)
+    float magnitude;          // used to control how the explosion of the enemy looks
 
     /// Spawns the enemy.
     void spawn();
-
-    /**
-     * @brief Detects whether the enemy has been hit by a bullet (using ray-box intersection).
-     * 
-     * @param bulletStartPos starting position of the bullet (in this program that is the player's position).
-     * @param bulletDir direction of the bullet (in this program that is the front vector of the player).
-     * @param bulletRange range of bullet (maximum distance the bullet can travel).
-     */
-    void collisionDetection(glm::vec3 bulletStartPos, glm::vec3 bulletDir, float bulletRange);
 
     /// Makes enemy explode when it gets shot (using the geometry shader).
     void dyingAnimation();
@@ -106,9 +104,6 @@ private:
 
     /// Generates model matrix for enemy.
     void generateModelMatrix();
-
-    /// Calculates bounding box for enemy using the enemy's current position.
-    void calculateBoundingBox();
 
     /// Returns the distance between the enemy position and player position in 3D space (x y z).
     float distanceToPLayer();
@@ -128,13 +123,11 @@ private:
     /// Plays explosion sound.
     void playExplosionSound();
 
-    /**
-     * @brief Attacks player: shoot laser beam in player's direction. 
-     * This also handles collision detection between the enemy's laser and the player.
-     * 
-     * @param player Player object.
-     */
-    void attackPlayer(Player &player);
+    /// Calculates the direction of the laser
+    void calculateLaserDirection();
+
+    /// Calculates bounding box for enemy using the enemy's current position.
+    void calculateBoundingBox();
 };
 
 #endif /*__ENEMY__*/

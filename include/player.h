@@ -62,9 +62,8 @@ public:
     // collisions
     AABBox boundingBox; // bounding box for collision detection (the bounding box is a cuboid, positioned behind the gun)
     // game
-    bool isAlive;    // is player alive?
     bool hasStarted; // has player started the game?
-    int kills;       // kill counter
+    float range;     // range of bullet
 
     /**
      * @brief Constructs a new Player object with vectors.
@@ -110,6 +109,15 @@ public:
     /// Get player's health as string (part of HUD).
     float getHealth() const;
 
+    /// Returns true if player is alive, else false.
+    bool getLifeState() const;
+
+    /// Returns player's kill count.
+    int getKills() const;
+
+    /// Update player's kill count.
+    void updateKills();
+
     /// Controls the rendering of the player (the gun).
     void controlPlayerRendering();
 
@@ -152,7 +160,9 @@ private:
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
     // game
+    bool isAlive; // is player alive?
     float health; // player's health (initialized at 100)
+    int kills;    // kill counter
     
     // for when resetting player
     glm::vec3 origPosition; // original position of player when starting game for first time
