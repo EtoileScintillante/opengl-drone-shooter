@@ -83,7 +83,7 @@ void Enemy::spawn()
         shaderLaser.use();
         shaderLaser.setMat4("view", view);
         shaderLaser.setMat4("projection", projection);
-        shaderLaser.setMat4("model", modelMatrixFire);
+        shaderLaser.setMat4("model", modelMatrixLaser);
         laserBeam.drawSpecificMesh(shaderLaser, 5);
         playLaserSound();
     }
