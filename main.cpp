@@ -25,9 +25,6 @@ int main()
     float deltaTime = 0.0f;
     float lastFrame = 0.0f;
 
-    // aim assist
-    bool aimAssist = true;
-
     // render loop
     while (!glfwWindowShouldClose(window))
     {
@@ -67,7 +64,7 @@ int main()
             detector.Detect(player, manager);
 
             // HUD
-            inGameScreen(text, player, aimAssist);
+            inGameScreen(text, player);
         }
 
         // ending screen

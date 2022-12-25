@@ -30,7 +30,7 @@ void startingScreen(TextRenderer &tr, Player &player, World &world)
     tr.RenderText("A               :   left", 310.0f, 95.0f, 0.4f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
-void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
+void inGameScreen(TextRenderer &tr, Player &player)
 {
     // update blink time
     tr.blink += tr.deltaTime + 0.03; // add small offset to make text blink faster
@@ -58,13 +58,11 @@ void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist)
     }
 
     // aim assist
-    if (aimAssist)
-    {
-        tr.RenderText("-", 380.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("-", 403.0f, 300.0f, 0.4f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("|", 395.0f, 312.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
-        tr.RenderText("|", 395.0f, 292.0f, 0.3f, glm::vec3(0.7f, 0.0f, 0.1f));
-    }
+    tr.RenderText("-", 356.0f, 300.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("-", 429.0f, 300.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("|", 395.0f, 337.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderText("|", 395.0f, 267.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
+    
 }
 
 void endingScreen(TextRenderer &tr, Player &player, World &world)

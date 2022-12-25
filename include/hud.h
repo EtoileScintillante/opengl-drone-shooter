@@ -29,9 +29,8 @@ void startingScreen(TextRenderer &tr, Player &player, World &world);
  * 
  * @param tr TextRenderer object.
  * @param player Player object.
- * @param aimAssist if true: renders a "+" to make it more clear where the gun is aiming on (default = false).
  */
-void inGameScreen(TextRenderer &tr, Player &player, bool aimAssist = false);
+void inGameScreen(TextRenderer &tr, Player &player);
 
 /**
  * @brief Renders simple ending screen (with option to play again).
