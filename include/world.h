@@ -51,7 +51,7 @@ public:
 
 private:
     // objects and shaders
-    Shader shaderModel;  // model shader
+    Shader shaderModel;  // shader for flower and tree models
     Shader shaderGround; // ground shader
     Shader shaderSkybox; // skybox shader
     Model tree;          // tree model

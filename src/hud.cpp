@@ -57,7 +57,7 @@ void inGameScreen(TextRenderer &tr, Player &player)
         tr.RenderText(health, 348.0f, 540.0f, 0.5f, glm::vec3(0.0f, 0.0f, 0.0f));
     }
 
-    // aim assist
+    // cross hairs
     tr.RenderText("-", 356.0f, 300.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
     tr.RenderText("-", 429.0f, 300.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
     tr.RenderText("|", 395.0f, 337.0f, 0.3f, glm::vec3(1.0f, 1.0f, 1.0f));
