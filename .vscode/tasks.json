@@ -1,0 +1,68 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: g++ build active file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-std=c++17",
+				"-fdiagnostics-color=always",
+				"-Wall",
+				"-g",
+				"-I${workspaceFolder}/include",
+				"-L${workspaceFolder}/lib",
+				"${workspaceFolder}/lib/libglfw.3.3.dylib",
+				"${workspaceFolder}/lib/libassimp.5.2.0.dylib",
+				"${workspaceFolder}/lib/libfreetype.6.dylib",
+				"${workspaceFolder}/main.cpp",
+				"${workspaceFolder}/src/glad.c",
+				"${workspaceFolder}/src/player.cpp",
+				"${workspaceFolder}/src/enemy.cpp",
+				"${workspaceFolder}/src/enemy_manager.cpp",
+				"${workspaceFolder}/src/collision_detection.cpp",
+				"${workspaceFolder}/src/texture_loading.cpp",
+				"${workspaceFolder}/src/text_renderer.cpp",
+				"${workspaceFolder}/src/skybox.cpp",
+				"${workspaceFolder}/src/box.cpp",
+				"${workspaceFolder}/src/hud.cpp",
+				"${workspaceFolder}/src/world.cpp",
+				"${workspaceFolder}/src/model.cpp",
+				"${workspaceFolder}/src/shader.cpp",
+				"${workspaceFolder}/src/mesh.cpp",
+				"${workspaceFolder}/src/ray.cpp",
+				"${workspaceFolder}/src/glfw_setup.cpp",
+				"${workspaceFolder}/src/stb_image.cpp",
+				"${workspaceFolder}/src/miniaudio.c",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}",
+				"-framework",
+				"OpenGL",
+				"-framework",
+				"Cocoa",
+				"-framework",
+				"IOKit",
+				"-framework",
+				"CoreAudio",
+				"-framework",
+				"AudioUnit",
+				"-framework",
+				"CoreVideo",
+				"-framework",
+				"CoreFoundation",
+				"-Wno-deprecated"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: /usr/bin/g++"
+		}
+	]
+}
