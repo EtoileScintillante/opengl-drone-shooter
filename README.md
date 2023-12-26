@@ -2,7 +2,7 @@
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.  
 
-<img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/ingame_gif.gif" width="400" height="270" alt="gif of game play" />
+<img src="doc/ingame_gif.gif" width="400" height="270" alt="gif of game play" />
 
 ## About
 Drone Shooter was created using just OpenGL, no game engine. It's purely done for fun and learning purposes.  
@@ -21,13 +21,13 @@ For adding soundeffects, rendering text and loading 3D models the libraries [min
 ### Player
 There is no actual player character, it’s just a gun. The direction of the bullet is the same as the front vector of the player, which makes aiming easy. The player’s bounding box looks as follows:
 
-<img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
+<img src="doc/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
 
 ### Enemy
 The enemy is a drone that can shoot laser beams. Its aim is not perfect; some randomness is added when calculating the direction of the laser beam, otherwise every shot would lead to a decrease in the player’s health.   
 The bounding box of the enemy does not cover the whole drone, as can be seen in the image below. It may look weird but it’s not a problem at all. The bounding box is still big enough so that hitting the drone is quite easy, even when standing far away. 
 
-<img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
+<img src="doc/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
 
 ## Building and Running the Game (macOS - arm64) 
 ### Prerequisites
@@ -58,7 +58,7 @@ The bounding box of the enemy does not cover the whole drone, as can be seen in 
     ```bash
     ./Drone-Shooter
     ```
-    
+
 ## Evolution of the game
 During the development I regularly uploaded videos to YouTube to keep track of the progress I made.
 
