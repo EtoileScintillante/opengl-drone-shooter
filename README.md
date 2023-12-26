@@ -2,7 +2,7 @@
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.  
 
-<img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/ingame.png" width="400" height="270" alt="aim assist off" />
+<img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/ingame_gif.gif" width="400" height="270" alt="gif of game play" />
 
 ## About
 Drone Shooter was created using just OpenGL, no game engine. It's purely done for fun and learning purposes.  
@@ -29,6 +29,36 @@ The bounding box of the enemy does not cover the whole drone, as can be seen in 
 
 <img src="https://github.com/EtoileScintillante/opengl-fps/blob/master/doc/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
 
+## Building and Running the Game (macOS - arm64) 
+### Prerequisites
+
+- [CMake](https://cmake.org) (version 3.5 or higher)
+- C++ Compiler with C++17 support
+- [Git](https://git-scm.com)
+
+### Instructions
+1. Clone this Repository
+
+    ```bash
+    git clone https://github.com/EtoileScintillante/opengl-drone-shooter.git
+    cd opengl-drone-shooter
+    ```
+
+2. Build the Game
+
+    ```bash
+    mkdir build
+    cd build
+    cmake ..
+    cmake --build .
+    ```
+
+3. Run the Game (executable not in build dir)
+
+    ```bash
+    ./Drone-Shooter
+    ```
+    
 ## Evolution of the game
 During the development I regularly uploaded videos to YouTube to keep track of the progress I made.
 
