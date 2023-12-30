@@ -18,7 +18,7 @@ World::World(const std::string& envType)
                    [](unsigned char c) { return std::tolower(c); });
 
     // check if envType is valid
-    if (lowercaseEnvType == "dessert" || lowercaseEnvType == "snow" ||
+    if (lowercaseEnvType == "desert" || lowercaseEnvType == "snow" ||
         lowercaseEnvType == "forest" || lowercaseEnvType == "night") {
         // set the environmentType if it's valid
         environmentType = lowercaseEnvType;
@@ -26,7 +26,7 @@ World::World(const std::string& envType)
     else
     {
         std::cout << "Invalid environment type: " << envType << std::endl;
-        std::cout << "Valid types are: dessert, forest, snow or night.\n";
+        std::cout << "Valid types are: desert, forest, snow or night.\n";
         std::cout << "Program will now randomly choose one.\n";
     }
 
@@ -60,7 +60,7 @@ void World::setupWorld()
     if (environmentType.empty())
     {
         // select environment type randomly
-        std::vector<std::string> envTypes = {"dessert", "forest", "snow", "night"};
+        std::vector<std::string> envTypes = {"desert", "forest", "snow", "night"};
         // set up a random number gen that picks an index
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -77,12 +77,12 @@ void World::setupWorld()
 
     // load correct models, skybox and ground texture
     std::string dirName;
-    if (environmentType == "dessert")
+    if (environmentType == "desert")
     {
-        surrounding = Model("resources/models/rocks/rock_dessert/rock.obj", true);
-        tree = Model("resources/models/trees/dessert_land_tree/hoewa_Forsteriana_1.obj", true);
-        dirName = "resources/skybox/dessert_land/";
-        groundTexture = TextureFromFile("dessert_ground.png", "resources/textures", false);
+        surrounding = Model("resources/models/rocks/rock_desert/rock.obj", true);
+        tree = Model("resources/models/trees/desert_land_tree/hoewa_Forsteriana_1.obj", true);
+        dirName = "resources/skybox/desert_land/";
+        groundTexture = TextureFromFile("desert_ground.png", "resources/textures", false);
     }
     if (environmentType == "forest")
     {
@@ -142,7 +142,7 @@ void World::drawTrees()
     shaderModel.setMat4("view", view);
     shaderModel.setInt("texture_diffuse1", 0);
 
-    if (environmentType == "dessert")
+    if (environmentType == "desert")
     {
         int meshID = 0;
         for (unsigned int i = 0; i < 6; i++)
@@ -231,8 +231,8 @@ void World::drawSurroundings()
     shaderModel.setMat4("view", view);
     shaderModel.setInt("texture_diffuse1", 0);
 
-    // dessert and snow environment have the same rocks, just different colors
-    if (environmentType == "dessert" or environmentType == "snow")
+    // desert and snow environment have the same rocks, just different colors
+    if (environmentType == "desert" or environmentType == "snow")
     {
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, surrounding.textures_loaded[0].id);
@@ -329,7 +329,7 @@ void World::createSurroundingPositions()
         } while (std::find(treePos.begin(), treePos.end(), vec) != treePos.end());
 
         // adjust y value where needed (otherwise some models are too high/low)
-        if (environmentType == "dessert" or environmentType == "snow")
+        if (environmentType == "desert" or environmentType == "snow")
         {
             vec.y += 0.2;
         }
@@ -348,7 +348,7 @@ void World::createTreeModelMatrices()
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, treePos[i]); // translation
-        if (environmentType == "dessert")
+        if (environmentType == "desert")
         {
             model = glm::scale(model, glm::vec3(0.06)); // scale down
         }
@@ -372,7 +372,7 @@ void World::createSurroundingModelMatrices()
         model = glm::translate(model, surroundingPos[i]); // translation
         float rotAngle = static_cast<float>((rand() % 360)); 
         model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation
-        if (environmentType == "dessert" or environmentType == "snow")
+        if (environmentType == "desert" or environmentType == "snow")
         {
             model = glm::scale(model, glm::vec3(0.4)); // scale down
         }

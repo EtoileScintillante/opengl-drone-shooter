@@ -28,7 +28,7 @@ public:
     glm::mat4 view;       // camera view matrix
     glm::mat4 projection; // projection matrix
     // environment type
-    std::string environmentType; // dessert, snow, forest, night
+    std::string environmentType; // desert, snow, forest, night
 
     /// Default constructor; constructs a new world object (randomly chooses environment type).
     World();
@@ -36,7 +36,7 @@ public:
     /**
      * @brief Constructor with environmentType parameter.
      * 
-     * @param envType The environment type (dessert, snow, forest, night).
+     * @param envType The environment type (desert, snow, forest, night).
      */
     World(const std::string& envType);
 

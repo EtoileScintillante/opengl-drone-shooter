@@ -11,7 +11,7 @@
 int main()
 {
     // ask user for the type of environment
-    std::cout << "Choose the environment you want to play in (dessert, forest, snow, night): ";
+    std::cout << "Choose the environment you want to play in (desert, forest, snow, night): ";
     std::string envType;
     std::cin >> envType;
 

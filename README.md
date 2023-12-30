@@ -1,7 +1,7 @@
 # Drone Shooter
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.
-There are four maps to choose from: forest, dessert, snow and night. 
+There are four maps to choose from: forest, desert, snow and night. 
 
 <img src="doc/ingame_gif.gif" width="400" height="290" alt="gif of game play" />
 
@@ -23,8 +23,8 @@ For adding soundeffects, rendering text and loading 3D models the libraries [min
 #### Forest     
 <img src="doc/ingame_forest.jpg" width="380" height="260" alt="screenshot of forest map" />
 
-#### Dessert   
-<img src="doc/ingame_dessert.jpg" width="380" height="260" alt="screenshot of dessert map" />
+#### Desert   
+<img src="doc/ingame_desert.jpg" width="380" height="260" alt="screenshot of desert map" />
 
 #### Snow  
 <img src="doc/ingame_snow.jpg" width="380" height="260" alt="screenshot of snow map" />
@@ -81,4 +81,4 @@ During the development I regularly uploaded videos to YouTube to keep track of t
 - [3 Oct. 2022](https://youtu.be/Qg2YRp42_rg) added sound effects
 - [17 Oct. 2022](https://youtu.be/Spv8I2WCzuU) improved enemy movement and added text on screen
 - [22 Oct. 2022](https://youtu.be/Ox03BBIdRAc) enemies can kill player
-- [30 Dec. 2023](https://youtu.be/gNRvBvoy_qI) new maps: forest, dessert, snow and night
+- [30 Dec. 2023](https://youtu.be/4EliOM1DS_s) new maps: forest, desert, snow and night
