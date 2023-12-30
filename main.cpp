@@ -10,12 +10,17 @@
 
 int main()
 {
+    // ask user for the type of environment
+    std::cout << "Choose the environment you want to play in (dessert, forest, snow, night): ";
+    std::string envType;
+    std::cin >> envType;
+
     // initialize and configure glwf, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone Shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // prepare game related objects
     Player player; 
-    World world;
+    World world(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;
     TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");

@@ -1,12 +1,37 @@
 #include "world.h"
 
-const unsigned int World::N_TREES = 15;
-const unsigned int World::N_FLOWERS = (N_TREES / 2) * 4;
+const unsigned int World::N_TREES = 20;
+const unsigned int World::N_SURROUNDINGS = 30;
 const float World::TERRAIN_SIZE = 30;
 const float World::GROUND_Y = -1.8f;
 
 World::World()
 {
+    setupWorld();
+}
+
+World::World(const std::string& envType)
+{
+    // convert envType to lowercase
+    std::string lowercaseEnvType = envType;
+    std::transform(lowercaseEnvType.begin(), lowercaseEnvType.end(), lowercaseEnvType.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    // check if envType is valid
+    if (lowercaseEnvType == "dessert" || lowercaseEnvType == "snow" ||
+        lowercaseEnvType == "forest" || lowercaseEnvType == "night") {
+        // set the environmentType if it's valid
+        environmentType = lowercaseEnvType;
+    }
+    else
+    {
+        std::cout << "Invalid environment type: " << envType << std::endl;
+        std::cout << "Valid types are: dessert, forest, snow or night.\n";
+        std::cout << "Program will now randomly choose one.\n";
+    }
+
+    // continue with the setup
+    // in case if envType is not valid, it will choose a random env. type
     setupWorld();
 }
 
@@ -21,7 +46,7 @@ void World::Draw(glm::mat4 View, glm::mat4 Projection)
     // draw objects
     drawSkyBox(false);
     drawGround();
-    drawFlowers();
+    drawSurroundings();
     drawTrees();
 }
 
@@ -32,26 +57,65 @@ std::vector<glm::vec3> World::getTreePositions() const
 
 void World::setupWorld()
 {
+    if (environmentType.empty())
+    {
+        // select environment type randomly
+        std::vector<std::string> envTypes = {"dessert", "forest", "snow", "night"};
+        // set up a random number gen that picks an index
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<> dis(0, envTypes.size() - 1);
+        int idx = dis(gen);
+        // use the selected environment type
+        environmentType = envTypes[idx];
+    }
+    
     // create shaders
     shaderModel = Shader("shaders/instancing.vert", "shaders/model.frag");
     shaderGround = Shader("shaders/ground.vert", "shaders/ground.frag");
     shaderSkybox = Shader("shaders/skybox.vert", "shaders/skybox.frag");
 
-    // load models
-    flowers = Model("resources/models/flowers/anemone_hybrida.obj", true);
-    tree = Model("resources/models/trees/trees9.obj", true);
-
+    // load correct models, skybox and ground texture
+    std::string dirName;
+    if (environmentType == "dessert")
+    {
+        surrounding = Model("resources/models/rocks/rock_dessert/rock.obj", true);
+        tree = Model("resources/models/trees/dessert_land_tree/hoewa_Forsteriana_1.obj", true);
+        dirName = "resources/skybox/dessert_land/";
+        groundTexture = TextureFromFile("dessert_ground.png", "resources/textures", false);
+    }
+    if (environmentType == "forest")
+    {
+        surrounding = Model("resources/models/flowers/anemone_hybrida.obj", true);
+        tree = Model("resources/models/trees/forest_land_tree/trees9.obj", true);
+        dirName = "resources/skybox/forest_land/";
+        groundTexture = TextureFromFile("forest_ground.png", "resources/textures", false);
+    }
+    if (environmentType == "snow")
+    {   
+        surrounding = Model("resources/models/rocks/rock_snow/rock.obj", true);
+        tree = Model("resources/models/trees/snow_land_tree/Tree_Red-spruce.obj", true);
+        dirName = "resources/skybox/snow_land/";
+        groundTexture = TextureFromFile("snow_ground.png", "resources/textures", false);
+    }
+    if (environmentType == "night")
+    {   
+        surrounding = Model("resources/models/pumpkin/pumpkin face.obj", true);
+        tree = Model("resources/models/trees/night_land_tree/Tree_001.obj", true);
+        dirName = "resources/skybox/night_land/";
+        groundTexture = TextureFromFile("night_ground.png", "resources/textures", false);
+    }
+    
     // generate positions, model matrices and set up instanced array buffers for trees and flowers
     createTreePositions();
-    createFlowerPositions();
+    createSurroundingPositions();
     createTreeModelMatrices();
-    createFlowerModelMatrices();
+    createSurroundingModelMatrices();
     setupInstancedArray(tree, treeBuffer, treeModelMatrices, N_TREES);
-    setupInstancedArray(flowers, flowerBuffer, flowerModelMatrices, N_FLOWERS);
+    setupInstancedArray(surrounding, surroundingBuffer, surroundingModelMatrices, N_SURROUNDINGS);
 
     // initialize skybox object
-    std::vector<std::string> filenames = {"right.jpg", "left.jpg", "top.jpg", "bottom.jpg", "front.jpg", "back.jpg"};
-    std::string dirName = "resources/skybox";
+    std::vector<std::string> filenames = {"px.jpg", "nx.jpg", "py.jpg", "ny.jpg", "pz.jpg", "nz.jpg"};
     skybox = SkyBox(filenames, dirName);
 
     // get ground vertex data and set up the buffers
@@ -68,9 +132,6 @@ void World::setupWorld()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
     glBindVertexArray(0);
-
-    // load ground texture
-    groundTexture = TextureFromFile("field.png", "resources/textures", false);
 }
 
 void World::drawTrees()
@@ -80,11 +141,51 @@ void World::drawTrees()
     shaderModel.setMat4("projection", projection);
     shaderModel.setMat4("view", view);
     shaderModel.setInt("texture_diffuse1", 0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, tree.textures_loaded[1].id); 
-    glBindVertexArray(tree.meshes[1].VAO); // render only one specific tree (the whole model is made up of more trees)
-    glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(tree.meshes[1].indices.size()), GL_UNSIGNED_INT, 0, N_TREES);
-    glBindVertexArray(0);
+
+    if (environmentType == "dessert")
+    {
+        int meshID = 0;
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            // mesh at index 0 has textures at indices 0,1,2
+            // mesh at index 1 has textures at indices 3,4,5
+            if (i >= 3) {meshID = 1;}
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, tree.textures_loaded[i].id);
+            glBindVertexArray(tree.meshes[meshID].VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(tree.meshes[meshID].indices.size()), GL_UNSIGNED_INT, 0, N_TREES);
+            glBindVertexArray(0);
+            glActiveTexture(GL_TEXTURE0);
+        }
+    }
+    if (environmentType == "forest" or environmentType == "snow")
+    {
+        int meshIdx = 1;
+        int textureIdx = 1; 
+        if (environmentType == "snow")
+        {
+            meshIdx = 5;
+            textureIdx = 0;
+        }
+        // render only one specific tree (both the forest and snow tree model is made up of multiple trees)
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, tree.textures_loaded[textureIdx].id); 
+        glBindVertexArray(tree.meshes[meshIdx].VAO); 
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(tree.meshes[meshIdx].indices.size()), GL_UNSIGNED_INT, 0, N_TREES);
+        glBindVertexArray(0);
+    }
+    if (environmentType == "night")
+    {
+        // tree model consists of one meshes and two textures
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, tree.textures_loaded[i].id); 
+            glBindVertexArray(tree.meshes[0].VAO); 
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(tree.meshes[0].indices.size()), GL_UNSIGNED_INT, 0, N_TREES);
+            glBindVertexArray(0); 
+        }  
+    }
 }
 
 void World::drawGround()
@@ -122,7 +223,7 @@ void World::drawSkyBox(bool grayscale)
     glDepthFunc(GL_LESS);
 }
 
-void World::drawFlowers()
+void World::drawSurroundings()
 {
     // set uniforms 
     shaderModel.use();
@@ -130,18 +231,44 @@ void World::drawFlowers()
     shaderModel.setMat4("view", view);
     shaderModel.setInt("texture_diffuse1", 0);
 
-    // note that not all textures and meshes are used to render the model
-    int textureIDs[] = {0, 1, 3, 6, 6, 8};
-    int meshIDs[] = {0, 1, 2, 4, 5, 6}; 
-    for (unsigned int i = 0; i < 6; i++)
+    // dessert and snow environment have the same rocks, just different colors
+    if (environmentType == "dessert" or environmentType == "snow")
     {
-        // draw flowers
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, flowers.textures_loaded[textureIDs[i]].id);
-        glBindVertexArray(flowers.meshes[meshIDs[i]].VAO);
-        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(flowers.meshes[meshIDs[i]].indices.size()), GL_UNSIGNED_INT, 0, N_FLOWERS);
+        glBindTexture(GL_TEXTURE_2D, surrounding.textures_loaded[0].id);
+        glBindVertexArray(surrounding.meshes[0].VAO);
+        glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(surrounding.meshes[0].indices.size()), GL_UNSIGNED_INT, 0, N_SURROUNDINGS);
         glBindVertexArray(0);
         glActiveTexture(GL_TEXTURE0);
+    }
+    if (environmentType == "forest")
+    {
+        // note that not all textures and meshes are used to render the model
+        int textureIDs[] = {0, 1, 3, 6, 6, 8};
+        int meshIDs[] = {0, 1, 2, 4, 5, 6}; 
+        for (unsigned int i = 0; i < 6; i++)
+        {
+            // draw flowers
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, surrounding.textures_loaded[textureIDs[i]].id);
+            glBindVertexArray(surrounding.meshes[meshIDs[i]].VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(surrounding.meshes[meshIDs[i]].indices.size()), GL_UNSIGNED_INT, 0, N_SURROUNDINGS);
+            glBindVertexArray(0);
+            glActiveTexture(GL_TEXTURE0);
+        }
+    }
+    if (environmentType == "night")
+    {
+        // pumpkin model consists three meshes and one texture
+        for (unsigned int i = 0; i < 3; i++)
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, surrounding.textures_loaded[0].id);
+            glBindVertexArray(surrounding.meshes[i].VAO);
+            glDrawElementsInstanced(GL_TRIANGLES, static_cast<unsigned int>(surrounding.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, N_SURROUNDINGS);
+            glBindVertexArray(0);
+            glActiveTexture(GL_TEXTURE0);
+        }
     }
 }
 
@@ -166,8 +293,12 @@ void World::createTreePositions()
     std::random_device rd;  // obtain a random number from hardware
     std::mt19937 gen(rd()); // seed the generator
 
-    // create random positions
-    std::uniform_int_distribution<> xzPlane((-TERRAIN_SIZE / 2) + 2, (TERRAIN_SIZE / 2) - 2); // define the range for x and z axis
+    // define range for x and z axis
+    int a = (-TERRAIN_SIZE / 2) + 2;
+    int b = (TERRAIN_SIZE / 2) - 2;
+    std::uniform_int_distribution<> xzPlane(a, b);
+
+    // create random positions for trees
     for (unsigned int i = 0; i < N_TREES; i++)
     {
         float posX = xzPlane(gen);
@@ -177,19 +308,37 @@ void World::createTreePositions()
     }
 }
 
-void World::createFlowerPositions()
+void World::createSurroundingPositions()
 {
-    // half of the trees will be surrounded by four flower models
-    for (unsigned int i = 0; i < N_TREES / 2; i++)
+    std::random_device rd;  // obtain a random number from hardware
+    std::mt19937 gen(rd()); // seed the generator
+
+    // define range for x and z axis
+    int a = (-TERRAIN_SIZE / 2) + 2;
+    int b = (TERRAIN_SIZE / 2) - 2;
+    std::uniform_int_distribution<> xzPlane(a, b);
+
+    // create random positions for surroundings
+    for (unsigned int i = 0; i < N_SURROUNDINGS; i++)
     {
-        glm::vec3 pos = glm::vec3(treePos[i].x + 1.2, treePos[i].y - 0.1, treePos[i].z);
-        glm::vec3 pos1 = glm::vec3(treePos[i].x, treePos[i].y - 0.1, treePos[i].z);
-        glm::vec3 pos2 = glm::vec3(treePos[i].x, treePos[i].y - 0.1, treePos[i].z - 1.0);
-        glm::vec3 pos3 = glm::vec3(treePos[i].x + 1.2, treePos[i].y - 0.1, treePos[i].z - 1.0);
-        flowerPos.push_back(pos);
-        flowerPos.push_back(pos1);
-        flowerPos.push_back(pos2);
-        flowerPos.push_back(pos3);
+        // generate positions until a unique position is found
+        glm::vec3 vec;
+        do
+        {
+            vec = {xzPlane(gen), GROUND_Y, xzPlane(gen)};
+        } while (std::find(treePos.begin(), treePos.end(), vec) != treePos.end());
+
+        // adjust y value where needed (otherwise some models are too high/low)
+        if (environmentType == "dessert" or environmentType == "snow")
+        {
+            vec.y += 0.2;
+        }
+        if (environmentType == "forest")
+        {
+            vec.y -= 0.1;
+        }
+
+        surroundingPos.push_back(vec);
     }
 }
 
@@ -199,21 +348,43 @@ void World::createTreeModelMatrices()
     {
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, treePos[i]); // translation
-        model = glm::scale(model, glm::vec3(0.4f)); // make model a bit smaller
+        if (environmentType == "dessert")
+        {
+            model = glm::scale(model, glm::vec3(0.06)); // scale down
+        }
+        if (environmentType == "forest" or environmentType == "night")
+        {
+            model = glm::scale(model, glm::vec3(0.4f)); // scale down
+        }
+        if (environmentType == "snow")
+        {
+            model = glm::scale(model, glm::vec3(0.9)); // scale down
+        }
         treeModelMatrices.push_back(model);
     }
 }
 
-void World::createFlowerModelMatrices()
+void World::createSurroundingModelMatrices()
 {
-    for (unsigned int i = 0; i < N_FLOWERS; i++)
+    for (unsigned int i = 0; i < N_SURROUNDINGS; i++)
     {
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, flowerPos[i]); // translation
+        model = glm::translate(model, surroundingPos[i]); // translation
         float rotAngle = static_cast<float>((rand() % 360)); 
         model = glm::rotate(model, rotAngle, glm::vec3(0.0f, 1.0f, 0.0f)); // add (semi)random rotation
-        model = glm::scale(model, glm::vec3(2.5f)); // make model bigger
-        flowerModelMatrices.push_back(model);
+        if (environmentType == "dessert" or environmentType == "snow")
+        {
+            model = glm::scale(model, glm::vec3(0.4)); // scale down
+        }
+        if (environmentType == "forest")
+        {
+            model = glm::scale(model, glm::vec3(2.5f)); // scale up
+        }
+        if (environmentType == "night")
+        {
+            model = glm::scale(model, glm::vec3(1.45f)); // scale up
+        }
+        surroundingModelMatrices.push_back(model);
     }
 }
 
