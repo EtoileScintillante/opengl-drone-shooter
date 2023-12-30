@@ -70,7 +70,7 @@ void endingScreen(TextRenderer &tr, Player &player, World &world)
     // update blink time
     tr.blink += tr.deltaTime + 0.02; // add small offset to make text blink faster
 
-    // render skybox
+    // render skybox in grayscale
     world.view = player.GetViewMatrix();
     world.projection = player.getProjectionMatrix();
     world.drawSkyBox(true);
@@ -84,10 +84,10 @@ void endingScreen(TextRenderer &tr, Player &player, World &world)
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
     {
-        tr.RenderText("Press  ENTER  to  play  again  or  ESC  to  quit", 115.0f, 210.0f, 0.55f, glm::vec3(0.0f, 0.0f, 0.0f));
+        tr.RenderText("Press  ENTER  to  play  again  or  ESC  to  quit", 115.0f, 210.0f, 0.55f, glm::vec3(0.870f, 0.592f, 0.0348f));
     }
 
     // kill count
     std::string kill = "Kills:  " + std::to_string(player.getKills());
-    tr.RenderText(kill, 335.0f, 300.0f, 0.6f, glm::vec3(0.0f, 0.0f, 0.0f));
+    tr.RenderText(kill, 335.0f, 300.0f, 0.7f, glm::vec3(1.0f, 1.0f, 1.0f));
 }
