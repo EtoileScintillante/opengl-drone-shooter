@@ -308,8 +308,8 @@ void Enemy::playLaserSound()
     // play sound if conditions are true
     if (d <= 50) 
     {
-        // same calculation as in playHoverSound, only the range differs
-        float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
+        // same calculation as in playHoverSound
+        float volume = 0.9 - ((d / 50) * (0.9 - 0.01) + 0.1);
         ma_engine_set_volume(&engine, volume);
         ma_engine_play_sound(&engine, soundLaserPath.c_str(), NULL);
         renderLaser = false; 
@@ -326,9 +326,9 @@ void Enemy::playHoverSound()
     if (d <= 30)
     {
         /* Here the distance in range 0 - 30 is mapped to the volume in range
-        0.01 - 1.5. The volume is then subtracted from 1.5 to make sure that
+        0.01 - 0.7. The volume is then subtracted from 0.7 to make sure that
         a lower distance results in a higher volume and not the other way around */
-        float volume = 1.5 - ((d / 30) * (1.5 - 0.01) + 0.1);
+        float volume = 0.7 - ((d / 50) * (0.7 - 0.01) + 0.1);
         ma_sound_set_volume(&hoverSound, volume);
         ma_sound_set_looping(&hoverSound, true);
         ma_sound_start(&hoverSound);
@@ -344,8 +344,8 @@ void Enemy::playExplosionSound()
     if (explosionSoundCount == 0 && d <= 50)
     {
         explosionSoundCount++;
-        // same calculation as in playHoverSound, only the range differs
-        float volume = 1.5 - ((d / 50) * (1.5 - 0.01) + 0.1);
+        // same calculation as in playHoverSound
+        float volume = 1.0 - ((d / 50) * (1.0 - 0.01) + 0.1);
         ma_engine_set_volume(&engine, volume);
         ma_engine_play_sound(&engine, soundExplosionPath.c_str(), NULL);
     }

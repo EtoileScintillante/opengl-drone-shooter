@@ -189,7 +189,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
             if (soundCount == 0)
             {
                 soundCount++;
-                ma_engine_set_volume(&engine, 2.5);
+                ma_engine_set_volume(&engine, 2.0);
                 ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
             }
             shot = true;
@@ -198,6 +198,7 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
         // add walking motion and sound if player moves
         if (isWalking)
         {
+            ma_sound_set_volume(&walkingSound, 0.6);
             ma_sound_start(&walkingSound);
             walkingMotion();
         }
@@ -484,7 +485,7 @@ void Player::updatePlayerVectors()
 void Player::gotAttacked(float damage)
 {
     health -= damage;
-    ma_engine_set_volume(&engine, 1.8);
+    ma_engine_set_volume(&engine, 1.4);
     ma_engine_play_sound(&engine, damageSoundPath.c_str(), NULL); 
 }
 
