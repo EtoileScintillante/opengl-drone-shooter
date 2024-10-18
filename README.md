@@ -1,4 +1,5 @@
 # Drone Shooter
+[![macOS Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-macOS-arm64/badge.svg)](https://github.com/opengl-drone-shooter/equity-bot-discord/actions)  
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.
 There are four maps to choose from: forest, desert, snow and night. 

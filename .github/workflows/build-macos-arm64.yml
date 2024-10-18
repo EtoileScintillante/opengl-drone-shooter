@@ -1,0 +1,25 @@
+name: Build-macOS-arm64
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-macos:
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up CMake
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+
+    - name: Build project
+      run: |
+        cd build
+        cmake --build .
