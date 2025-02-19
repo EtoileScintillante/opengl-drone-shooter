@@ -1,5 +1,5 @@
 # Drone Shooter
-[![macOS Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-macOS-arm64/badge.svg)](https://github.com/opengl-drone-shooter/actions)  
+[![macOS Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-macOS-arm64/badge.svg)](https://github.com/opengl-drone-shooter/actions) [![Linux Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-Linux-x86/badge.svg)](https://github.com/opengl-drone-shooter/actions)    
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.
 There are four maps to choose from: forest, desert, snow and night. 
@@ -44,7 +44,7 @@ The bounding box of the enemy does not cover the whole drone, as can be seen in 
 
 <img src="doc/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
 
-## Building and Running the Game (macOS - arm64) 
+## Building and Running the Game 
 ### Prerequisites
 
 - [CMake](https://cmake.org) (version 3.5 or higher)
@@ -52,14 +52,24 @@ The bounding box of the enemy does not cover the whole drone, as can be seen in 
 - [Git](https://git-scm.com)
 
 ### Instructions
-1. Clone this Repository
+1. Install Dependencies  
+   On macOS with Homebrew:
+   ```bash
+   brew install cmake glfw assimp freetype
+   ```
+   On Linux with APT
+   ```bash
+   sudo apt install cmake g++ libassimp-dev libfreetype6-dev libglfw3-dev libx11-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev
+   ```
+
+2. Clone this Repository
 
     ```bash
     git clone https://github.com/EtoileScintillante/opengl-drone-shooter.git
     cd opengl-drone-shooter
     ```
 
-2. Build the Game
+3. Build the Game
 
     ```bash
     mkdir build
@@ -68,13 +78,13 @@ The bounding box of the enemy does not cover the whole drone, as can be seen in 
     cmake --build .
     ```
 
-3. Run the Game (executable not in build dir)
+4. Run the Game (executable not in build dir)
 
     ```bash
     ./Drone-Shooter
     ```
 
-## Evolution of the game
+## Evolution of the Game
 During the development I regularly uploaded videos to YouTube to keep track of the progress I made.
 
 - [12 Sept. 2022](https://youtu.be/qpYmfjfTjCA) Minecraft scenery (starting point)
