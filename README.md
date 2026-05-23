@@ -1,4 +1,4 @@
-# Drone Shooter
+# Drone Shooter 
 [![macOS Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-macOS-arm64/badge.svg)](https://github.com/opengl-drone-shooter/actions) [![Linux Build Status](https://github.com/EtoileScintillante/opengl-drone-shooter/workflows/Build-Linux-x86/badge.svg)](https://github.com/opengl-drone-shooter/actions)    
 Drone Shooter is a simple FPS game created with OpenGL.  
 The goal is to shoot as many drones as you can before they kill you.
