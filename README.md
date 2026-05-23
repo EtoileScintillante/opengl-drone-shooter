@@ -4,7 +4,7 @@ Drone Shooter is a simple FPS game created with OpenGL.
 The goal is to shoot as many drones as you can before they kill you.
 There are four maps to choose from: forest, desert, snow and night. 
 
-<img src="doc/ingame_gif.gif" width="400" height="290" alt="gif of game play" />
+<img src="docs/ingame_gif.gif" width="400" height="290" alt="gif of game play" />
 
 ## About
 Drone Shooter was created using just OpenGL, no game engine. It's purely done for fun and learning purposes.  
@@ -22,27 +22,27 @@ For adding soundeffects, rendering text and loading 3D models the libraries [min
 
 ### Maps
 #### Forest     
-<img src="doc/ingame_forest.jpg" width="380" height="260" alt="screenshot of forest map" />
+<img src="docs/ingame_forest.jpg" width="380" height="260" alt="screenshot of forest map" />
 
 #### Desert   
-<img src="doc/ingame_desert.jpg" width="380" height="260" alt="screenshot of desert map" />
+<img src="docs/ingame_desert.jpg" width="380" height="260" alt="screenshot of desert map" />
 
 #### Snow  
-<img src="doc/ingame_snow.jpg" width="380" height="260" alt="screenshot of snow map" />
+<img src="docs/ingame_snow.jpg" width="380" height="260" alt="screenshot of snow map" />
 
 #### Night
-<img src="doc/ingame_night.jpg" width="380" height="260" alt="screenshot of night map" />  
+<img src="docs/ingame_night.jpg" width="380" height="260" alt="screenshot of night map" />  
 
 ### Player
 There is no actual player character, it’s just a gun. The direction of the bullet is the same as the front vector of the player, which makes aiming easy. The player’s bounding box looks as follows:
 
-<img src="doc/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
+<img src="docs/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
 
 ### Enemy
 The enemy is a drone that can shoot laser beams. Its aim is not perfect; some randomness is added when calculating the direction of the laser beam, otherwise every shot would lead to a decrease in the player’s health.   
 The bounding box of the enemy does not cover the whole drone, as can be seen in the image below. It may look weird but it’s not a problem at all. The bounding box is still big enough so that hitting the drone is quite easy, even when standing far away. 
 
-<img src="doc/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
+<img src="docs/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
 
 ## Building and Running the Game 
 ### Prerequisites
