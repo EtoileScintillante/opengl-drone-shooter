@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Drone Shooter — Architecture Overview</title>
+  <style>
+    :root {
+      --bg:      #0a0e14;
+      --surface: #111820;
+      --card:    #151d28;
+      --border:  #1e2a38;
+      --text:    #cdd9e5;
+      --muted:   #556070;
+      --cyan:    #39c5e0;
+      --green:   #3db950;
+      --red:     #e85555;
+      --purple:  #b07adc;
+      --orange:  #e89040;
+      --yellow:  #c9a030;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── NAV ─────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10, 14, 20, 0.93);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 32px; gap: 4px;
+    }
+    .nav-brand {
+      font-size: 14px; font-weight: 800;
+      color: var(--cyan); letter-spacing: .5px;
+      padding: 13px 20px 13px 0;
+      border-right: 1px solid var(--border);
+      margin-right: 8px; white-space: nowrap;
+    }
+    nav a {
+      color: var(--muted); text-decoration: none;
+      padding: 13px 12px; font-size: 12.5px;
+      transition: color .15s;
+    }
+    nav a:hover { color: var(--text); }
+
+    /* ── LAYOUT ──────────────────────────────── */
+    main { max-width: 1200px; margin: 0 auto; padding: 0 32px 80px; }
+    section { padding: 56px 0 24px; }
+    section + section { border-top: 1px solid var(--border); }
+    h1 { font-size: 34px; font-weight: 800; letter-spacing: -.5px; line-height: 1.2; }
+    h2 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    p  { color: var(--muted); line-height: 1.7; }
+    .label {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 1.2px; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 6px;
+    }
+    .sub { color: var(--muted); font-size: 14px; max-width: 640px; margin: 8px 0 28px; }
+
+    /* ── HERO STATS ──────────────────────────── */
+    .stat-row { display: flex; gap: 12px; flex-wrap: wrap; }
+    .stat {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 14px 22px; min-width: 110px;
+      text-align: center;
+    }
+    .stat-n { font-size: 26px; font-weight: 800; color: var(--cyan); display: block; }
+    .stat-l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+
+
+    /* ── GAME STATES ─────────────────────────── */
+    .states-row { display: flex; align-items: stretch; margin-top: 20px; }
+    .state-card {
+      flex: 1; background: var(--card); border: 1px solid var(--border);
+      padding: 20px;
+    }
+    .state-card:first-child { border-radius: 8px 0 0 8px; }
+    .state-card:last-child  { border-radius: 0 8px 8px 0; }
+    .state-arrow {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 14px; color: var(--cyan); font-size: 18px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .state-name  { font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+    .state-items { font-size: 12px; color: var(--muted); line-height: 1.9; }
+    .state-trig  { font-size: 11px; color: var(--cyan); margin-top: 10px; }
+
+    /* ── GAME LOOP ───────────────────────────── */
+    .loop-col {
+      display: flex; flex-direction: column; gap: 0;
+      border-left: 2px solid var(--border);
+      margin-left: 18px; margin-top: 20px;
+    }
+    .loop-step {
+      position: relative;
+      padding: 10px 0 10px 22px;
+    }
+    .loop-step::before {
+      content: '';
+      position: absolute; left: -6px; top: 16px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--cyan); border: 2px solid var(--bg);
+    }
+    .ls-title { font-weight: 600; font-size: 13px; color: var(--text); }
+    .ls-calls  { font-size: 11.5px; color: var(--muted); margin-top: 3px; font-family: 'SF Mono', monospace; }
+
+    /* ── COMPONENT GRID ──────────────────────── */
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 12px; margin-top: 20px;
+    }
+    .comp {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+      transition: border-color .15s;
+    }
+    .comp:hover { border-color: var(--cyan); }
+    .comp-head  { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .comp-ico   {
+      width: 30px; height: 30px; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; flex-shrink: 0;
+    }
+    .comp-name  { font-weight: 700; font-size: 13px; }
+    .badge {
+      font-size: 10px; padding: 2px 7px; border-radius: 20px;
+      font-weight: 600; letter-spacing: .4px; text-transform: uppercase;
+      margin-left: auto; white-space: nowrap;
+    }
+    .comp-file  { font-size: 11px; color: var(--muted); font-family: monospace; margin-bottom: 8px; }
+    .comp-desc  { font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .comp-list  { list-style: none; font-size: 12px; }
+    .comp-list li {
+      padding: 2px 0 2px 14px; position: relative; color: var(--muted);
+    }
+    .comp-list li::before { content: '▸'; position: absolute; left: 0; color: var(--cyan); }
+    .dep-tags   { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .dep-tag {
+      font-size: 10.5px; padding: 1px 7px; border-radius: 4px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--muted); font-family: monospace;
+    }
+
+    /* type colors */
+    .t-entry  { background: rgba(232,144,64,.12); color: var(--orange); border-color: rgba(232,144,64,.3); }
+    .t-game   { background: rgba(57,197,224,.12);  color: var(--cyan);   border-color: rgba(57,197,224,.3); }
+    .t-render { background: rgba(176,122,220,.12); color: var(--purple); border-color: rgba(176,122,220,.3); }
+    .t-phys   { background: rgba(232,85,85,.12);   color: var(--red);    border-color: rgba(232,85,85,.3); }
+    .t-ui     { background: rgba(201,160,48,.12);  color: var(--yellow); border-color: rgba(201,160,48,.3); }
+    .t-sys    { background: rgba(61,185,80,.12);   color: var(--green);  border-color: rgba(61,185,80,.3); }
+
+    .ico-entry  { background: rgba(232,144,64,.15); color: var(--orange); }
+    .ico-game   { background: rgba(57,197,224,.15);  color: var(--cyan); }
+    .ico-render { background: rgba(176,122,220,.15); color: var(--purple); }
+    .ico-phys   { background: rgba(232,85,85,.15);   color: var(--red); }
+    .ico-ui     { background: rgba(201,160,48,.15);  color: var(--yellow); }
+    .ico-sys    { background: rgba(61,185,80,.15);   color: var(--green); }
+
+    /* ── SHADER GRID ─────────────────────────── */
+    .shader-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px; margin-top: 20px;
+    }
+    .shader {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .stage-row { display: flex; gap: 5px; margin-bottom: 10px; }
+    .stage {
+      font-size: 10px; padding: 2px 6px; border-radius: 3px;
+      font-weight: 700; font-family: monospace;
+    }
+    .sv { background: rgba(61,185,80,.15); color: var(--green); border: 1px solid rgba(61,185,80,.3); }
+    .sg { background: rgba(176,122,220,.15); color: var(--purple); border: 1px solid rgba(176,122,220,.3); }
+    .sf { background: rgba(232,85,85,.15);  color: var(--red); border: 1px solid rgba(232,85,85,.3); }
+    .shader-name { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+    .shader-desc { font-size: 12px; color: var(--muted); }
+    .shader-used { font-size: 11px; color: var(--cyan); margin-top: 8px; }
+
+    /* ── DEPS GRID ───────────────────────────── */
+    .deps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 12px; margin-top: 20px;
+    }
+    .dep-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px;
+    }
+    .dep-name { font-weight: 700; font-size: 14px; margin-bottom: 2px; }
+    .dep-role { font-size: 12px; color: var(--muted); }
+    .dep-usedby { font-size: 11px; color: var(--cyan); margin-top: 8px; }
+
+    footer {
+      text-align: center; padding: 40px 20px;
+      color: var(--muted); font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">◈ Drone Shooter</div>
+  <a href="#overview">Overview</a>
+  <a href="#game-loop">Game Loop</a>
+  <a href="#components">Components</a>
+  <a href="#shaders">Shaders</a>
+  <a href="#dependencies">Dependencies</a>
+</nav>
+
+<main>
+
+<!-- ══════════════ OVERVIEW ══════════════ -->
+<section id="overview">
+  <div class="label">Project Overview</div>
+  <h1>OpenGL Drone Shooter</h1>
+  <p class="sub">A first-person shooter written from scratch in C++17 using OpenGL 3.3 core profile, no game engine. Shoot down drones across 4 environments.</p>
+  <div class="stat-row">
+    <div class="stat"><span class="stat-n">16</span><div class="stat-l">Classes / Modules</div></div>
+    <div class="stat"><span class="stat-n">7</span><div class="stat-l">Shader Programs</div></div>
+    <div class="stat"><span class="stat-n">4</span><div class="stat-l">Environments</div></div>
+    <div class="stat"><span class="stat-n">7</span><div class="stat-l">Ext. Libraries</div></div>
+    <div class="stat"><span class="stat-n">3</span><div class="stat-l">Game States</div></div>
+    <div class="stat"><span class="stat-n">4</span><div class="stat-l">Max Enemies</div></div>
+  </div>
+</section>
+
+<!-- ══════════════ GAME LOOP ══════════════ -->
+<section id="game-loop">
+  <div class="label">Runtime</div>
+  <h2>Game States &amp; Frame Loop</h2>
+
+  <div class="states-row">
+    <div class="state-card">
+      <div class="state-name">① Start Screen</div>
+      <div class="state-items">
+        Title &amp; controls display<br>
+        Environment selection prompt<br>
+        Cursor captured by GLFW
+      </div>
+      <div class="state-trig">Press Enter →</div>
+    </div>
+    <div class="state-arrow">→</div>
+    <div class="state-card">
+      <div class="state-name">② Playing</div>
+      <div class="state-items">
+        WASD + mouse look<br>
+        Click to shoot<br>
+        Enemies spawn every 3s<br>
+        Health / kill tracking
+      </div>
+      <div class="state-trig">Health reaches 0 →</div>
+    </div>
+    <div class="state-arrow">→</div>
+    <div class="state-card">
+      <div class="state-name">③ End Screen</div>
+      <div class="state-items">
+        Grayscale skybox filter<br>
+        Final kill count shown<br>
+        All enemies frozen
+      </div>
+      <div class="state-trig">Press Enter → restart</div>
+    </div>
+  </div>
+
+  <div style="margin-top: 36px;">
+    <h2>Frame Update Order</h2>
+    <div class="loop-col">
+      <div class="loop-step">
+        <div class="ls-title">1 — Clear Buffers</div>
+        <div class="ls-calls">glClear(COLOR | DEPTH)  ·  calculate deltaTime</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">2 — Input</div>
+        <div class="ls-calls">player.processKeyboardMouse()  ·  WASD + mouse look + shoot flag</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">3 — Render World</div>
+        <div class="ls-calls">world.Draw()  →  Skybox → Ground → Trees (instanced) → Decorations</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">4 — Render Player</div>
+        <div class="ls-calls">player.controlPlayerRendering()  →  gun model + recoil animation + muzzle flash</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">5 — Update &amp; Render Enemies</div>
+        <div class="ls-calls">manager.manage()  →  spawn · chase · attack · explosion anim · audio</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">6 — Collision Detection</div>
+        <div class="ls-calls">detector.Detect()  →  bullet↔enemy AABB · laser↔player AABB</div>
+      </div>
+      <div class="loop-step">
+        <div class="ls-title">7 — HUD Overlay</div>
+        <div class="ls-calls">hud.inGameScreen()  →  health bar + kill counter (orthographic text pass)</div>
+      </div>
+      <div class="loop-step" style="border-left-color: transparent;">
+        <div class="ls-title">8 — Swap Buffers</div>
+        <div class="ls-calls">glfwSwapBuffers()  ·  glfwPollEvents()</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ COMPONENTS ══════════════ -->
+<section id="components">
+  <div class="label">Components</div>
+  <h2>All Classes &amp; Modules</h2>
+
+  <div class="comp-grid">
+
+    <!-- main.cpp -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-entry">⊕</div>
+        <div class="comp-name">main.cpp</div>
+        <div class="badge t-entry">Entry</div>
+      </div>
+      <div class="comp-file">main.cpp</div>
+      <div class="comp-desc">Game loop orchestrator. Owns all top-level objects and manages state transitions.</div>
+      <ul class="comp-list">
+        <li>GLFW window init &amp; OpenGL context setup</li>
+        <li>Creates Player, World, EnemyManager, CollisionDetector, HUD</li>
+        <li>Drives the 3-state game state machine</li>
+        <li>Calculates deltaTime each frame</li>
+      </ul>
+    </div>
+
+    <!-- Player -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-game">◉</div>
+        <div class="comp-name">Player</div>
+        <div class="badge t-game">Game</div>
+      </div>
+      <div class="comp-file">include/player.h · src/player.cpp</div>
+      <div class="comp-desc">First-person camera, gun controller, health tracker, and audio source for the player.</div>
+      <ul class="comp-list">
+        <li>View &amp; projection matrix generation</li>
+        <li>WASD movement constrained to terrain bounds (±15)</li>
+        <li>Mouse look (yaw/pitch), click-to-shoot flag</li>
+        <li>Gun model rendering + recoil animation</li>
+        <li>Health (0–100), kill counter, bounding box</li>
+        <li>Audio: walking loop, gunshot, damage hit</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">World</span>
+        <span class="dep-tag">Box</span>
+        <span class="dep-tag">Model</span>
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">miniaudio</span>
+        <span class="dep-tag">GLM</span>
+      </div>
+    </div>
+
+    <!-- EnemyManager -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-game">⊞</div>
+        <div class="comp-name">EnemyManager</div>
+        <div class="badge t-game">Game</div>
+      </div>
+      <div class="comp-file">include/enemy_manager.h · src/enemy_manager.cpp</div>
+      <div class="comp-desc">Manages the lifecycle of all drone enemies: spawning, updating, and resetting.</div>
+      <ul class="comp-list">
+        <li>Holds vector of shared_ptr&lt;Enemy&gt;</li>
+        <li>Spawns 1 enemy at start, +1 every 3 s (max 4)</li>
+        <li>Calls enemy update each frame</li>
+        <li>Exposes enemy list to CollisionDetector</li>
+        <li>resetAll() for game restart</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Enemy</span>
+        <span class="dep-tag">Player</span>
+      </div>
+    </div>
+
+    <!-- Enemy -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-game">◈</div>
+        <div class="comp-name">Enemy</div>
+        <div class="badge t-game">Game</div>
+      </div>
+      <div class="comp-file">include/enemy.h · src/enemy.cpp</div>
+      <div class="comp-desc">Individual drone entity with AI movement, laser attacks, explosion animation, and audio.</div>
+      <ul class="comp-list">
+        <li>Random spawn position within terrain bounds</li>
+        <li>Slow chase: moves toward player each frame</li>
+        <li>Fires laser every 2 s with slight random spread</li>
+        <li>Geometry-shader explosion on death</li>
+        <li>3 s respawn delay after dying</li>
+        <li>Audio: hover loop, laser fire, explosion</li>
+        <li>AABB bounding box for bullet collision</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Player</span>
+        <span class="dep-tag">World</span>
+        <span class="dep-tag">Model</span>
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">Ray</span>
+        <span class="dep-tag">Box</span>
+        <span class="dep-tag">miniaudio</span>
+      </div>
+    </div>
+
+    <!-- World -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico" style="background:rgba(61,185,80,.15);color:#3db950;">⬡</div>
+        <div class="comp-name">World</div>
+        <div class="badge" style="background:rgba(61,185,80,.12);color:#3db950;border:1px solid rgba(61,185,80,.3);">Environment</div>
+      </div>
+      <div class="comp-file">include/world.h · src/world.cpp</div>
+      <div class="comp-desc">Owns all environment rendering: terrain, skybox, trees, and decorations. Selects assets based on environment type.</div>
+      <ul class="comp-list">
+        <li>4 environments: desert · forest · snow · night</li>
+        <li>Terrain: 30×30 unit bounded plane at y = −1.8</li>
+        <li>20 trees placed via instanced rendering</li>
+        <li>30 decorations (flowers / rocks / pumpkins)</li>
+        <li>Cubemap skybox with optional grayscale filter</li>
+        <li>Provides TERRAIN_SIZE constant to other systems</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">Model</span>
+        <span class="dep-tag">SkyBox</span>
+        <span class="dep-tag">GLM</span>
+      </div>
+    </div>
+
+    <!-- CollisionDetector -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">⊗</div>
+        <div class="comp-name">CollisionDetector</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/collision_detection.h · src/collision_detection.cpp</div>
+      <div class="comp-desc">Runs all ray–box intersection tests once per frame, updating player health and enemy death state.</div>
+      <ul class="comp-list">
+        <li>If player shot: Ray(player.pos, player.front) vs each enemy AABB</li>
+        <li>Each active enemy laser Ray vs player AABB</li>
+        <li>Calls enemy.gotHit() / player.gotAttacked() on hit</li>
+        <li>Resets canDamage flag after laser lands</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Player</span>
+        <span class="dep-tag">EnemyManager</span>
+        <span class="dep-tag">Box</span>
+        <span class="dep-tag">Ray</span>
+      </div>
+    </div>
+
+    <!-- Box -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">▣</div>
+        <div class="comp-name">Box (AABB)</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/box.h · src/box.cpp</div>
+      <div class="comp-desc">Axis-aligned bounding box used for both the player and each enemy.</div>
+      <ul class="comp-list">
+        <li>min / max corner vectors</li>
+        <li>Updated each frame from entity position</li>
+        <li>Player box: cuboid around camera eye</li>
+        <li>Enemy box: smaller than drone model (gameplay balance)</li>
+      </ul>
+    </div>
+
+    <!-- Ray -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">→</div>
+        <div class="comp-name">Ray</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/ray.h · src/ray.cpp</div>
+      <div class="comp-desc">Ray defined by origin + direction. Used for bullet raycast and enemy laser tests.</div>
+      <ul class="comp-list">
+        <li>origin: vec3, direction: vec3 (normalized)</li>
+        <li>Bullet ray: player.position → player.front</li>
+        <li>Laser ray: enemy.position → laserDirection</li>
+        <li>Range: terrain size × 2 (~60 units)</li>
+      </ul>
+    </div>
+
+    <!-- Shader -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-render">◧</div>
+        <div class="comp-name">Shader</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/shader.h · src/shader.cpp</div>
+      <div class="comp-desc">Compiles and links GLSL programs; provides typed uniform setters.</div>
+      <ul class="comp-list">
+        <li>Compiles vertex + fragment + optional geometry stage</li>
+        <li>Uniform setters: bool, int, float, vec2/3/4, mat2/3/4</li>
+        <li>use() activates the program</li>
+        <li>OpenGL 3.3 core profile</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">GLAD</span>
+        <span class="dep-tag">GLM</span>
+      </div>
+    </div>
+
+    <!-- Mesh -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-render">⬡</div>
+        <div class="comp-name">Mesh</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/mesh.h · src/mesh.cpp</div>
+      <div class="comp-desc">GPU-resident vertex data container. Manages VAO/VBO/EBO lifetime.</div>
+      <ul class="comp-list">
+        <li>Stores vertices: position, normal, UV, tangent, bitangent</li>
+        <li>Stores texture references (diffuse, specular, etc.)</li>
+        <li>Sets up VAO/VBO/EBO on construction</li>
+        <li>Draw(shader) issues glDrawElements</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">GLAD</span>
+      </div>
+    </div>
+
+    <!-- Model -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-render">◫</div>
+        <div class="comp-name">Model</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/model.h · src/model.cpp</div>
+      <div class="comp-desc">Loads 3D assets via ASSIMP and manages a hierarchy of meshes.</div>
+      <ul class="comp-list">
+        <li>Recursive ASSIMP node traversal</li>
+        <li>Texture caching (avoid re-upload)</li>
+        <li>Supports diffuse, specular, normal map types</li>
+        <li>Used for: gun, drone, laser beam, trees, decorations</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Mesh</span>
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">ASSIMP</span>
+        <span class="dep-tag">STB Image</span>
+      </div>
+    </div>
+
+    <!-- SkyBox -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico" style="background:rgba(61,185,80,.15);color:#3db950;">⬚</div>
+        <div class="comp-name">SkyBox</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/skybox.h · src/skybox.cpp</div>
+      <div class="comp-desc">Cubemap renderer that fills the background regardless of camera movement.</div>
+      <ul class="comp-list">
+        <li>Loads 6 face textures (right/left/top/bottom/front/back)</li>
+        <li>Renders as large cube, depth writes disabled</li>
+        <li>Grayscale uniform for death-screen effect</li>
+        <li>4 environment cubemap sets</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">STB Image</span>
+      </div>
+    </div>
+
+    <!-- TextRenderer -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-ui">Aa</div>
+        <div class="comp-name">TextRenderer</div>
+        <div class="badge t-ui">UI</div>
+      </div>
+      <div class="comp-file">include/text_renderer.h · src/text_renderer.cpp</div>
+      <div class="comp-desc">FreeType-based glyph renderer that draws 2D text in screen space.</div>
+      <ul class="comp-list">
+        <li>Loads .ttf font file</li>
+        <li>Generates per-glyph texture atlas (ASCII 32–127)</li>
+        <li>RenderText(text, x, y, scale, color)</li>
+        <li>Orthographic projection for screen-space placement</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">FreeType</span>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-ui">⊟</div>
+        <div class="comp-name">HUD</div>
+        <div class="badge t-ui">UI</div>
+      </div>
+      <div class="comp-file">include/hud.h · src/hud.cpp</div>
+      <div class="comp-desc">Three screen-overlay functions using TextRenderer for different game states.</div>
+      <ul class="comp-list">
+        <li>startingScreen() — title + control hints</li>
+        <li>inGameScreen() — health bar + kill counter</li>
+        <li>endingScreen() — "Game Over" + final score</li>
+        <li>Font: theboldfont.ttf</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">TextRenderer</span>
+        <span class="dep-tag">Player</span>
+        <span class="dep-tag">World</span>
+      </div>
+    </div>
+
+    <!-- texture_loading -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-render">⊡</div>
+        <div class="comp-name">texture_loading</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/texture_loading.h · src/texture_loading.cpp</div>
+      <div class="comp-desc">Utility functions for loading 2D and cubemap textures via STB Image.</div>
+      <ul class="comp-list">
+        <li>loadTexture(path) → GL texture ID</li>
+        <li>loadCubemap(faces[6]) → cubemap texture ID</li>
+        <li>Used primarily by SkyBox</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">STB Image</span>
+        <span class="dep-tag">GLAD</span>
+      </div>
+    </div>
+
+    <!-- glfw_setup -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-sys">⊞</div>
+        <div class="comp-name">glfw_setup</div>
+        <div class="badge t-sys">System</div>
+      </div>
+      <div class="comp-file">include/glfw_setup.h · src/glfw_setup.cpp</div>
+      <div class="comp-desc">Initializes the GLFW window, OpenGL context, and GLAD function pointers.</div>
+      <ul class="comp-list">
+        <li>GLFW init + hint (OpenGL 3.3 core)</li>
+        <li>Creates 1280×720 window</li>
+        <li>Loads OpenGL via gladLoadGLLoader</li>
+        <li>Sets viewport and enables depth test</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">GLFW</span>
+        <span class="dep-tag">GLAD</span>
+      </div>
+    </div>
+
+  </div><!-- /comp-grid -->
+</section>
+
+<!-- ══════════════ SHADERS ══════════════ -->
+<section id="shaders">
+  <div class="label">GLSL Shaders</div>
+  <h2>Shader Programs</h2>
+  <p>All shaders live in <code style="color:var(--purple)">shaders/</code>. Each program = one row of stage badges.</p>
+
+  <div class="shader-grid">
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">model</div>
+      <div class="shader-desc">Standard 3D rendering. Transforms vertices by MVP matrices and samples a diffuse texture.</div>
+      <div class="shader-used">Used by: Model (gun, drone, decorations)</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sg">GEOM</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">explode</div>
+      <div class="shader-desc">Geometry shader that translates triangles along their face normal proportional to a time uniform: creates the enemy death burst.</div>
+      <div class="shader-used">Used by: Enemy (dying animation)</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">ground</div>
+      <div class="shader-desc">Renders the terrain plane. Tiles a ground texture across the 30×30 unit quad.</div>
+      <div class="shader-used">Used by: World (terrain)</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">skybox</div>
+      <div class="shader-desc">Samples a cubemap using the vertex position as a direction vector. Supports a grayscale uniform for the death-screen effect.</div>
+      <div class="shader-used">Used by: SkyBox</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">text</div>
+      <div class="shader-desc">2D screen-space shader for FreeType glyph rendering. Reads the red channel as alpha and tints with a color uniform.</div>
+      <div class="shader-used">Used by: TextRenderer</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">laser</div>
+      <div class="shader-desc">Fragment-only override that outputs a solid red color, giving enemy laser beams their appearance regardless of underlying geometry UV.</div>
+      <div class="shader-used">Used by: Enemy (laser beam model)</div>
+    </div>
+
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span></div>
+      <div class="shader-name">instancing</div>
+      <div class="shader-desc">Vertex stage for instanced tree/decoration rendering. Reads a per-instance model matrix from a vertex attribute buffer instead of a uniform.</div>
+      <div class="shader-used">Used by: World (trees + surroundings). Pairs with model.frag</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ══════════════ DEPENDENCIES ══════════════ -->
+<section id="dependencies">
+  <div class="label">External Libraries</div>
+  <h2>Dependencies</h2>
+  <p>All vendor headers live in <code style="color:var(--purple)">include/</code>. System libraries are linked via CMake.</p>
+
+  <div class="deps-grid">
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--cyan)">GLAD</div>
+      <div class="dep-role">OpenGL 3.3 core function pointer loader. Generated loader included directly in the project.</div>
+      <div class="dep-usedby">Used by: Shader, Mesh, glfw_setup</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--green)">GLFW 3</div>
+      <div class="dep-role">Cross-platform window creation, OpenGL context, keyboard/mouse input, and event loop.</div>
+      <div class="dep-usedby">Used by: glfw_setup, Player (input)</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--purple)">GLM</div>
+      <div class="dep-role">Header-only vector and matrix math library mirroring GLSL types (vec2/3/4, mat4, etc.).</div>
+      <div class="dep-usedby">Used by: almost all systems</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--orange)">ASSIMP</div>
+      <div class="dep-role">3D model importer supporting OBJ, FBX, and many other formats. Processes mesh hierarchy and materials.</div>
+      <div class="dep-usedby">Used by: Model</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--yellow)">STB Image</div>
+      <div class="dep-role">Single-header image loader for PNG, JPEG, and other formats. Used to upload textures to the GPU.</div>
+      <div class="dep-usedby">Used by: Model, texture_loading</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:var(--red)">FreeType 2</div>
+      <div class="dep-role">Font rendering library. Rasterizes .ttf glyphs into bitmaps that are uploaded as GL textures for text rendering.</div>
+      <div class="dep-usedby">Used by: TextRenderer</div>
+    </div>
+    <div class="dep-card">
+      <div class="dep-name" style="color:#aa88ff">miniaudio</div>
+      <div class="dep-role">Single-header, cross-platform audio engine. Plays and loops .wav files for all in-game sounds.</div>
+      <div class="dep-usedby">Used by: Player, Enemy</div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  OpenGL Drone Shooter · Architecture overview generated from source · C++17 · OpenGL 3.3 Core
+</footer>
+
+</body>
+</html>
