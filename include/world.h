@@ -12,6 +12,7 @@
 
 #include <random>
 
+#include "terrain_constants.h"
 #include "shader.h"
 #include "model.h"
 #include "skybox.h"
@@ -22,8 +23,6 @@ public:
     // terrain settings
     static const unsigned int N_TREES;        // number of trees
     static const unsigned int N_SURROUNDINGS; // number of flowers/rocks/pumpkins
-    static const float TERRAIN_SIZE;          // terrain size; it's a square with (x, z) = (0, 0) as center
-    static const float GROUND_Y;              // y level of ground
     // matrices
     glm::mat4 view;       // camera view matrix
     glm::mat4 projection; // projection matrix

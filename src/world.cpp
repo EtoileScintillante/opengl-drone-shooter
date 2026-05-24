@@ -2,8 +2,6 @@
 
 const unsigned int World::N_TREES = 20;
 const unsigned int World::N_SURROUNDINGS = 30;
-const float World::TERRAIN_SIZE = 30;
-const float World::GROUND_Y = -1.8f;
 
 World::World()
 {
@@ -276,13 +274,13 @@ std::vector<float> World::getGroundVertexData() const
 {
     std::vector<float> v = {
         // positions                                     // texcoords
-        TERRAIN_SIZE / 2, GROUND_Y, TERRAIN_SIZE / 2,    TERRAIN_SIZE / 2, 0.0f,
-       -TERRAIN_SIZE / 2, GROUND_Y, TERRAIN_SIZE / 2,    0.0f, 0.0f,
-       -TERRAIN_SIZE / 2, GROUND_Y, -TERRAIN_SIZE / 2,   0.0f, TERRAIN_SIZE / 2,
+        Terrain::SIZE / 2, Terrain::GROUND_Y, Terrain::SIZE / 2,    Terrain::SIZE / 2, 0.0f,
+       -Terrain::SIZE / 2, Terrain::GROUND_Y, Terrain::SIZE / 2,    0.0f, 0.0f,
+       -Terrain::SIZE / 2, Terrain::GROUND_Y, -Terrain::SIZE / 2,   0.0f, Terrain::SIZE / 2,
 
-        TERRAIN_SIZE / 2, GROUND_Y, TERRAIN_SIZE / 2,    TERRAIN_SIZE / 2, 0.0f,
-       -TERRAIN_SIZE / 2, GROUND_Y, -TERRAIN_SIZE / 2,   0.0f, TERRAIN_SIZE / 2,
-        TERRAIN_SIZE / 2, GROUND_Y, -TERRAIN_SIZE / 2,   TERRAIN_SIZE / 2, TERRAIN_SIZE / 2
+        Terrain::SIZE / 2, Terrain::GROUND_Y, Terrain::SIZE / 2,    Terrain::SIZE / 2, 0.0f,
+       -Terrain::SIZE / 2, Terrain::GROUND_Y, -Terrain::SIZE / 2,   0.0f, Terrain::SIZE / 2,
+        Terrain::SIZE / 2, Terrain::GROUND_Y, -Terrain::SIZE / 2,   Terrain::SIZE / 2, Terrain::SIZE / 2
         };
 
     return v;
@@ -294,8 +292,8 @@ void World::createTreePositions()
     std::mt19937 gen(rd()); // seed the generator
 
     // define range for x and z axis
-    int a = (-TERRAIN_SIZE / 2) + 2;
-    int b = (TERRAIN_SIZE / 2) - 2;
+    int a = (-Terrain::SIZE / 2) + 2;
+    int b = (Terrain::SIZE / 2) - 2;
     std::uniform_int_distribution<> xzPlane(a, b);
 
     // create random positions for trees
@@ -303,7 +301,7 @@ void World::createTreePositions()
     {
         float posX = xzPlane(gen);
         float posZ = xzPlane(gen);
-        glm::vec3 vec = {posX, GROUND_Y, posZ};
+        glm::vec3 vec = {posX, Terrain::GROUND_Y, posZ};
         treePos.push_back(vec);
     }
 }
@@ -314,8 +312,8 @@ void World::createSurroundingPositions()
     std::mt19937 gen(rd()); // seed the generator
 
     // define range for x and z axis
-    int a = (-TERRAIN_SIZE / 2) + 2;
-    int b = (TERRAIN_SIZE / 2) - 2;
+    int a = (-Terrain::SIZE / 2) + 2;
+    int b = (Terrain::SIZE / 2) - 2;
     std::uniform_int_distribution<> xzPlane(a, b);
 
     // create random positions for surroundings
@@ -325,7 +323,7 @@ void World::createSurroundingPositions()
         glm::vec3 vec;
         do
         {
-            vec = {xzPlane(gen), GROUND_Y, xzPlane(gen)};
+            vec = {xzPlane(gen), Terrain::GROUND_Y, xzPlane(gen)};
         } while (std::find(treePos.begin(), treePos.end(), vec) != treePos.end());
 
         // adjust y value where needed (otherwise some models are too high/low)

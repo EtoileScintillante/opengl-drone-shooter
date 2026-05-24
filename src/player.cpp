@@ -12,10 +12,10 @@ const float Player::SENSITIVITY = 0.1f;
 const float Player::ZOOM = 45.0f;
 
 // player movement limitations
-const float Player::BOTTOM_LIMIT_X = -World::TERRAIN_SIZE / 2;
-const float Player::UPPER_LIMIT_X = World::TERRAIN_SIZE / 2;
-const float Player::BOTTOM_LIMIT_Z = -World::TERRAIN_SIZE / 2;
-const float Player::UPPER_LIMIT_Z = World::TERRAIN_SIZE / 2;
+const float Player::BOTTOM_LIMIT_X = -Terrain::SIZE / 2;
+const float Player::UPPER_LIMIT_X = Terrain::SIZE / 2;
+const float Player::BOTTOM_LIMIT_Z = -Terrain::SIZE / 2;
+const float Player::UPPER_LIMIT_Z = Terrain::SIZE / 2;
 
 Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY)
 {
@@ -39,7 +39,7 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     WorldUp = up;
     Yaw = yaw;
     Pitch = pitch;
-    range = World::TERRAIN_SIZE * 2;
+    range = Terrain::SIZE * 2;
     updatePlayerVectors();
 
     // set base position of gun
@@ -79,7 +79,7 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     WorldUp = glm::vec3(upX, upY, upZ);
     Yaw = yaw;
     Pitch = pitch;
-    range = World::TERRAIN_SIZE * 2;
+    range = Terrain::SIZE * 2;
     updatePlayerVectors();
 
     // set base position of gun

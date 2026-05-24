@@ -12,7 +12,7 @@
 
 #include <cmath>
 #include <random>
-#include "world.h"
+#include "terrain_constants.h"
 #include "player.h"
 #include "ray.h"
 #include "box.h"

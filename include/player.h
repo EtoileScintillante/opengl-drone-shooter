@@ -11,9 +11,12 @@
 #ifndef __PLAYER_H__
 #define __PLAYER_H__
 
-#include "world.h"
+#include "terrain_constants.h"
+#include "model.h"
+#include "shader.h"
 #include "box.h"
 #include "miniaudio.h"
+#include <GLFW/glfw3.h>
 
 class Player
 {
