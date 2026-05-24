@@ -1,5 +1,6 @@
 /// === Shoot drones! === ///
 
+#include "game_state.h"
 #include "player.h"
 #include "enemy.h"
 #include "hud.h"
@@ -15,15 +16,18 @@ int main()
     std::string envType;
     std::cin >> envType;
 
-    // initialize and configure glwf, load OpenGL function pointers and create window
+    // initialize and configure glfw, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone Shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // prepare game related objects
-    Player player; 
+    Player player;
     World world(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;
     TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
+
+    // game state
+    GameState state = GameState::START;
 
     // timing
     float currentFrame;
@@ -42,50 +46,53 @@ int main()
         lastFrame = currentFrame;
         text.deltaTime = deltaTime;
 
-        // title/start screen
-        if (!player.hasStarted)
+        // ESC always closes the window
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        switch (state)
         {
-            startingScreen(text, player, world);
-            player.processKeyboardMouse(window, deltaTime); // pressing enter starts the game
+            case GameState::START:
+                startingScreen(text, player, world);
+                if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+                    state = GameState::PLAYING;
+                break;
+
+            case GameState::PLAYING:
+                // pass timing to objects that need it
+                player.currentFrame = currentFrame;
+                manager.currentTime = currentFrame;
+                manager.deltaTime   = deltaTime;
+
+                // input, world, player, enemies, collisions, HUD
+                player.processKeyboardMouse(window, deltaTime);
+                world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
+                player.controlPlayerRendering();
+                manager.manage(player.Position, player.GetViewMatrix(), player.getProjectionMatrix());
+                detector.Detect(player, manager);
+                inGameScreen(text, player);
+
+                // transition when player dies
+                if (!player.getLifeState())
+                    state = GameState::GAME_OVER;
+                break;
+
+            case GameState::GAME_OVER:
+                manager.reset();
+                endingScreen(text, player, world);
+                if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+                {
+                    player.resetAll();
+                    state = GameState::PLAYING;
+                }
+                break;
         }
-    
-        // game started
-        if (player.hasStarted && player.getLifeState())
-        {
-            // pass time variables to player and enemy manager
-            player.currentFrame = currentFrame; 
-            manager.currentTime = currentFrame;
-            manager.deltaTime = deltaTime;
 
-            // keyboard and mouse input
-            player.processKeyboardMouse(window, deltaTime);
-
-            // draw the world objects, the gun and the enemies
-            world.Draw(player.GetViewMatrix(), player.getProjectionMatrix());
-            player.controlPlayerRendering();
-            manager.manage(player.Position, player.GetViewMatrix(), player.getProjectionMatrix());
-
-            // handle collisions
-            detector.Detect(player, manager);
-
-            // HUD
-            inGameScreen(text, player);
-        }
-
-        // ending screen
-        if (player.hasStarted && (!player.getLifeState()))
-        {
-            manager.reset(); // reset enemies in case player restarts the game
-            endingScreen(text, player, world);
-            player.processKeyboardMouse(window, deltaTime); // pressing enter restarts the game
-        }
-
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // glfw: swap buffers and poll IO events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // glfw: terminate, clearing all previously allocated GLFW resources.
     glfwTerminate();
     return 0;
 }

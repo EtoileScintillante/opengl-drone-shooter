@@ -65,8 +65,7 @@ public:
     // collisions
     AABBox boundingBox; // bounding box for collision detection (the bounding box is a cuboid, positioned behind the gun)
     // game
-    bool hasStarted; // has player started the game?
-    float range;     // range of bullet
+    float range; // range of bullet
 
     /**
      * @brief Constructs a new Player object with vectors.

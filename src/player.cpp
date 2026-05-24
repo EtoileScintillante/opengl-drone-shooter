@@ -25,7 +25,6 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     firstMouse = true;
 
     // set player values
-    hasStarted = false;
     angle = 0;
     soundCount = 0;
     shot = false;
@@ -65,7 +64,6 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     firstMouse = true;
 
     // set player values
-    hasStarted = false;
     angle = 0;
     soundCount = 0;
     shot = false;
@@ -152,85 +150,52 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
 
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
-
-    // close window on ESC
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        glfwSetWindowShouldClose(window, true);
+        isWalking = true;
+        ProcessKeyboard(FORWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(BACKWARD, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(LEFT, deltaTime);
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        isWalking = true;
+        ProcessKeyboard(RIGHT, deltaTime);
     }
 
-    // in game (player can move and shoot)
-    if (hasStarted && isAlive)
+    // player shoots gun
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
     {
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        if (soundCount == 0)
         {
-            isWalking = true;
-            ProcessKeyboard(FORWARD, deltaTime);
+            soundCount++;
+            ma_engine_set_volume(&engine, 2.0);
+            ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL);
         }
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        {
-            isWalking = true;
-            ProcessKeyboard(BACKWARD, deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        {
-            isWalking = true;
-            ProcessKeyboard(LEFT, deltaTime);
-        }
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        {
-            isWalking = true;
-            ProcessKeyboard(RIGHT, deltaTime);
-        }
-
-        // player shoots gun
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) 
-        {
-            if (soundCount == 0)
-            {
-                soundCount++;
-                ma_engine_set_volume(&engine, 2.0);
-                ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL); 
-            }
-            shot = true;
-        }
-
-        // add walking motion and sound if player moves
-        if (isWalking)
-        {
-            ma_sound_set_volume(&walkingSound, 0.6);
-            ma_sound_start(&walkingSound);
-            walkingMotion();
-        }
-        else // stop playing sound if player stops walking
-        {
-            ma_sound_stop(&walkingSound);
-        }
-
-        isWalking = false; // set back to false again
+        shot = true;
     }
 
-    // player has not started game yet
-    if (!hasStarted)
+    // walking motion and audio
+    if (isWalking)
     {
-        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
-        {
-            hasStarted = true;
-        }
+        ma_sound_set_volume(&walkingSound, 0.6);
+        ma_sound_start(&walkingSound);
+        walkingMotion();
     }
-
-    // player died
-    if (hasStarted && (!isAlive))
+    else
     {
-        // stop sound in case player dies while walking
         ma_sound_stop(&walkingSound);
-
-        // reset values if player wants to play again (restart the game)
-        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) 
-        {
-            resetAll();
-        }
     }
+
+    isWalking = false;
 }
 
 void Player::ProcessMouseMovement(GLboolean constrainPitch)
@@ -423,14 +388,15 @@ void Player::controlPlayerRendering()
     createBoundingBox();
 
     // player dies if no health left
-    if (health <= 0) 
+    if (health <= 0)
     {
         /* in case player took a shot while dying, let the recoil animation finish before
-        going to the ending screen and resetting the values if player presses enter, 
+        going to the ending screen and resetting the values if player presses enter,
         otherwise the gun will spawn in a wrongly rotated way after restarting the game */
         if (!shot)
         {
             isAlive = false;
+            ma_sound_stop(&walkingSound); // stop walking sound if player dies mid-walk
         }
     }
 
@@ -491,25 +457,9 @@ void Player::gotAttacked(float damage)
 
 void Player::processKeyboardMouse(GLFWwindow *window, float deltaTime)
 {
-    // process mouse and keyboard if in game
-    if (hasStarted && isAlive)
-    {
-        processInput(window, deltaTime);
-        glfwGetCursorPos(window, &xPosIn, &yPosIn);
-        ProcessMouseMovement();
-    }
-
-    // pre-game: only keyboard
-    if (!hasStarted)
-    {
-        processInput(window, deltaTime);
-    }
-
-    // after player died: only keyboard
-    if (hasStarted && (!isAlive))
-    {
-        processInput(window, deltaTime);
-    }
+    processInput(window, deltaTime);
+    glfwGetCursorPos(window, &xPosIn, &yPosIn);
+    ProcessMouseMovement();
 }
 
 void Player::resetAll()
