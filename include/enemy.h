@@ -13,7 +13,8 @@
 #include <cmath>
 #include <random>
 #include "terrain_constants.h"
-#include "player.h"
+#include "model.h"
+#include "shader.h"
 #include "ray.h"
 #include "box.h"
 #include "miniaudio.h"
