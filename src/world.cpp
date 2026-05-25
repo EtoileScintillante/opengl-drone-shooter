@@ -5,11 +5,19 @@ const unsigned int World::N_SURROUNDINGS = 30;
 
 World::World()
 {
-    setupWorld();
+    isLoaded = false;
 }
 
 World::World(const std::string& envType)
 {
+    isLoaded = false;
+    load(envType);
+}
+
+void World::load(const std::string& envType)
+{
+    environmentType = "";
+
     // convert envType to lowercase
     std::string lowercaseEnvType = envType;
     std::transform(lowercaseEnvType.begin(), lowercaseEnvType.end(), lowercaseEnvType.begin(),
@@ -18,7 +26,6 @@ World::World(const std::string& envType)
     // check if envType is valid
     if (lowercaseEnvType == "desert" || lowercaseEnvType == "snow" ||
         lowercaseEnvType == "forest" || lowercaseEnvType == "night") {
-        // set the environmentType if it's valid
         environmentType = lowercaseEnvType;
     }
     else
@@ -28,13 +35,14 @@ World::World(const std::string& envType)
         std::cout << "Program will now randomly choose one.\n";
     }
 
-    // continue with the setup
-    // in case if envType is not valid, it will choose a random env. type
     setupWorld();
+    isLoaded = true;
 }
 
 void World::Draw(glm::mat4 View, glm::mat4 Projection)
 {
+    if (!isLoaded) return;
+
     view = View;
     projection = Projection;
 
@@ -204,6 +212,8 @@ void World::drawGround()
 
 void World::drawSkyBox(bool grayscale)
 {
+    if (!isLoaded) return;
+
     // render skybox
     glDepthFunc(GL_LEQUAL);
     shaderSkybox.use();

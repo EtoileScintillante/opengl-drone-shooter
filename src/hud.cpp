@@ -1,14 +1,16 @@
 #include "hud.h"
+#include "screen_renderer.h"
+#include "texture_loading.h"
 
-void startingScreen(TextRenderer &tr, Player &player, World &world)
+void startingScreen(TextRenderer &tr, Player &player)
 {
     // update blink time
     tr.blink += tr.deltaTime + 0.02; // add small offset to make text blink faster
 
-    // render skybox
-    world.view = player.GetViewMatrix();
-    world.projection = player.getProjectionMatrix();
-    world.drawSkyBox(false);
+    // render background image (lazy-initialized on first call)
+    static ScreenRenderer renderer("shaders/screen.vert", "shaders/screen.frag");
+    static unsigned int bgTexture = TextureFromFile("game_start.png", "resources/screens", true);
+    renderer.draw(bgTexture);
 
     // set projection matrix and render title screen with instructions on how to play
     tr.projection = player.getOrthoProjectionMatrix();
@@ -21,7 +23,7 @@ void startingScreen(TextRenderer &tr, Player &player, World &world)
     float textScale = std::min(xScale, yScale);
 
     // title
-    tr.RenderText("Drone  Shooter", 75.0f * xScale, 400.0f * yScale, 1.8f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
+    tr.RenderText("Drone  Shooter", 180.0f * xScale, 400.0f * yScale, 1.2f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
 
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
@@ -83,15 +85,15 @@ void inGameScreen(TextRenderer &tr, Player &player)
     
 }
 
-void endingScreen(TextRenderer &tr, Player &player, World &world)
+void endingScreen(TextRenderer &tr, Player &player)
 {
     // update blink time
     tr.blink += tr.deltaTime + 0.02; // add small offset to make text blink faster
 
-    // render skybox in grayscale
-    world.view = player.GetViewMatrix();
-    world.projection = player.getProjectionMatrix();
-    world.drawSkyBox(true);
+    // render background image (lazy-initialized on first call)
+    static ScreenRenderer renderer("shaders/screen.vert", "shaders/screen.frag");
+    static unsigned int bgTexture = TextureFromFile("game_over.png", "resources/screens", true);
+    renderer.draw(bgTexture);
 
     // set projection matrix and render game over screen
     tr.projection = player.getOrthoProjectionMatrix();

@@ -13,32 +13,29 @@
 
 #include "text_renderer.h"
 #include "player.h"
-#include "world.h"
 
 /**
- * @brief Renders simple start/title screen.
- * 
+ * @brief Renders start/title screen with a fullscreen background image.
+ *
  * @param tr TextRenderer object.
  * @param player Player object.
- * @param world World object (for drawing the skybox as background).
  */
-void startingScreen(TextRenderer &tr, Player &player, World &world);
+void startingScreen(TextRenderer &tr, Player &player);
 
 /**
  * @brief Renders text that should be visible while playing: player's kills and health.
- * 
+ *
  * @param tr TextRenderer object.
  * @param player Player object.
  */
 void inGameScreen(TextRenderer &tr, Player &player);
 
 /**
- * @brief Renders simple ending screen (with option to play again).
- * 
+ * @brief Renders ending screen with a fullscreen background image.
+ *
  * @param tr TextRenderer object.
  * @param player Player object.
- * @param world World object (for drawing the skybox as background).
  */
-void endingScreen(TextRenderer &tr, Player &player, World &world);
+void endingScreen(TextRenderer &tr, Player &player);
 
 #endif /*__HUD__*/

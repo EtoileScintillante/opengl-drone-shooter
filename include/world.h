@@ -28,20 +28,31 @@ public:
     glm::mat4 projection; // projection matrix
     // environment type
     std::string environmentType; // desert, snow, forest, night
+    bool isLoaded;               // true after load() has been called
 
-    /// Default constructor; constructs a new world object (randomly chooses environment type).
+    /// Default constructor; constructs an empty World with no GPU resources allocated.
     World();
 
     /**
-     * @brief Constructor with environmentType parameter.
-     * 
+     * @brief Convenience constructor: calls load(envType).
+     *
      * @param envType The environment type (desert, snow, forest, night).
      */
     World(const std::string& envType);
 
     /**
+     * @brief Loads all GPU resources for the given environment.
+     * Safe to call once the OpenGL context exists.
+     * Randomly picks an environment if envType is empty or invalid.
+     *
+     * @param envType The environment type (desert, snow, forest, night).
+     */
+    void load(const std::string& envType);
+
+    /**
      * @brief Renders the world (ground, trees, flowers/rocks/pumpkins and skybox).
-     * 
+     * Just returns if load() has not been called yet.
+     *
      * @param view view matrix.
      * @param projection projection matrix.
      */

@@ -2,6 +2,7 @@
 
 #include "game_state.h"
 #include "player.h"
+#include "world.h"
 #include "enemy.h"
 #include "hud.h"
 #include "glfw_setup.h"
@@ -21,7 +22,8 @@ int main()
 
     // prepare game related objects
     Player player;
-    World world(envType); // will choose env. type randomly if input is invalid
+    World world;
+    world.load(envType); // will choose env. type randomly if input is invalid
     EnemyManager manager;
     CollisionDetector detector;
     TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
@@ -53,7 +55,7 @@ int main()
         switch (state)
         {
             case GameState::START:
-                startingScreen(text, player, world);
+                startingScreen(text, player);
                 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
                     state = GameState::PLAYING;
                 break;
@@ -79,7 +81,7 @@ int main()
 
             case GameState::GAME_OVER:
                 manager.reset();
-                endingScreen(text, player, world);
+                endingScreen(text, player);
                 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
                 {
                     player.resetAll();
