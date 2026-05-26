@@ -15,12 +15,13 @@
 #include "player.h"
 
 /**
- * @brief Renders start/title screen with a fullscreen background image.
+ * @brief Renders start/title screen with a fullscreen background image and environment selector.
  *
  * @param tr TextRenderer object.
  * @param player Player object.
+ * @param selectedEnv index of currently highlighted environment (0=desert, 1=forest, 2=snow, 3=night).
  */
-void startingScreen(TextRenderer &tr, Player &player);
+void startingScreen(TextRenderer &tr, Player &player, int selectedEnv);
 
 /**
  * @brief Renders text that should be visible while playing: player's kills and health.

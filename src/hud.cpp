@@ -2,7 +2,7 @@
 #include "screen_renderer.h"
 #include "texture_loading.h"
 
-void startingScreen(TextRenderer &tr, Player &player)
+void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
 {
     // update blink time
     tr.blink += tr.deltaTime + 0.02; // add small offset to make text blink faster
@@ -23,22 +23,47 @@ void startingScreen(TextRenderer &tr, Player &player)
     float textScale = std::min(xScale, yScale);
 
     // title
-    tr.RenderText("Drone  Shooter", 180.0f * xScale, 400.0f * yScale, 1.2f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
+    tr.RenderTextBordered("Drone  Shooter", 180.0f * xScale, 400.0f * yScale, 1.2f * textScale,
+                           glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
     {
-        tr.RenderText("Press  ENTER  to  start", 253.0f * xScale, 303.0f * yScale, 0.55f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
+        tr.RenderTextBordered("Press  ENTER  to  start", 253.0f * xScale, 303.0f * yScale, 0.55f * textScale,
+                               glm::vec3(0.400f, 0.569f, 0.086f), glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // instructions (it looks weird but this way the colons are aligned)
     float textSize = 0.4f * textScale;
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    tr.RenderText("Space  :  take shot", 310.0f * xScale, 180.0f * yScale, textSize, textColor);
-    tr.RenderText("W              :   forwards", 310.0f * xScale, 155.0f * yScale, textSize, textColor);
-    tr.RenderText("S                :   backwards", 310.0f * xScale, 135.0f * yScale, textSize, textColor);
-    tr.RenderText("D                :   right", 310.0f * xScale, 115.0f * yScale, textSize, textColor);
-    tr.RenderText("A               :   left", 310.0f * xScale, 95.0f * yScale, textSize, textColor);
+    tr.RenderText("Mouse  :  look around", 20.0f * xScale, 195.0f * yScale, textSize, textColor);
+    tr.RenderText("Space    :  take shot", 20.0f * xScale, 175.0f * yScale, textSize, textColor);
+    tr.RenderText("W                :   forwards", 20.0f * xScale, 155.0f * yScale, textSize, textColor);
+    tr.RenderText("S                  :   backwards", 20.0f * xScale, 135.0f * yScale, textSize, textColor);
+    tr.RenderText("D                  :   right", 20.0f * xScale, 115.0f * yScale, textSize, textColor);
+    tr.RenderText("A                 :   left", 20.0f * xScale, 95.0f * yScale, textSize, textColor);
+
+    // environment selector
+    const std::string envNames[4] = {"Desert", "Forest", "Snow", "Night"};
+    float selectorTextSize = 0.45f * textScale;
+    float nameX   = 380.0f * xScale; // env name column
+    float arrowX  = 352.0f * xScale; // ">" column, slightly to the left
+    float startY  = 175.0f;
+    float stepY   = 25.0f;
+
+    for (int i = 0; i < 4; i++)
+    {
+        float y = (startY - i * stepY) * yScale;
+        if (i == selectedEnv)
+        {
+            tr.RenderText(">", arrowX, y, selectorTextSize, glm::vec3(1.0f, 0.6f, 0.0f));
+            tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(1.0f, 0.6f, 0.0f));
+        }
+        else
+        {
+            tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(1.0f, 1.0f, 1.0f));
+        }
+    }
 }
 
 void inGameScreen(TextRenderer &tr, Player &player)
@@ -105,13 +130,16 @@ void endingScreen(TextRenderer &tr, Player &player)
     // also calculate text scale factor
     float textScale = std::min(xScale, yScale);
 
-    // game over
-    tr.RenderText("Game  Over", 183.0f * xScale, 400.0f * yScale, 1.6f * textScale, glm::vec3(0.7f, 0.0f, 0.2f));
+    // game over with white border (FT_Stroker-generated outline)
+    tr.RenderTextBordered("Game  Over", 183.0f * xScale, 400.0f * yScale, 1.6f * textScale,
+                           glm::vec3(0.7f, 0.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f));
 
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
     {
-        tr.RenderText("Press  ENTER  to  play  again  or  ESC  to  quit", 115.0f * xScale, 210.0f * yScale, 0.55f * textScale, glm::vec3(0.870f, 0.592f, 0.0348f));
+        tr.RenderTextBordered("Press  ENTER  to  play  again  or  ESC  to  quit",
+                               115.0f * xScale, 210.0f * yScale, 0.55f * textScale,
+                               glm::vec3(0.870f, 0.592f, 0.0348f), glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
     // kill count

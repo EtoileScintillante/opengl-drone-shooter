@@ -12,24 +12,24 @@
 
 int main()
 {
-    // ask user for the type of environment
-    std::cout << "Choose the environment you want to play in (desert, forest, snow, night): ";
-    std::string envType;
-    std::cin >> envType;
-
     // initialize and configure glfw, load OpenGL function pointers and create window
     GLFWwindow *window = setup("Drone Shooter", Player::SCR_HEIGHT, Player::SCR_WIDTH);
 
     // prepare game related objects
     Player player;
-    World world;
-    world.load(envType); // will choose env. type randomly if input is invalid
+    World world; // loaded later, after player selects environment on start screen
     EnemyManager manager;
     CollisionDetector detector;
     TextRenderer text("resources/font/theboldfont.ttf", "shaders/text.vert", "shaders/text.frag");
 
     // game state
     GameState state = GameState::START;
+
+    // environment selection
+    const std::string envNames[4] = {"desert", "forest", "snow", "night"};
+    int selectedEnv = 0;
+    bool wWasPressed = false;
+    bool sWasPressed = false;
 
     // timing
     float currentFrame;
@@ -55,10 +55,24 @@ int main()
         switch (state)
         {
             case GameState::START:
-                startingScreen(text, player);
+            {
+                // navigate env selector with edge detection to avoid skipping entries
+                bool wNow = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
+                bool sNow = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+                if (wNow && !wWasPressed) selectedEnv = (selectedEnv - 1 + 4) % 4;
+                if (sNow && !sWasPressed) selectedEnv = (selectedEnv + 1) % 4;
+                wWasPressed = wNow;
+                sWasPressed = sNow;
+
+                startingScreen(text, player, selectedEnv);
+
                 if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+                {
+                    world.load(envNames[selectedEnv]);
                     state = GameState::PLAYING;
+                }
                 break;
+            }
 
             case GameState::PLAYING:
                 // pass timing to objects that need it

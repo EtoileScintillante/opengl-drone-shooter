@@ -24,6 +24,8 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include FT_STROKER_H
 
 /// Holds all state information relevant to a character as loaded using FreeType.
 struct Character
@@ -62,11 +64,25 @@ public:
      */
     void RenderText(std::string_view text, float x, float y, float scale, glm::vec3 color);
 
+    /**
+     * @brief Renders text with a solid border using FT_Stroker-generated glyph outlines.
+     * Border pass renders first so the fill sits cleanly on top.
+     *
+     * @param text text to render.
+     * @param x x position.
+     * @param y y position.
+     * @param scale scale factor.
+     * @param fillColor color of the text fill.
+     * @param borderColor color of the border.
+     */
+    void RenderTextBordered(std::string_view text, float x, float y, float scale, glm::vec3 fillColor, glm::vec3 borderColor);
+
 private:
     std::string font;          // path to font
     FT_Library ft;             // FreeType Library
     FT_Face face;              // needed to load font as a face
-    Character characters[95];  // covers ASCII values from 32 to 127
+    Character characters[95];       // fill glyphs, covers ASCII 32–126
+    Character borderCharacters[95]; // stroked border glyphs, same range
     Shader shader;             // shader
     unsigned int VBO, VAO;     // data buffers
 
