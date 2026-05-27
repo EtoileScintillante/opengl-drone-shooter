@@ -33,15 +33,12 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
                                glm::vec3(0.400f, 0.569f, 0.086f), glm::vec3(1.0f, 1.0f, 1.0f));
     }
 
-    // instructions (it looks weird but this way the colons are aligned)
-    float textSize = 0.4f * textScale;
+    float textSize = 0.35f * textScale;
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    tr.RenderText("Mouse  :  look around", 20.0f * xScale, 195.0f * yScale, textSize, textColor);
-    tr.RenderText("Space    :  take shot", 20.0f * xScale, 175.0f * yScale, textSize, textColor);
-    tr.RenderText("W                :   forwards", 20.0f * xScale, 155.0f * yScale, textSize, textColor);
-    tr.RenderText("S                  :   backwards", 20.0f * xScale, 135.0f * yScale, textSize, textColor);
-    tr.RenderText("D                  :   right", 20.0f * xScale, 115.0f * yScale, textSize, textColor);
-    tr.RenderText("A                 :   left", 20.0f * xScale, 95.0f * yScale, textSize, textColor);
+    tr.RenderText("How  to  play :", 20.0f * xScale, 175.0f * yScale, textSize, textColor);
+    tr.RenderText("Mouse   -   look  around", 20.0f * xScale, 150.0f * yScale, textSize, textColor);
+    tr.RenderText("Space   -   shoot", 20.0f * xScale, 125.0f * yScale, textSize, textColor);
+    tr.RenderText("WASD / arrows   -   walk", 20.0f * xScale, 100.0f * yScale, textSize, textColor);
 
     // environment selector
     const std::string envNames[4] = {"Desert", "Forest", "Snow", "Night"};
