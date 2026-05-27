@@ -57,8 +57,8 @@ int main()
             case GameState::START:
             {
                 // navigate env selector with edge detection to avoid skipping entries
-                bool wNow = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS;
-                bool sNow = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS;
+                bool wNow = glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS;
+                bool sNow = glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS;
                 if (wNow && !wWasPressed) selectedEnv = (selectedEnv - 1 + 4) % 4;
                 if (sNow && !sWasPressed) selectedEnv = (selectedEnv + 1) % 4;
                 wWasPressed = wNow;

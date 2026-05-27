@@ -150,22 +150,22 @@ void Player::ProcessKeyboard(Player_Movement direction, float deltaTime)
 
 void Player::processInput(GLFWwindow *window, float deltaTime)
 {
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
     {
         isWalking = true;
         ProcessKeyboard(FORWARD, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
     {
         isWalking = true;
         ProcessKeyboard(BACKWARD, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
     {
         isWalking = true;
         ProcessKeyboard(LEFT, deltaTime);
     }
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
     {
         isWalking = true;
         ProcessKeyboard(RIGHT, deltaTime);
