@@ -96,4 +96,4 @@ During the development I regularly uploaded videos to YouTube to keep track of t
 - [17 Oct. 2022](https://youtu.be/Spv8I2WCzuU) improved enemy movement and added text on screen
 - [22 Oct. 2022](https://youtu.be/Ox03BBIdRAc) enemies can kill player
 - [30 Dec. 2023](https://youtu.be/4EliOM1DS_s) new maps: forest, desert, snow and night
-- [30 May, 2026](https://youtu.be/SiVTnY3V7iA) added reloading logic, new start & game over screens, better text rendering, better enemy explosion rendering
+- [30 May. 2026](https://youtu.be/SiVTnY3V7iA) added reloading logic, new start & game over screens, better text rendering, better enemy explosion rendering
