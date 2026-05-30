@@ -2,6 +2,8 @@
 #include "screen_renderer.h"
 #include "texture_loading.h"
 
+#include <algorithm>
+
 void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
 {
     // update blink time
@@ -23,13 +25,19 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
     float textScale = std::min(xScale, yScale);
 
     // title
-    tr.RenderTextBordered("Drone  Shooter", 180.0f * xScale, 400.0f * yScale, 1.2f * textScale,
+    std::string_view title = "DRONE  SHOOTER";
+    float titleScale = 1.52f * textScale;
+    float titleX = (static_cast<float>(player.SCR_WIDTH) - tr.MeasureText(title, titleScale)) * 0.5f;
+    tr.RenderTextBordered(title, titleX, 475.0f * yScale, titleScale,
                            glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
     {
-        tr.RenderText("Press  ENTER  to  start", 253.0f * xScale, 303.0f * yScale, 0.55f * textScale, glm::vec3(0.82f, 0.82f, 0.82f));
+        std::string_view startPrompt = "Press  ENTER  to  start";
+        float startPromptScale = 0.55f * textScale;
+        float startPromptX = (static_cast<float>(player.SCR_WIDTH) - tr.MeasureText(startPrompt, startPromptScale)) * 0.5f;
+        tr.RenderText(startPrompt, startPromptX, 315.0f * yScale, startPromptScale, glm::vec3(0.82f, 0.82f, 0.82f));
     }
 
     float textSize = 0.35f * textScale;
@@ -42,9 +50,10 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
     // environment selector
     const std::string envNames[4] = {"Desert", "Forest", "Snow", "Night"};
     float selectorTextSize = 0.55f * textScale;
-    float nameX   = 370.0f * xScale; // env name column
-    float arrowX  = 338.0f * xScale; // ">" column, slightly to the left
-    float startY  = 195.0f;
+    float selectedSelectorTextSize = selectorTextSize + 0.05f;
+    float nameCenterX = static_cast<float>(player.SCR_WIDTH) * 0.5f;
+    float arrowX = nameCenterX - 72.0f * xScale;
+    float startY  = 215.0f;
     float stepY   = 33.0f;
 
     for (int i = 0; i < 4; i++)
@@ -52,11 +61,13 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
         float y = (startY - i * stepY) * yScale;
         if (i == selectedEnv)
         {
+            float nameX = nameCenterX - tr.MeasureText(envNames[i], selectedSelectorTextSize) * 0.5f;
             tr.RenderTextBordered(">", arrowX, y, selectorTextSize, glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
-            tr.RenderTextBordered(envNames[i], nameX, y, selectorTextSize + 0.05, glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            tr.RenderTextBordered(envNames[i], nameX, y, selectedSelectorTextSize, glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         }
         else
         {
+            float nameX = nameCenterX - tr.MeasureText(envNames[i], selectorTextSize) * 0.5f;
             tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(0.392f, 0.263f, 1.0f));
         }
     }
@@ -64,14 +75,9 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
 
 void inGameScreen(TextRenderer &tr, Player &player)
 {
-    // update blink time
-    tr.blink += tr.deltaTime + 0.03; // add small offset to make text blink faster
-
     // set projection matrix and render in-game HUD
     tr.projection = player.getOrthoProjectionMatrix();
     int playerHealth = static_cast<int>(player.getHealth());
-    std::string health = "Health:  " + std::to_string(playerHealth);
-    std::string kill = "Kills:  " + std::to_string(player.getKills());
 
     // calculate scaling factors (all x-pos and y-pos in RenderText are based on a screen with height = 600 and width = 800)
     float xScale = static_cast<float>(player.SCR_WIDTH) / 800.0f;
@@ -80,21 +86,49 @@ void inGameScreen(TextRenderer &tr, Player &player)
     // also calculate text scale factor
     float textScale = std::min(xScale, yScale);
 
-    // kill count
-    tr.RenderText(kill, 365.0f * xScale, 565.0f * yScale, 0.5f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
+    const glm::vec3 black(0.0f, 0.0f, 0.0f);
+    const glm::vec3 white(1.0f, 1.0f, 1.0f);
 
-    // player's health: add blinking effect and red color if it gets low
-    if (playerHealth <= 20)
+    int visibleHealth = playerHealth;
+    if (visibleHealth < 0)
     {
-        if (static_cast<int>(tr.blink) % 2 == 0)
-        {
-            tr.RenderText(health, 348.0f * xScale, 540.0f * yScale, 0.5f * textScale, glm::vec3(0.7f, 0.0f, 0.1f));
-        }
+        visibleHealth = 0;
     }
-    else
+    else if (visibleHealth > 100)
     {
-        tr.RenderText(health, 348.0f * xScale, 540.0f * yScale, 0.5f * textScale, glm::vec3(0.0f, 0.0f, 0.0f));
+        visibleHealth = 100;
     }
+
+    int filledBars = visibleHealth / 10;
+    std::string healthBar = "[" + std::string(filledBars, '#') + std::string(10 - filledBars, '-') + "]  " + std::to_string(visibleHealth);
+
+    glm::vec3 healthColor(0.0f, 0.82f, 0.22f);
+    if (visibleHealth < 30)
+    {
+        healthColor = glm::vec3(0.86f, 0.0f, 0.12f);
+    }
+    else if (visibleHealth <= 60)
+    {
+        healthColor = glm::vec3(1.0f, 0.46f, 0.0f);
+    }
+
+    float leftMargin = 20.0f * xScale;
+    tr.RenderTextBordered("HEALTH", leftMargin, 565.0f * yScale, 0.48f * textScale, black, white);
+    tr.RenderTextBordered(healthBar, leftMargin, 525.0f * yScale, 0.45f * textScale, healthColor, white);
+
+    std::string killsLabel = "KILLS";
+    std::string killCount = std::to_string(player.getKills());
+    float killsLabelScale = 0.48f * textScale;
+    float killCountScale = 0.68f * textScale;
+    float rightMargin = 24.0f * xScale;
+    float blockRight = static_cast<float>(player.SCR_WIDTH) - rightMargin;
+    float killsBlockWidth = std::max(tr.MeasureText(killsLabel, killsLabelScale), tr.MeasureText(killCount, killCountScale));
+    float killsCenter = blockRight - killsBlockWidth * 0.5f;
+
+    tr.RenderTextBordered(killsLabel, killsCenter - tr.MeasureText(killsLabel, killsLabelScale) * 0.5f,
+                          565.0f * yScale, killsLabelScale, black, white);
+    tr.RenderTextBordered(killCount, killsCenter - tr.MeasureText(killCount, killCountScale) * 0.5f,
+                          522.0f * yScale, killCountScale, black, white);
 
     // cross hairs
     float textSize = 0.3f * textScale;
@@ -108,6 +142,9 @@ void inGameScreen(TextRenderer &tr, Player &player)
 
 void endingScreen(TextRenderer &tr, Player &player)
 {
+    // update blink time
+    tr.blink += tr.deltaTime + 0.02;
+
     // render background image (lazy-initialized on first call)
     static ScreenRenderer renderer("shaders/screen.vert", "shaders/screen.frag");
     static unsigned int bgTexture = TextureFromFile("game_over.png", "resources/screens", true);
@@ -137,7 +174,10 @@ void endingScreen(TextRenderer &tr, Player &player)
 
     // The laser in the background sits slightly above center, so the title stays above it
     // while the stats and actions form a centered stack below it.
-    renderCenteredBordered("GAME OVER", 430.0f, 1.75f * textScale, red, white);
+    if (static_cast<int>(tr.blink) % 2 == 0)
+    {
+        renderCenteredBordered("GAME OVER", 430.0f, 1.75f * textScale, red, white);
+    }
     renderCenteredBordered("KILLS", 292.0f, 0.62f * textScale, white, red);
     renderCenteredBordered(std::to_string(player.getKills()), 215.0f, 1.22f * textScale, white, red);
     renderCenteredBordered("[ENTER]    -    RESTART", 158.0f, 0.50f * textScale, white, red);

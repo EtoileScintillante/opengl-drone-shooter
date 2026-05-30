@@ -29,7 +29,13 @@ TextRenderer::TextRenderer(std::string pathToFont, std::string pathVertexShader,
 
 void TextRenderer::RenderText(std::string_view text, float x, float y, float scale, glm::vec3 color)
 {
+    GLboolean depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+    GLboolean depthMask;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+
     // set OpenGL state
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -76,6 +82,11 @@ void TextRenderer::RenderText(std::string_view text, float x, float y, float sca
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
+    glDepthMask(depthMask);
+    if (depthTestEnabled)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
 }
 
 float TextRenderer::MeasureText(std::string_view text, float scale) const
@@ -186,6 +197,12 @@ void TextRenderer::loadFace()
 
 void TextRenderer::RenderTextBordered(std::string_view text, float x, float y, float scale, glm::vec3 fillColor, glm::vec3 borderColor)
 {
+    GLboolean depthTestEnabled = glIsEnabled(GL_DEPTH_TEST);
+    GLboolean depthMask;
+    glGetBooleanv(GL_DEPTH_WRITEMASK, &depthMask);
+
+    glDisable(GL_DEPTH_TEST);
+    glDepthMask(GL_FALSE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     shader.use();
@@ -254,6 +271,11 @@ void TextRenderer::RenderTextBordered(std::string_view text, float x, float y, f
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_BLEND);
+    glDepthMask(depthMask);
+    if (depthTestEnabled)
+    {
+        glEnable(GL_DEPTH_TEST);
+    }
 }
 
 void TextRenderer::configBuffers()
