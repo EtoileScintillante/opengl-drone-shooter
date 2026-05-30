@@ -117,6 +117,12 @@ public:
     /// Returns player's kill count.
     int getKills() const;
 
+    /// Returns how many shots are available before the next reload.
+    int getShotsRemaining() const;
+
+    /// Returns the maximum shots available after a reload.
+    int getMaxShotsBeforeReload() const;
+
     /// Update player's kill count.
     void updateKills();
 
@@ -146,6 +152,10 @@ private:
     float angle;              // recoil animation: this angle will be updated every frame to make the gun rotate up or down
     bool startRecoil;         // start recoil animation?
     bool goDown;              // recoil animation: gun needs to move down if true
+    int shotsRemaining;       // shots left before reload animation starts
+    bool isReloading;         // is the gun currently reloading?
+    float reloadStartTime;    // time when reload animation started
+    glm::mat4 reloadBaseModelMatrix; // gun transform captured when reload starts
     // player movement control (mouse input)
     bool isWalking;  // is player walking?
     bool firstMouse; // first time moving mouse?
@@ -158,6 +168,7 @@ private:
     std::string gunshotSoundPath; // path to gunshot wav file
     std::string walkSoundPath;    // path to walking wav file
     std::string damageSoundPath;  // path to damage wav
+    std::string reloadSoundPath;  // path to reload wav
     // matrices
     glm::mat4 projection;   // projection matrix
     glm::mat4 viewLocalMat; // view matrix with positional information removed (needed for rendering the gun)
@@ -216,6 +227,12 @@ private:
 
     /// Starts second part of recoil animation: gun rotates down to base position.
     void endRecoilAnimation();
+
+    /// Starts reload animation after the magazine is empty.
+    void startReloadAnimation();
+
+    /// Moves the gun out of view and back in during reload.
+    void updateReloadAnimation();
 
     /// Calculates the front vector from the Player's (updated) Euler Angles.
     void updatePlayerVectors();

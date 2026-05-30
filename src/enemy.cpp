@@ -29,9 +29,9 @@ Enemy::Enemy()
     generatePosition();
 
     // wav file paths
-    soundExplosionPath = "resources/audio/mixkit-shatter-shot-explosion-1693.wav";
-    soundHoverPath = "resources/audio/helicopter-hovering-01.wav";
-    soundLaserPath = "resources/audio/blaster-2-81267.wav";
+    soundExplosionPath = "resources/audio/explosion.wav";
+    soundHoverPath = "resources/audio/hover.wav";
+    soundLaserPath = "resources/audio/laser-beam.wav";
 
     // miniaudio engine setup
     ma_result result = ma_engine_init(NULL, &engine);
@@ -145,7 +145,7 @@ void Enemy::dyingAnimation()
     // duration of explosion is about a second
     if (explodeTime <= 0.25)
     {
-        magnitude += 1.0f; // increase with every frame
+        magnitude = explodeTime * 8.0f;
         spawn();
     }
     // spawn enemy again in new position after time interval has passed

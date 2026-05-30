@@ -102,7 +102,7 @@ void inGameScreen(TextRenderer &tr, Player &player)
     int filledBars = visibleHealth / 10;
     std::string healthBar = "[" + std::string(filledBars, '#') + std::string(10 - filledBars, '-') + "]  " + std::to_string(visibleHealth);
 
-    glm::vec3 healthColor(0.0f, 0.82f, 0.22f);
+    glm::vec3 healthColor(0.13f, 0.59f, 0.00f);
     if (visibleHealth < 30)
     {
         healthColor = glm::vec3(0.86f, 0.0f, 0.12f);
@@ -115,6 +115,20 @@ void inGameScreen(TextRenderer &tr, Player &player)
     float leftMargin = 20.0f * xScale;
     tr.RenderTextBordered("HEALTH", leftMargin, 565.0f * yScale, 0.48f * textScale, black, white);
     tr.RenderTextBordered(healthBar, leftMargin, 525.0f * yScale, 0.45f * textScale, healthColor, white);
+
+    int shotsRemaining = player.getShotsRemaining();
+    int maxShots = player.getMaxShotsBeforeReload();
+    std::string ammoBar = "AMMO  [  ";
+    for (int i = 0; i < maxShots; i++)
+    {
+        ammoBar += i < shotsRemaining ? "|" : "-";
+        if (i < maxShots - 1)
+        {
+            ammoBar += " ";
+        }
+    }
+    ammoBar += "  ]  " + std::to_string(shotsRemaining);
+    tr.RenderTextBordered(ammoBar, leftMargin, 485.0f * yScale, 0.45f * textScale, black, white);
 
     std::string killsLabel = "KILLS";
     std::string killCount = std::to_string(player.getKills());
@@ -132,7 +146,6 @@ void inGameScreen(TextRenderer &tr, Player &player)
 
     // cross hairs
     float textSize = 0.3f * textScale;
-    glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
     float centerX = static_cast<float>(player.SCR_WIDTH) * 0.5f;
     float centerY = static_cast<float>(player.SCR_HEIGHT) * 0.5f;
     float horizontalGap = 42.0f * textScale;
@@ -140,10 +153,10 @@ void inGameScreen(TextRenderer &tr, Player &player)
     float dashWidth = tr.MeasureText("-", textSize);
     float barWidth = tr.MeasureText("|", textSize);
 
-    tr.RenderText("-", centerX - horizontalGap - dashWidth * 0.5f, centerY, textSize, textColor);
-    tr.RenderText("-", centerX + horizontalGap - dashWidth * 0.5f, centerY, textSize, textColor);
-    tr.RenderText("|", centerX - barWidth * 0.5f, centerY + verticalGap, textSize, textColor);
-    tr.RenderText("|", centerX - barWidth * 0.5f, centerY - verticalGap, textSize, textColor);
+    tr.RenderTextBordered("-", centerX - horizontalGap - dashWidth * 0.5f, centerY, textSize, white, black);
+    tr.RenderTextBordered("-", centerX + horizontalGap - dashWidth * 0.5f, centerY, textSize, white, black);
+    tr.RenderTextBordered("|", centerX - barWidth * 0.5f, centerY + verticalGap, textSize, white, black);
+    tr.RenderTextBordered("|", centerX - barWidth * 0.5f, centerY - verticalGap, textSize, white, black);
     
 }
 

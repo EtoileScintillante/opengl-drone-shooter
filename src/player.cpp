@@ -11,6 +11,11 @@ const float Player::SPEED = 5.0f;
 const float Player::SENSITIVITY = 0.1f;
 const float Player::ZOOM = 45.0f;
 
+static constexpr int MAX_SHOTS_BEFORE_RELOAD = 5;
+static constexpr float RELOAD_DURATION = 1.5f;
+static constexpr float RELOAD_HIDDEN_Y = -1.35f;
+static constexpr float RELOAD_NOSE_DOWN_ANGLE = -55.0f;
+
 // player movement limitations
 const float Player::BOTTOM_LIMIT_X = -Terrain::SIZE / 2;
 const float Player::UPPER_LIMIT_X = Terrain::SIZE / 2;
@@ -30,6 +35,10 @@ Player::Player(glm::vec3 position, glm::vec3 up, float yaw, float pitch) : Front
     shot = false;
     startRecoil = false;
     goDown = false;
+    shotsRemaining = MAX_SHOTS_BEFORE_RELOAD;
+    isReloading = false;
+    reloadStartTime = 0.0f;
+    reloadBaseModelMatrix = glm::mat4(1.0f);
     kills = 0;
     isAlive = true;
     health = 100;
@@ -69,6 +78,10 @@ Player::Player(float posX, float posY, float posZ, float upX, float upY, float u
     shot = false;
     startRecoil = false;
     goDown = false;
+    shotsRemaining = MAX_SHOTS_BEFORE_RELOAD;
+    isReloading = false;
+    reloadStartTime = 0.0f;
+    reloadBaseModelMatrix = glm::mat4(1.0f);
     kills = 0;
     isAlive = true;
     health = 100;
@@ -172,14 +185,12 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     }
 
     // player shoots gun
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !shot && !isReloading && shotsRemaining > 0)
     {
-        if (soundCount == 0)
-        {
-            soundCount++;
-            ma_engine_set_volume(&engine, 2.0);
-            ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL);
-        }
+        shotsRemaining--;
+        soundCount++;
+        ma_engine_set_volume(&engine, 2.0);
+        ma_engine_play_sound(&engine, gunshotSoundPath.c_str(), NULL);
         shot = true;
     }
 
@@ -188,7 +199,10 @@ void Player::processInput(GLFWwindow *window, float deltaTime)
     {
         ma_sound_set_volume(&walkingSound, 0.6);
         ma_sound_start(&walkingSound);
-        walkingMotion();
+        if (!isReloading)
+        {
+            walkingMotion();
+        }
     }
     else
     {
@@ -347,6 +361,16 @@ int Player::getKills() const
     return kills;
 }
 
+int Player::getShotsRemaining() const
+{
+    return shotsRemaining;
+}
+
+int Player::getMaxShotsBeforeReload() const
+{
+    return MAX_SHOTS_BEFORE_RELOAD;
+}
+
 void Player::updateKills()
 {
     kills++;
@@ -379,6 +403,55 @@ void Player::endRecoilAnimation()
         shot = false;
         goDown = false;
         startRecoil = false;
+        if (shotsRemaining == 0)
+        {
+            startReloadAnimation();
+        }
+    }
+}
+
+void Player::startReloadAnimation()
+{
+    isReloading = true;
+    reloadStartTime = currentFrame;
+    ma_engine_set_volume(&engine, 1.5f);
+    ma_engine_play_sound(&engine, reloadSoundPath.c_str(), NULL);
+    angle = 0.0f;
+    goDown = false;
+    startRecoil = false;
+    shot = false;
+    gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
+    gunModelMatrix[3] = glm::vec4(gunPosition, 1.0f);
+    reloadBaseModelMatrix = gunModelMatrix;
+}
+
+void Player::updateReloadAnimation()
+{
+    float progress = (currentFrame - reloadStartTime) / RELOAD_DURATION;
+    if (progress < 0.0f)
+    {
+        progress = 0.0f;
+    }
+    else if (progress > 1.0f)
+    {
+        progress = 1.0f;
+    }
+
+    float phase = progress < 0.5f ? progress * 2.0f : (1.0f - progress) * 2.0f;
+    float easedPhase = phase * phase * (3.0f - 2.0f * phase);
+    glm::vec3 reloadPosition = gunPosition;
+    reloadPosition.y = -0.5f + (RELOAD_HIDDEN_Y + 0.5f) * easedPhase;
+    gunModelMatrix = reloadBaseModelMatrix;
+    gunModelMatrix[3] = glm::vec4(reloadPosition, 1.0f);
+    gunModelMatrix = glm::rotate(gunModelMatrix, glm::radians(RELOAD_NOSE_DOWN_ANGLE * easedPhase), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    if (progress >= 1.0f)
+    {
+        isReloading = false;
+        shotsRemaining = MAX_SHOTS_BEFORE_RELOAD;
+        gunPosition = glm::vec3(0.45f, -0.5f, -1.5f);
+        gunModelMatrix = reloadBaseModelMatrix;
+        gunModelMatrix[3] = glm::vec4(gunPosition, 1.0f);
     }
 }
 
@@ -404,6 +477,13 @@ void Player::controlPlayerRendering()
     if (!isWalking)
     {
         passiveMotion();
+    }
+
+    if (isReloading)
+    {
+        updateReloadAnimation();
+        drawGun();
+        return;
     }
 
     // draw the handgun in base position
@@ -469,6 +549,10 @@ void Player::resetAll()
     shot = false;
     startRecoil = false;
     goDown = false;
+    shotsRemaining = MAX_SHOTS_BEFORE_RELOAD;
+    isReloading = false;
+    reloadStartTime = 0.0f;
+    reloadBaseModelMatrix = glm::mat4(1.0f);
     isAlive = true;
     kills = 0;
     health = 100;
@@ -494,9 +578,10 @@ void Player::createBoundingBox()
 void Player::audioSetup()
 {
     // wav file paths
-    gunshotSoundPath = "resources/audio/gun-gunshot-02.wav";
+    gunshotSoundPath = "resources/audio/gunshot.wav";
     walkSoundPath = "resources/audio/footsteps.wav";
-    damageSoundPath = "resources/audio/minecraft_hit_soundmp3converter.wav";
+    damageSoundPath = "resources/audio/damage-to-player.wav";
+    reloadSoundPath = "resources/audio/gun-full-reload.wav";
 
     // miniaudio engines setup
     ma_result result = ma_engine_init(NULL, &engine);
