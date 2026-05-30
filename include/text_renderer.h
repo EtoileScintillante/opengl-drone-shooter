@@ -11,6 +11,7 @@
 #define __TEXT_RENDERER_H__
 
 #include <string>
+#include <string_view>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -63,6 +64,15 @@ public:
      * @param color color of text.
      */
     void RenderText(std::string_view text, float x, float y, float scale, glm::vec3 color);
+
+    /**
+     * @brief Measures a line of text using the same glyph advances as RenderText.
+     *
+     * @param text text to measure.
+     * @param scale scale factor.
+     * @return width of the rendered text in screen pixels.
+     */
+    float MeasureText(std::string_view text, float scale) const;
 
     /**
      * @brief Renders text with a solid border using FT_Stroker-generated glyph outlines.

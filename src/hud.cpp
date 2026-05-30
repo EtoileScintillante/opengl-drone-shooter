@@ -108,9 +108,6 @@ void inGameScreen(TextRenderer &tr, Player &player)
 
 void endingScreen(TextRenderer &tr, Player &player)
 {
-    // update blink time
-    tr.blink += tr.deltaTime + 0.02; // add small offset to make text blink faster
-
     // render background image (lazy-initialized on first call)
     static ScreenRenderer renderer("shaders/screen.vert", "shaders/screen.frag");
     static unsigned int bgTexture = TextureFromFile("game_over.png", "resources/screens", true);
@@ -126,19 +123,23 @@ void endingScreen(TextRenderer &tr, Player &player)
     // also calculate text scale factor
     float textScale = std::min(xScale, yScale);
 
-    // game over with white border (FT_Stroker-generated outline)
-    tr.RenderTextBordered("Game  Over", 183.0f * xScale, 400.0f * yScale, 1.6f * textScale,
-                           glm::vec3(0.7f, 0.0f, 0.2f), glm::vec3(1.0f, 1.0f, 1.0f));
+    const glm::vec3 red(0.86f, 0.0f, 0.12f);
+    const glm::vec3 white(1.0f, 1.0f, 1.0f);
 
-    // add blinking effect
-    if (static_cast<int>(tr.blink) % 2 == 0)
-    {
-        tr.RenderTextBordered("Press  ENTER  to  play  again  or  ESC  to  quit",
-                               115.0f * xScale, 210.0f * yScale, 0.55f * textScale,
-                               glm::vec3(0.870f, 0.592f, 0.0348f), glm::vec3(1.0f, 1.0f, 1.0f));
-    }
+    auto centeredX = [&](std::string_view text, float scale) {
+        return (static_cast<float>(player.SCR_WIDTH) - tr.MeasureText(text, scale)) * 0.5f;
+    };
 
-    // kill count
-    std::string kill = "Kills:  " + std::to_string(player.getKills());
-    tr.RenderText(kill, 335.0f * xScale, 300.0f * yScale, 0.7f * textScale, glm::vec3(1.0f, 1.0f, 1.0f));
+    auto renderCenteredBordered = [&](std::string_view text, float y, float scale,
+                                      glm::vec3 fillColor, glm::vec3 borderColor) {
+        tr.RenderTextBordered(text, centeredX(text, scale), y * yScale, scale, fillColor, borderColor);
+    };
+
+    // The laser in the background sits slightly above center, so the title stays above it
+    // while the stats and actions form a centered stack below it.
+    renderCenteredBordered("GAME OVER", 430.0f, 1.75f * textScale, red, white);
+    renderCenteredBordered("KILLS", 292.0f, 0.62f * textScale, white, red);
+    renderCenteredBordered(std::to_string(player.getKills()), 215.0f, 1.22f * textScale, white, red);
+    renderCenteredBordered("[ENTER]    -    RESTART", 158.0f, 0.50f * textScale, white, red);
+    renderCenteredBordered("[ESC]    -    QUIT", 118.0f, 0.50f * textScale, white, red);
 }

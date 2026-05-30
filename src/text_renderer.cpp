@@ -78,6 +78,20 @@ void TextRenderer::RenderText(std::string_view text, float x, float y, float sca
     glDisable(GL_BLEND);
 }
 
+float TextRenderer::MeasureText(std::string_view text, float scale) const
+{
+    float width = 0.0f;
+    for (char c : text)
+    {
+        if (c < 32 || c > 126)
+        {
+            continue;
+        }
+        width += static_cast<float>(characters[c - 32].Advance >> 6) * scale;
+    }
+    return width;
+}
+
 // Border stroke width in FreeType's 26.6 fixed-point format
 // (64 units = 1 pixel). FreeType uses this representation to
 // achieve sub-pixel precision for smoother text rendering.
