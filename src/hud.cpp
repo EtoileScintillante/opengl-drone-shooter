@@ -29,36 +29,35 @@ void startingScreen(TextRenderer &tr, Player &player, int selectedEnv)
     // add blinking effect
     if (static_cast<int>(tr.blink) % 2 == 0)
     {
-        tr.RenderTextBordered("Press  ENTER  to  start", 253.0f * xScale, 303.0f * yScale, 0.55f * textScale,
-                               glm::vec3(0.400f, 0.569f, 0.086f), glm::vec3(1.0f, 1.0f, 1.0f));
+        tr.RenderText("Press  ENTER  to  start", 253.0f * xScale, 303.0f * yScale, 0.55f * textScale, glm::vec3(0.82f, 0.82f, 0.82f));
     }
 
     float textSize = 0.35f * textScale;
-    glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    tr.RenderText("How  to  play :", 20.0f * xScale, 175.0f * yScale, textSize, textColor);
-    tr.RenderText("Mouse   -   look  around", 20.0f * xScale, 150.0f * yScale, textSize, textColor);
-    tr.RenderText("Space   -   shoot", 20.0f * xScale, 125.0f * yScale, textSize, textColor);
-    tr.RenderText("WASD / arrows   -   walk", 20.0f * xScale, 100.0f * yScale, textSize, textColor);
+    glm::vec3 textColor = glm::vec3(0.82f, 0.82f, 0.82f);
+    tr.RenderText("How  to  play :", 20.0f * xScale, 173.0f * yScale, textSize, textColor);
+    tr.RenderText("Mouse   -   look  around", 20.0f * xScale, 148.0f * yScale, textSize, textColor);
+    tr.RenderText("Space   -   shoot", 20.0f * xScale, 123.0f * yScale, textSize, textColor);
+    tr.RenderText("WASD / arrows   -   walk", 20.0f * xScale, 98.0f * yScale, textSize, textColor);
 
     // environment selector
     const std::string envNames[4] = {"Desert", "Forest", "Snow", "Night"};
-    float selectorTextSize = 0.45f * textScale;
-    float nameX   = 380.0f * xScale; // env name column
-    float arrowX  = 352.0f * xScale; // ">" column, slightly to the left
-    float startY  = 175.0f;
-    float stepY   = 25.0f;
+    float selectorTextSize = 0.55f * textScale;
+    float nameX   = 370.0f * xScale; // env name column
+    float arrowX  = 338.0f * xScale; // ">" column, slightly to the left
+    float startY  = 195.0f;
+    float stepY   = 33.0f;
 
     for (int i = 0; i < 4; i++)
     {
         float y = (startY - i * stepY) * yScale;
         if (i == selectedEnv)
         {
-            tr.RenderText(">", arrowX, y, selectorTextSize, glm::vec3(1.0f, 0.6f, 0.0f));
-            tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(1.0f, 0.6f, 0.0f));
+            tr.RenderTextBordered(">", arrowX, y, selectorTextSize, glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+            tr.RenderTextBordered(envNames[i], nameX, y, selectorTextSize + 0.05, glm::vec3(0.392f, 0.263f, 1.0f), glm::vec3(1.0f, 1.0f, 1.0f));
         }
         else
         {
-            tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(1.0f, 1.0f, 1.0f));
+            tr.RenderText(envNames[i], nameX, y, selectorTextSize, glm::vec3(0.392f, 0.263f, 1.0f));
         }
     }
 }
