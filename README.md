@@ -16,22 +16,22 @@ such as shader.h, mesh.h and model.h.
 The game objects (models, sounds, font and textures) were all downloaded for free from the internet.  
 I used sites like [free3d](https://free3d.com/), [soundjay](https://www.soundjay.com/gun-sound-effect.html) and [freebpr](https://freepbr.com/). Unfortunately I did not save the exact links to the used objects.  
 
-To implement collision detection between the player’s bullet and enemy and between the enemy’s laser beam and player [this](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection) site was a great resource. Box.h and ray.h are based on code from that site. 
+To implement collision detection between the player’s bullet and enemy and between the enemy’s laser beam and player [this](https://www.scratchapixel.com/lessons/3d-basic-rendering/minimal-ray-tracer-rendering-simple-shapes/ray-box-intersection) site was a great resource. `box.h` and `ray.h` are based on code from that site. 
 
 For adding soundeffects, rendering text and loading 3D models the libraries [miniaudio](https://github.com/mackron/miniaudio), [freetype](http://freetype.org/) and [assimp](https://github.com/assimp/assimp) were used.
 
 ### Maps
 #### Forest     
-<img src="docs/ingame_forest.jpg" width="380" height="260" alt="screenshot of forest map" />
+<img src="docs/ingame_forest.png" width="380" height="260" alt="screenshot of forest map" />
 
 #### Desert   
-<img src="docs/ingame_desert.jpg" width="380" height="260" alt="screenshot of desert map" />
+<img src="docs/ingame_desert.png" width="380" height="260" alt="screenshot of desert map" />
 
 #### Snow  
-<img src="docs/ingame_snow.jpg" width="380" height="260" alt="screenshot of snow map" />
+<img src="docs/ingame_snow.png" width="380" height="260" alt="screenshot of snow map" />
 
 #### Night
-<img src="docs/ingame_night.jpg" width="380" height="260" alt="screenshot of night map" />  
+<img src="docs/ingame_night.png" width="380" height="260" alt="screenshot of night map" />  
 
 ### Player
 There is no actual player character, it’s just a gun. The direction of the bullet is the same as the front vector of the player, which makes aiming easy. The player’s bounding box looks as follows:
@@ -39,7 +39,10 @@ There is no actual player character, it’s just a gun. The direction of the bul
 <img src="docs/player_bbox/front_side.png" width="200" height="210" alt="bounding box player" />
 
 ### Enemy
-The enemy is a drone that can shoot laser beams. Its aim is not perfect; some randomness is added when calculating the direction of the laser beam, otherwise every shot would lead to a decrease in the player’s health.   
+The enemy is a drone that can shoot laser beams. Its aim is not perfect; some randomness is added when calculating the direction of the laser beam, otherwise every shot would lead to a decrease in the player’s health.  
+
+<img src="docs/drone.png" width="290" height="190" alt="enemy" />
+
 The bounding box of the enemy does not cover the whole drone, as can be seen in the image below. It may look weird but it’s not a problem at all. The bounding box is still big enough so that hitting the drone is quite easy, even when standing far away. 
 
 <img src="docs/enemy_bbox/front_side.png" width="400" height="250" alt="bounding box enemy" />
@@ -93,3 +96,4 @@ During the development I regularly uploaded videos to YouTube to keep track of t
 - [17 Oct. 2022](https://youtu.be/Spv8I2WCzuU) improved enemy movement and added text on screen
 - [22 Oct. 2022](https://youtu.be/Ox03BBIdRAc) enemies can kill player
 - [30 Dec. 2023](https://youtu.be/4EliOM1DS_s) new maps: forest, desert, snow and night
+- [30 May, 2026](https://youtu.be/SiVTnY3V7iA) added reloading logic, new start & game over screens, better text rendering, better enemy explosion rendering
