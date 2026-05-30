@@ -60,7 +60,10 @@ void Enemy::spawn()
     glEnable(GL_DEPTH_TEST);
 
     // update position
-    moveToPlayer();
+    if (!isDead)
+    {
+        moveToPlayer();
+    }
 
     // generate model matrix
     generateModelMatrix();

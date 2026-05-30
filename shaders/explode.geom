@@ -10,6 +10,8 @@ out vec2 TexCoords;
 
 uniform float magnitude;
 uniform bool isDead;
+uniform mat4 projection;
+uniform mat4 view;
 
 // this returns a new vector that translates the position vector along the direction of the normal vector
 vec4 explode(vec4 position, vec3 normal)
@@ -31,26 +33,26 @@ void main() {
     {
         vec3 normal = GetNormal();
 
-        gl_Position = explode(gl_in[0].gl_Position, normal);
+        gl_Position = projection * view * explode(gl_in[0].gl_Position, normal);
         TexCoords = gs_in[0].texCoords;
         EmitVertex();
-        gl_Position = explode(gl_in[1].gl_Position, normal);
+        gl_Position = projection * view * explode(gl_in[1].gl_Position, normal);
         TexCoords = gs_in[1].texCoords;
         EmitVertex();
-        gl_Position = explode(gl_in[2].gl_Position, normal);
+        gl_Position = projection * view * explode(gl_in[2].gl_Position, normal);
         TexCoords = gs_in[2].texCoords;
         EmitVertex();
         EndPrimitive();
     }
     else // draw enemy without modifications
     {
-        gl_Position = gl_in[0].gl_Position; 
+        gl_Position = projection * view * gl_in[0].gl_Position;
         TexCoords = gs_in[0].texCoords;
         EmitVertex();
-        gl_Position = gl_in[1].gl_Position; 
+        gl_Position = projection * view * gl_in[1].gl_Position;
         TexCoords = gs_in[1].texCoords;
         EmitVertex();
-        gl_Position = gl_in[2].gl_Position; 
+        gl_Position = projection * view * gl_in[2].gl_Position;
         TexCoords = gs_in[2].texCoords;
         EmitVertex();
         EndPrimitive();
