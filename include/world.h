@@ -91,6 +91,9 @@ private:
     /// Sets up all the objects so that they can be rendered.
     void setupWorld();
 
+    /// Clears generated per-environment data before loading another world.
+    void clearWorldData();
+
     /// Renders trees.
     void drawTrees();
 

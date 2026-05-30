@@ -30,6 +30,7 @@ int main()
     int selectedEnv = 0;
     bool wWasPressed = false;
     bool sWasPressed = false;
+    bool enterWasPressed = false;
 
     // timing
     float currentFrame;
@@ -52,6 +53,8 @@ int main()
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(window, true);
 
+        bool enterNow = glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS;
+
         switch (state)
         {
             case GameState::START:
@@ -66,7 +69,7 @@ int main()
 
                 startingScreen(text, player, selectedEnv);
 
-                if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+                if (enterNow && !enterWasPressed)
                 {
                     world.load(envNames[selectedEnv]);
                     state = GameState::PLAYING;
@@ -90,19 +93,23 @@ int main()
 
                 // transition when player dies
                 if (!player.getLifeState())
+                {
+                    manager.reset();
                     state = GameState::GAME_OVER;
+                }
                 break;
 
             case GameState::GAME_OVER:
-                manager.reset();
                 endingScreen(text, player);
-                if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS)
+                if (enterNow && !enterWasPressed)
                 {
                     player.resetAll();
-                    state = GameState::PLAYING;
+                    state = GameState::START;
                 }
                 break;
         }
+
+        enterWasPressed = enterNow;
 
         // glfw: swap buffers and poll IO events
         glfwSwapBuffers(window);

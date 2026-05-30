@@ -16,6 +16,7 @@ World::World(const std::string& envType)
 
 void World::load(const std::string& envType)
 {
+    clearWorldData();
     environmentType = "";
 
     // convert envType to lowercase
@@ -37,6 +38,15 @@ void World::load(const std::string& envType)
 
     setupWorld();
     isLoaded = true;
+}
+
+void World::clearWorldData()
+{
+    treePos.clear();
+    surroundingPos.clear();
+    groundVertices.clear();
+    treeModelMatrices.clear();
+    surroundingModelMatrices.clear();
 }
 
 void World::Draw(glm::mat4 View, glm::mat4 Projection)
