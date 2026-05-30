@@ -133,10 +133,17 @@ void inGameScreen(TextRenderer &tr, Player &player)
     // cross hairs
     float textSize = 0.3f * textScale;
     glm::vec3 textColor = glm::vec3(1.0f, 1.0f, 1.0f);
-    tr.RenderText("-", 356.0f * xScale, 300.0f * yScale, textSize, textColor);
-    tr.RenderText("-", 429.0f * xScale, 300.0f * yScale, textSize, textColor);
-    tr.RenderText("|", 395.0f * xScale, 337.0f * yScale, textSize, textColor);
-    tr.RenderText("|", 395.0f * xScale, 267.0f * yScale, textSize, textColor);
+    float centerX = static_cast<float>(player.SCR_WIDTH) * 0.5f;
+    float centerY = static_cast<float>(player.SCR_HEIGHT) * 0.5f;
+    float horizontalGap = 42.0f * textScale;
+    float verticalGap = 38.0f * textScale;
+    float dashWidth = tr.MeasureText("-", textSize);
+    float barWidth = tr.MeasureText("|", textSize);
+
+    tr.RenderText("-", centerX - horizontalGap - dashWidth * 0.5f, centerY, textSize, textColor);
+    tr.RenderText("-", centerX + horizontalGap - dashWidth * 0.5f, centerY, textSize, textColor);
+    tr.RenderText("|", centerX - barWidth * 0.5f, centerY + verticalGap, textSize, textColor);
+    tr.RenderText("|", centerX - barWidth * 0.5f, centerY - verticalGap, textSize, textColor);
     
 }
 
