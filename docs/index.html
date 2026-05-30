@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Drone Shooter — Architecture Overview</title>
+  <title>OpenGL Drone Shooter: Architecture Overview</title>
   <style>
     :root {
       --bg:      #0a0e14;
@@ -147,6 +147,13 @@
       padding: 2px 0 2px 14px; position: relative; color: var(--muted);
     }
     .comp-list li::before { content: '▸'; position: absolute; left: 0; color: var(--cyan); }
+    .comp:has(.t-entry) .comp-list li::before { color: var(--orange); }
+    .comp:has(.t-game)  .comp-list li::before { color: var(--cyan); }
+    .comp:has(.t-env)   .comp-list li::before { color: var(--green); }
+    .comp:has(.t-ui)    .comp-list li::before { color: var(--yellow); }
+    .comp:has(.t-render) .comp-list li::before { color: var(--purple); }
+    .comp:has(.t-phys)  .comp-list li::before { color: var(--red); }
+    .comp:has(.t-sys)   .comp-list li::before { color: var(--green); }
     .dep-tags   { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
     .dep-tag {
       font-size: 10.5px; padding: 1px 7px; border-radius: 4px;
@@ -160,6 +167,7 @@
     .t-render { background: rgba(176,122,220,.12); color: var(--purple); border-color: rgba(176,122,220,.3); }
     .t-phys   { background: rgba(232,85,85,.12);   color: var(--red);    border-color: rgba(232,85,85,.3); }
     .t-ui     { background: rgba(201,160,48,.12);  color: var(--yellow); border-color: rgba(201,160,48,.3); }
+    .t-env    { background: rgba(61,185,80,.12);   color: var(--green);  border-color: rgba(61,185,80,.3); }
     .t-sys    { background: rgba(61,185,80,.12);   color: var(--green);  border-color: rgba(61,185,80,.3); }
 
     .ico-entry  { background: rgba(232,144,64,.15); color: var(--orange); }
@@ -167,6 +175,7 @@
     .ico-render { background: rgba(176,122,220,.15); color: var(--purple); }
     .ico-phys   { background: rgba(232,85,85,.15);   color: var(--red); }
     .ico-ui     { background: rgba(201,160,48,.15);  color: var(--yellow); }
+    .ico-env    { background: rgba(61,185,80,.15);   color: var(--green); }
     .ico-sys    { background: rgba(61,185,80,.15);   color: var(--green); }
 
     /* ── SHADER GRID ─────────────────────────── */
@@ -210,6 +219,24 @@
       color: var(--muted); font-size: 12px;
       border-top: 1px solid var(--border);
     }
+
+    /* ── IMPRESSIONS ─────────────────────────── */
+    .impressions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px; margin-top: 20px;
+    }
+    .impression-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; overflow: hidden;
+      transition: border-color .15s;
+    }
+    .impression-card:hover { border-color: var(--cyan); }
+    .impression-card img { width: 100%; display: block; }
+    .impression-caption {
+      padding: 10px 14px;
+      font-size: 12px; font-weight: 600; color: var(--muted);
+    }
   </style>
 </head>
 <body>
@@ -221,6 +248,7 @@
   <a href="#components">Components</a>
   <a href="#shaders">Shaders</a>
   <a href="#dependencies">Dependencies</a>
+  <a href="#impressions">Impressions</a>
 </nav>
 
 <main>
@@ -228,15 +256,18 @@
 <!-- ══════════════ OVERVIEW ══════════════ -->
 <section id="overview">
   <div class="label">Project Overview</div>
-  <h1>OpenGL Drone Shooter</h1>
+  <div style="display:flex; align-items:center; gap:18px; margin-bottom:4px;">
+    <img src="drone.png" style="height:68px; flex-shrink:0;" alt="drone" />
+    <h1>OpenGL Drone Shooter</h1>
+  </div>
   <p class="sub">A first-person shooter written from scratch in C++17 using OpenGL 3.3 core profile, no game engine. Shoot down drones across 4 environments.</p>
   <div class="stat-row">
-    <div class="stat"><span class="stat-n">16</span><div class="stat-l">Classes / Modules</div></div>
-    <div class="stat"><span class="stat-n">7</span><div class="stat-l">Shader Programs</div></div>
+    <div class="stat"><span class="stat-n">19</span><div class="stat-l">Classes / Modules</div></div>
+    <div class="stat"><span class="stat-n">8</span><div class="stat-l">Shader Programs</div></div>
     <div class="stat"><span class="stat-n">4</span><div class="stat-l">Environments</div></div>
     <div class="stat"><span class="stat-n">7</span><div class="stat-l">Ext. Libraries</div></div>
     <div class="stat"><span class="stat-n">3</span><div class="stat-l">Game States</div></div>
-    <div class="stat"><span class="stat-n">4</span><div class="stat-l">Max Enemies</div></div>
+    <div class="stat"><span class="stat-n">3</span><div class="stat-l">Max Enemies</div></div>
   </div>
 </section>
 
@@ -249,9 +280,9 @@
     <div class="state-card">
       <div class="state-name">① Start Screen</div>
       <div class="state-items">
-        Title &amp; controls display<br>
-        Environment selection prompt<br>
-        Cursor captured by GLFW
+        Fullscreen background image<br>
+        Arrow-key environment selector<br>
+        Title, controls &amp; key hints
       </div>
       <div class="state-trig">Press Enter →</div>
     </div>
@@ -260,9 +291,9 @@
       <div class="state-name">② Playing</div>
       <div class="state-items">
         WASD + mouse look<br>
-        Click to shoot<br>
+        Press space to shoot<br>
         Enemies spawn every 3s<br>
-        Health / kill tracking
+        Health / kill / ammo tracking
       </div>
       <div class="state-trig">Health reaches 0 →</div>
     </div>
@@ -270,11 +301,10 @@
     <div class="state-card">
       <div class="state-name">③ End Screen</div>
       <div class="state-items">
-        Grayscale skybox filter<br>
-        Final kill count shown<br>
-        All enemies frozen
+        Fullscreen background image<br>
+        Final kill count shown
       </div>
-      <div class="state-trig">Press Enter → restart</div>
+      <div class="state-trig">Press Enter → pick new env</div>
     </div>
   </div>
 
@@ -295,7 +325,7 @@
       </div>
       <div class="loop-step">
         <div class="ls-title">4 — Render Player</div>
-        <div class="ls-calls">player.controlPlayerRendering()  →  gun model + recoil animation + muzzle flash</div>
+        <div class="ls-calls">player.controlPlayerRendering()  →  gun model + recoil animation + reload animation + muzzle flash</div>
       </div>
       <div class="loop-step">
         <div class="ls-title">5 — Update &amp; Render Enemies</div>
@@ -307,7 +337,7 @@
       </div>
       <div class="loop-step">
         <div class="ls-title">7 — HUD Overlay</div>
-        <div class="ls-calls">hud.inGameScreen()  →  health bar + kill counter (orthographic text pass)</div>
+        <div class="ls-calls">hud.inGameScreen()  →  health bar + kill counter + ammo display (orthographic text pass)</div>
       </div>
       <div class="loop-step" style="border-left-color: transparent;">
         <div class="ls-title">8 — Swap Buffers</div>
@@ -335,8 +365,9 @@
       <div class="comp-desc">Game loop orchestrator. Owns all top-level objects and manages state transitions.</div>
       <ul class="comp-list">
         <li>GLFW window init &amp; OpenGL context setup</li>
-        <li>Creates Player, World, EnemyManager, CollisionDetector, HUD</li>
-        <li>Drives the 3-state game state machine</li>
+        <li>Creates Player, World, EnemyManager, CollisionDetector, HUD, ScreenRenderer</li>
+        <li>Drives the 3-state GameState machine (game_state.h enum)</li>
+        <li>Handles arrow-key env selection on start/game-over screens</li>
         <li>Calculates deltaTime each frame</li>
       </ul>
     </div>
@@ -355,8 +386,10 @@
         <li>WASD movement constrained to terrain bounds (±15)</li>
         <li>Mouse look (yaw/pitch), click-to-shoot flag</li>
         <li>Gun model rendering + recoil animation</li>
+        <li>Reload animation: gun slides out of view on empty magazine, returns after reload</li>
+        <li>Ammo tracking: getShotsRemaining() / getMaxShotsBeforeReload()</li>
         <li>Health (0–100), kill counter, bounding box</li>
-        <li>Audio: walking loop, gunshot, damage hit</li>
+        <li>Audio: walking loop, gunshot, damage hit, reload sound</li>
       </ul>
       <div class="dep-tags">
         <span class="dep-tag">World</span>
@@ -379,10 +412,10 @@
       <div class="comp-desc">Manages the lifecycle of all drone enemies: spawning, updating, and resetting.</div>
       <ul class="comp-list">
         <li>Holds vector of shared_ptr&lt;Enemy&gt;</li>
-        <li>Spawns 1 enemy at start, +1 every 3 s (max 4)</li>
+        <li>Spawns 1 enemy at start, +1 every 3 s (max 3)</li>
         <li>Calls enemy update each frame</li>
         <li>Exposes enemy list to CollisionDetector</li>
-        <li>resetAll() for game restart</li>
+        <li>reset() for game restart</li>
       </ul>
       <div class="dep-tags">
         <span class="dep-tag">Enemy</span>
@@ -422,9 +455,9 @@
     <!-- World -->
     <div class="comp">
       <div class="comp-head">
-        <div class="comp-ico" style="background:rgba(61,185,80,.15);color:#3db950;">⬡</div>
+        <div class="comp-ico ico-env">⬡</div>
         <div class="comp-name">World</div>
-        <div class="badge" style="background:rgba(61,185,80,.12);color:#3db950;border:1px solid rgba(61,185,80,.3);">Environment</div>
+        <div class="badge t-env">Environment</div>
       </div>
       <div class="comp-file">include/world.h · src/world.cpp</div>
       <div class="comp-desc">Owns all environment rendering: terrain, skybox, trees, and decorations. Selects assets based on environment type.</div>
@@ -434,7 +467,7 @@
         <li>20 trees placed via instanced rendering</li>
         <li>30 decorations (flowers / rocks / pumpkins)</li>
         <li>Cubemap skybox with optional grayscale filter</li>
-        <li>Provides TERRAIN_SIZE constant to other systems</li>
+        <li>Default constructor builds empty world; load(envType) allocates GPU resources</li>
       </ul>
       <div class="dep-tags">
         <span class="dep-tag">Shader</span>
@@ -444,61 +477,51 @@
       </div>
     </div>
 
-    <!-- CollisionDetector -->
+    <!-- TextRenderer -->
     <div class="comp">
       <div class="comp-head">
-        <div class="comp-ico ico-phys">⊗</div>
-        <div class="comp-name">CollisionDetector</div>
-        <div class="badge t-phys">Physics</div>
+        <div class="comp-ico ico-ui">Aa</div>
+        <div class="comp-name">TextRenderer</div>
+        <div class="badge t-ui">UI</div>
       </div>
-      <div class="comp-file">include/collision_detection.h · src/collision_detection.cpp</div>
-      <div class="comp-desc">Runs all ray–box intersection tests once per frame, updating player health and enemy death state.</div>
+      <div class="comp-file">include/text_renderer.h · src/text_renderer.cpp</div>
+      <div class="comp-desc">FreeType-based glyph renderer that draws 2D text in screen space.</div>
       <ul class="comp-list">
-        <li>If player shot: Ray(player.pos, player.front) vs each enemy AABB</li>
-        <li>Each active enemy laser Ray vs player AABB</li>
-        <li>Calls enemy.gotHit() / player.gotAttacked() on hit</li>
-        <li>Resets canDamage flag after laser lands</li>
+        <li>Loads .ttf font file via FreeType</li>
+        <li>Generates per-glyph texture atlas (ASCII 32–126, 95 glyphs)</li>
+        <li>RenderText(text, x, y, scale, color)</li>
+        <li>RenderTextBordered() — FT_Stroker outlines rendered before fill</li>
+        <li>MeasureText() — returns rendered pixel width for dynamic centering</li>
+        <li>Orthographic projection for screen-space placement</li>
       </ul>
       <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">FreeType</span>
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-ui">⊟</div>
+        <div class="comp-name">HUD</div>
+        <div class="badge t-ui">UI</div>
+      </div>
+      <div class="comp-file">include/hud.h · src/hud.cpp</div>
+      <div class="comp-desc">Three screen-overlay functions using TextRenderer for different game states.</div>
+      <ul class="comp-list">
+        <li>startingScreen() — fullscreen bg + arrow-key env selector + control hints</li>
+        <li>inGameScreen() — health bar + kill counter + ammo display</li>
+        <li>endingScreen() — fullscreen bg + "Game Over" + final score + ESC to quit</li>
+        <li>Uses TextRenderer.MeasureText() for dynamic centering</li>
+        <li>Uses TextRenderer.RenderTextBordered() throughout</li>
+        <li>Font: theboldfont.ttf</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">TextRenderer</span>
         <span class="dep-tag">Player</span>
-        <span class="dep-tag">EnemyManager</span>
-        <span class="dep-tag">Box</span>
-        <span class="dep-tag">Ray</span>
+        <span class="dep-tag">World</span>
       </div>
-    </div>
-
-    <!-- Box -->
-    <div class="comp">
-      <div class="comp-head">
-        <div class="comp-ico ico-phys">▣</div>
-        <div class="comp-name">Box (AABB)</div>
-        <div class="badge t-phys">Physics</div>
-      </div>
-      <div class="comp-file">include/box.h · src/box.cpp</div>
-      <div class="comp-desc">Axis-aligned bounding box used for both the player and each enemy.</div>
-      <ul class="comp-list">
-        <li>min / max corner vectors</li>
-        <li>Updated each frame from entity position</li>
-        <li>Player box: cuboid around camera eye</li>
-        <li>Enemy box: smaller than drone model (gameplay balance)</li>
-      </ul>
-    </div>
-
-    <!-- Ray -->
-    <div class="comp">
-      <div class="comp-head">
-        <div class="comp-ico ico-phys">→</div>
-        <div class="comp-name">Ray</div>
-        <div class="badge t-phys">Physics</div>
-      </div>
-      <div class="comp-file">include/ray.h · src/ray.cpp</div>
-      <div class="comp-desc">Ray defined by origin + direction. Used for bullet raycast and enemy laser tests.</div>
-      <ul class="comp-list">
-        <li>origin: vec3, direction: vec3 (normalized)</li>
-        <li>Bullet ray: player.position → player.front</li>
-        <li>Laser ray: enemy.position → laserDirection</li>
-        <li>Range: terrain size × 2 (~60 units)</li>
-      </ul>
     </div>
 
     <!-- Shader -->
@@ -569,7 +592,7 @@
     <!-- SkyBox -->
     <div class="comp">
       <div class="comp-head">
-        <div class="comp-ico" style="background:rgba(61,185,80,.15);color:#3db950;">⬚</div>
+        <div class="comp-ico ico-render">⬚</div>
         <div class="comp-name">SkyBox</div>
         <div class="badge t-render">Rendering</div>
       </div>
@@ -578,55 +601,11 @@
       <ul class="comp-list">
         <li>Loads 6 face textures (right/left/top/bottom/front/back)</li>
         <li>Renders as large cube, depth writes disabled</li>
-        <li>Grayscale uniform for death-screen effect</li>
         <li>4 environment cubemap sets</li>
       </ul>
       <div class="dep-tags">
         <span class="dep-tag">Shader</span>
         <span class="dep-tag">STB Image</span>
-      </div>
-    </div>
-
-    <!-- TextRenderer -->
-    <div class="comp">
-      <div class="comp-head">
-        <div class="comp-ico ico-ui">Aa</div>
-        <div class="comp-name">TextRenderer</div>
-        <div class="badge t-ui">UI</div>
-      </div>
-      <div class="comp-file">include/text_renderer.h · src/text_renderer.cpp</div>
-      <div class="comp-desc">FreeType-based glyph renderer that draws 2D text in screen space.</div>
-      <ul class="comp-list">
-        <li>Loads .ttf font file</li>
-        <li>Generates per-glyph texture atlas (ASCII 32–127)</li>
-        <li>RenderText(text, x, y, scale, color)</li>
-        <li>Orthographic projection for screen-space placement</li>
-      </ul>
-      <div class="dep-tags">
-        <span class="dep-tag">Shader</span>
-        <span class="dep-tag">FreeType</span>
-      </div>
-    </div>
-
-    <!-- HUD -->
-    <div class="comp">
-      <div class="comp-head">
-        <div class="comp-ico ico-ui">⊟</div>
-        <div class="comp-name">HUD</div>
-        <div class="badge t-ui">UI</div>
-      </div>
-      <div class="comp-file">include/hud.h · src/hud.cpp</div>
-      <div class="comp-desc">Three screen-overlay functions using TextRenderer for different game states.</div>
-      <ul class="comp-list">
-        <li>startingScreen() — title + control hints</li>
-        <li>inGameScreen() — health bar + kill counter</li>
-        <li>endingScreen() — "Game Over" + final score</li>
-        <li>Font: theboldfont.ttf</li>
-      </ul>
-      <div class="dep-tags">
-        <span class="dep-tag">TextRenderer</span>
-        <span class="dep-tag">Player</span>
-        <span class="dep-tag">World</span>
       </div>
     </div>
 
@@ -650,6 +629,84 @@
       </div>
     </div>
 
+    <!-- ScreenRenderer -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-render">⬛</div>
+        <div class="comp-name">ScreenRenderer</div>
+        <div class="badge t-render">Rendering</div>
+      </div>
+      <div class="comp-file">include/screen_renderer.h · src/screen_renderer.cpp</div>
+      <div class="comp-desc">Renders a fullscreen textured quad for the title and game-over background images.</div>
+      <ul class="comp-list">
+        <li>Uploads a single fullscreen quad to the GPU (VAO/VBO)</li>
+        <li>draw(textureID) disables depth testing before rendering</li>
+        <li>Text drawn by HUD renders on top correctly</li>
+        <li>Used by: start screen, game-over screen</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Shader</span>
+        <span class="dep-tag">GLAD</span>
+      </div>
+    </div>
+
+    <!-- CollisionDetector -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">⊗</div>
+        <div class="comp-name">CollisionDetector</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/collision_detection.h · src/collision_detection.cpp</div>
+      <div class="comp-desc">Runs all ray–box intersection tests once per frame, updating player health and enemy death state.</div>
+      <ul class="comp-list">
+        <li>If player shot: Ray(player.pos, player.front) vs each enemy AABB</li>
+        <li>Each active enemy laser Ray vs player AABB</li>
+        <li>Calls enemy.gotHit() / player.gotAttacked() on hit</li>
+        <li>Resets canDamage flag after laser lands</li>
+      </ul>
+      <div class="dep-tags">
+        <span class="dep-tag">Player</span>
+        <span class="dep-tag">EnemyManager</span>
+        <span class="dep-tag">Box</span>
+        <span class="dep-tag">Ray</span>
+      </div>
+    </div>
+
+    <!-- Box -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">▣</div>
+        <div class="comp-name">Box (AABB)</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/box.h · src/box.cpp</div>
+      <div class="comp-desc">Axis-aligned bounding box used for both the player and each enemy.</div>
+      <ul class="comp-list">
+        <li>min / max corner vectors</li>
+        <li>Updated each frame from entity position</li>
+        <li>Player box: cuboid around camera eye</li>
+        <li>Enemy box: smaller than drone model (gameplay balance)</li>
+      </ul>
+    </div>
+
+    <!-- Ray -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-phys">→</div>
+        <div class="comp-name">Ray</div>
+        <div class="badge t-phys">Physics</div>
+      </div>
+      <div class="comp-file">include/ray.h · src/ray.cpp</div>
+      <div class="comp-desc">Ray defined by origin + direction. Used for bullet raycast and enemy laser tests.</div>
+      <ul class="comp-list">
+        <li>origin: vec3, direction: vec3 (normalized)</li>
+        <li>Bullet ray: player.position → player.front</li>
+        <li>Laser ray: enemy.position → laserDirection</li>
+        <li>Range: terrain size × 2 (~60 units)</li>
+      </ul>
+    </div>
+
     <!-- glfw_setup -->
     <div class="comp">
       <div class="comp-head">
@@ -661,7 +718,7 @@
       <div class="comp-desc">Initializes the GLFW window, OpenGL context, and GLAD function pointers.</div>
       <ul class="comp-list">
         <li>GLFW init + hint (OpenGL 3.3 core)</li>
-        <li>Creates 1280×720 window</li>
+        <li>Creates 800×600 window (dimensions from Player::SCR_WIDTH/HEIGHT)</li>
         <li>Loads OpenGL via gladLoadGLLoader</li>
         <li>Sets viewport and enables depth test</li>
       </ul>
@@ -671,6 +728,39 @@
       </div>
     </div>
 
+    <!-- GameState -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-sys">≡</div>
+        <div class="comp-name">GameState</div>
+        <div class="badge t-sys">System</div>
+      </div>
+      <div class="comp-file">include/game_state.h</div>
+      <div class="comp-desc">Header-only scoped enum defining the three top-level game states, shared across all systems.</div>
+      <ul class="comp-list">
+        <li>START — title / env-selection screen</li>
+        <li>PLAYING — active gameplay</li>
+        <li>GAME_OVER — ending screen</li>
+        <li>Replaces ad-hoc bool flags previously held by Player</li>
+      </ul>
+    </div>
+
+    <!-- TerrainConstants -->
+    <div class="comp">
+      <div class="comp-head">
+        <div class="comp-ico ico-sys">⊟</div>
+        <div class="comp-name">TerrainConstants</div>
+        <div class="badge t-sys">System</div>
+      </div>
+      <div class="comp-file">include/terrain_constants.h</div>
+      <div class="comp-desc">Header-only namespace exposing shared terrain values, eliminating the World/Player circular dependency on these constants.</div>
+      <ul class="comp-list">
+        <li>Terrain::SIZE = 30.0f — half-extents for spawn &amp; movement bounds</li>
+        <li>Terrain::GROUND_Y = −1.8f — floor level</li>
+        <li>Decouples Player from World's rendering stack</li>
+      </ul>
+    </div>
+
   </div><!-- /comp-grid -->
 </section>
 
@@ -678,7 +768,7 @@
 <section id="shaders">
   <div class="label">GLSL Shaders</div>
   <h2>Shader Programs</h2>
-  <p>All shaders live in <code style="color:var(--purple)">shaders/</code>. Each program = one row of stage badges.</p>
+  <p>All shaders live in <code style="color:var(--purple)">shaders/</code>. Each card represents one shader program, the colored badges show which pipeline stages it uses.</p>
 
   <div class="shader-grid">
 
@@ -731,6 +821,13 @@
       <div class="shader-used">Used by: World (trees + surroundings). Pairs with model.frag</div>
     </div>
 
+    <div class="shader">
+      <div class="stage-row"><span class="stage sv">VERT</span><span class="stage sf">FRAG</span></div>
+      <div class="shader-name">screen</div>
+      <div class="shader-desc">Maps NDC coordinates directly to a fullscreen quad and samples a 2D texture as the background image. No MVP transform needed.</div>
+      <div class="shader-used">Used by: ScreenRenderer (start &amp; game-over screens)</div>
+    </div>
+
   </div>
 </section>
 
@@ -779,10 +876,44 @@
   </div>
 </section>
 
+<!-- ══════════════ IMPRESSIONS ══════════════ -->
+<section id="impressions">
+  <div class="label">Impressions</div>
+  <h2>In-Game Screenshots</h2>
+  <p>Title screen, the four playable environments, and the game-over screen.</p>
+
+  <div class="impressions-grid">
+    <div class="impression-card">
+      <img src="title_screen.png" alt="Title screen" />
+      <div class="impression-caption">Title Screen</div>
+    </div>
+    <div class="impression-card">
+      <img src="ingame_forest.png" alt="Forest environment" />
+      <div class="impression-caption">Forest</div>
+    </div>
+    <div class="impression-card">
+      <img src="ingame_desert.png" alt="Desert environment" />
+      <div class="impression-caption">Desert</div>
+    </div>
+    <div class="impression-card">
+      <img src="ingame_snow.png" alt="Snow environment" />
+      <div class="impression-caption">Snow</div>
+    </div>
+    <div class="impression-card">
+      <img src="ingame_night.png" alt="Night environment" />
+      <div class="impression-caption">Night</div>
+    </div>
+    <div class="impression-card">
+      <img src="game_over.png" alt="Game over screen" />
+      <div class="impression-caption">Game Over Screen</div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <footer>
-  OpenGL Drone Shooter · Architecture overview generated from source · C++17 · OpenGL 3.3 Core
+  · OpenGL Drone Shooter architecture overview by EtoileScintillante ·
 </footer>
 
 </body>
